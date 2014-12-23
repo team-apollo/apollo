@@ -1,7 +1,14 @@
 (ns cljspazzer.core
+  (:require  [ring.adapter.jetty :as j])
   (:gen-class :main true))
 
+
+(defn app-handler [request]
+  {:status 200
+   :headers {"Content-Type" "text/plain;=us-ascii"}
+   :body (str request)})
+
 (defn -main
-  "I don't do a whole lot."
+  "Launch the web server app"
   [& args]
-  (println "Hello, World!"))
+  (j/run-jetty app-handler {:port 3000}))

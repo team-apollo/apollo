@@ -1,17 +1,11 @@
 (ns cljspazzer.core
-  (:require  [ring.adapter.jetty9 :as j]
-             [ring.middleware.resource :as m]
-             [compojure.core :refer :all]
-             [compojure.route :as route]
-             [compojure.response :refer [render]]
-             [clojure.java.io :as io])
-  (:gen-class :main true))
+  (:require [ring.middleware.resource :as m]
+            [compojure.core :refer :all]
+            [compojure.response :refer [render]]))
 
-(defroutes app
+(defroutes app-handler
   (GET "/" [] {:status 302
                :headers {"Location" "/index.html"}}))
+(def app
+  (m/wrap-resource app-handler "public"))
 
-(defn -main
-  "Launch the web server app"
-  [& args]
-  (j/run-jetty (m/wrap-resource app "public") {:port 5050}))

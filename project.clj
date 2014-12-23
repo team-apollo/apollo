@@ -12,6 +12,7 @@
                  "src.cljs"]
   :plugins [[lein-ring "0.8.13"]
             [lein-cljsbuild "1.0.4-SNAPSHOT"]]
+  :hooks [leiningen.cljsbuild]
   :ring {:handler cljspazzer.core/app
          :port 5050}
   :cljsbuild {

@@ -1,45 +1,10 @@
 (ns cljspazzer.core
   (:require [ring.middleware.resource :as m]
             [compojure.core :refer :all]
-            [compojure.response :refer [render]]
             [ring.middleware.json :as j]
-            [ring.util.response :refer [response]]))
-(defn track-detail [artist-id album-id track-id]
-  (response {:track {:id 1
-                     :num 1
-                     :disc 1
-                     :title "Catatonic"
-                     :details_url "/api/artists/1/albums/1/tracks/1"}}))
-
-(defn album-detail [artist-id album-id]
-  (response {:album {:id 1
-                     :name "Madonna"
-                     :year 1998
-                     :details_url "/api/artists/1/albums/1"
-                     :tracks [{:track {:id 1
-                                       :num 1
-                                       :disc 1
-                                       :title "Catatonic"
-                                       :details_url "/api/artists/1/albums/1/tracks/1"}}]}}))
-
-(defn artists-detail [id]
-  (response {:artist {:id 1
-                      :name "...And You Will Know Us by the Trail of Dead"
-                      :albums [{:album {:id 1
-                                        :name "Madonna"
-                                        :year 1998
-                                        :details_url "/api/artists/1/albums/1"
-                                        :tracks [{:track {:id 1
-                                                          :num 1
-                                                          :disc 1
-                                                          :title "Catatonic"
-                                                          :details_url "/api/artists/1/albums/1/tracks/1"}}]}}]}}))
-
-(defn artists-index [req]
-  (response {:artists
-             [{:artist {:id 1
-                        :name "...And You Will Know Us by the Trail of Dead"
-                        :details_url "/api/artists/1"}}]}))
+            [cljspazzer.http.artist :refer :all]
+            [cljspazzer.http.album :refer :all]
+            [cljspazzer.http.track :refer :all]))
 
 (defroutes app-handler
   (GET "/api/artists/:artist-id/albums/:album-id/tracks/:track-id"

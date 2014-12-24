@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [ring/ring-core "1.3.2"]
                  [ring/ring-jetty-adapter "1.3.2"]
+                 [ring/ring-json "0.3.1"]
                  [compojure "1.3.1"]
                  [org.clojure/clojurescript "0.0-2511"]]
   :source-paths ["src/clj"

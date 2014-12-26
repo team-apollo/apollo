@@ -10,7 +10,9 @@
                  [compojure "1.3.1"]
                  [org.clojure/clojurescript "0.0-2511"]
                  [org.clojure/java.jdbc "0.3.5"]
-                 [org.xerial/sqlite-jdbc "3.7.15-M1"]]
+                 [org.xerial/sqlite-jdbc "3.7.15-M1"]
+                 [org/jaudiotagger "2.0.3"]
+                 [claudio "0.1.2"]]
   :source-paths ["src/clj"
                  "src/cljs"]
   :plugins [[lein-ring "0.8.13"]

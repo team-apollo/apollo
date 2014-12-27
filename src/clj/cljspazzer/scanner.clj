@@ -1,7 +1,7 @@
 (ns cljspazzer.scanner
   (:require [clojure.java.io :as io]
             [claudio.id3 :as id3] ;; might want to ditch this, it's pretty limited
-            )
+            [clojure.string :as s])
   (:import org.jaudiotagger.audio.AudioFileFilter))
 
 (def file-filter (new org.jaudiotagger.audio.AudioFileFilter false))
@@ -23,7 +23,11 @@
         id3tags-fixed (hm-filter-null id3tags)]
     (assoc id3tags-fixed
            :path (.getAbsolutePath f)
-           :last-modified (.lastModified f))))
+           :last_modified (.lastModified f)
+           :artist_canonical (s/trim (s/lower-case (:artist id3tags-fixed "")))
+           :album_canonical (s/trim (s/lower-case (:album id3tags-fixed "")))
+           :title_canonical (s/trim (s/lower-case (:title id3tags-fixed "")))
+           :disc_no (:disc-no id3tags-fixed))))
 
 (defn file-tag-seq [d]
   (let [audio-files (filter is-audio-file? (file-seq (io/file d)))]

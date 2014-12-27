@@ -12,8 +12,13 @@
                                [:title :string]
                                [:artist :string]
                                [:year :string]
-                               [:disc :integer]
-                               [:album :string]]}})
+                               [:disc_no :integer]
+                               [:album :string]
+                               [:artist_canonical :string]
+                               [:album_canonical :string]
+                               [:title_canonical :string]
+                               [:last_modified :integer]
+                               [:genre :integer]]}})
 
 (defn create-tbl [db, tbl]
   (let [args (cons (:name tbl) (:columns tbl))]
@@ -28,3 +33,10 @@
 
 (defn drop-all-tbls [db]
   (map (partial drop-tbl db) (vals tables)))
+
+
+(defn track-exists? [db t]
+  (> (:count
+      (first
+       (sql/query db ["select count(id) as count from tracks where path=?" t])))
+     0))

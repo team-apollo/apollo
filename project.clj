@@ -12,7 +12,8 @@
                  [org.clojure/java.jdbc "0.3.5"]
                  [org.xerial/sqlite-jdbc "3.7.15-M1"]
                  [org/jaudiotagger "2.0.3"]
-                 [claudio "0.1.2"]]
+                 [claudio "0.1.2"]
+                 [com.novemberain/pantomime "2.3.0"]]
   :source-paths ["src/clj"
                  "src/cljs"]
   :plugins [[lein-ring "0.8.13"]

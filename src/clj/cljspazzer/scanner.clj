@@ -14,10 +14,7 @@
   (not (= (last kv) "null")))
 
 (defn hm-filter-null [hm]
-  (apply hash-map
-         (flatten
-          (filter val-not-null?
-                  (seq hm)))))
+  (into {} (filter val-not-null? hm)))
 
 (defn get-info [f]
   (let [id3tags (id3/read-tag f)
@@ -33,7 +30,10 @@
                  (db/column-names
                   (:tracks db/tables)))))
 
-
 (defn file-tag-seq [d]
-  (let [audio-files (filter is-audio-file? (file-seq (io/file d)))]
+  (let [lmidx (db/last-modified-index db/the-db)
+        need-info? (fn [f] (and (is-audio-file? f)
+                                (or (nil? (lmidx (.getAbsolutePath f)))
+                                    (not (= (.lastModified f) (lmidx (.getAbsolutePath f)))))))
+        audio-files (filter need-info? (file-seq (io/file d)))]
     (pmap get-info audio-files)))

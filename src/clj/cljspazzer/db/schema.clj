@@ -34,6 +34,8 @@
 (defn drop-all-tbls [db]
   (map (partial drop-tbl db) (vals tables)))
 
+(defn column-names [t]
+  (map first (:columns t)))
 
 (defn track-exists? [db t]
   (> (:count

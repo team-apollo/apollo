@@ -1,7 +1,8 @@
 (ns cljspazzer.scanner
   (:require [clojure.java.io :as io]
             [claudio.id3 :as id3] ;; might want to ditch this, it's pretty limited
-            [clojure.string :as s])
+            [clojure.string :as s]
+            [cljspazzer.db.schema :as db])
   (:import org.jaudiotagger.audio.AudioFileFilter))
 
 (def file-filter (new org.jaudiotagger.audio.AudioFileFilter false))
@@ -20,14 +21,18 @@
 
 (defn get-info [f]
   (let [id3tags (id3/read-tag f)
-        id3tags-fixed (hm-filter-null id3tags)]
-    (assoc id3tags-fixed
-           :path (.getAbsolutePath f)
-           :last_modified (.lastModified f)
-           :artist_canonical (s/trim (s/lower-case (:artist id3tags-fixed "")))
-           :album_canonical (s/trim (s/lower-case (:album id3tags-fixed "")))
-           :title_canonical (s/trim (s/lower-case (:title id3tags-fixed "")))
-           :disc_no (:disc-no id3tags-fixed))))
+        id3tags-fixed (hm-filter-null id3tags)
+        result (assoc id3tags-fixed
+                      :path (.getAbsolutePath f)
+                      :last_modified (.lastModified f)
+                      :artist_canonical (s/trim (s/lower-case (:artist id3tags-fixed "")))
+                      :album_canonical (s/trim (s/lower-case (:album id3tags-fixed "")))
+                      :title_canonical (s/trim (s/lower-case (:title id3tags-fixed "")))
+                      :disc_no (:disc-no id3tags-fixed))]
+    (select-keys result
+                 (db/column-names
+                  (:tracks db/tables)))))
+
 
 (defn file-tag-seq [d]
   (let [audio-files (filter is-audio-file? (file-seq (io/file d)))]

@@ -70,5 +70,6 @@
 
 
 (defn process-dir! [d]
-  (map (partial db/upsert-track! db/the-db)
-       (file-tag-seq d (mk-need-info))))
+  (do
+   (map (partial db/upsert-track! db/the-db) (file-tag-seq d (mk-need-info)))
+   (db/prune-tracks db/the-db)))

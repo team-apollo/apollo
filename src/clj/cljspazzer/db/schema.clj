@@ -19,7 +19,10 @@
                                [:album_canonical :string]
                                [:title_canonical :string]
                                [:last_modified :integer]
-                               [:genre :integer]]}})
+                               [:genre :integer]]}
+             :mounts {:name "mounts"
+                      :columns [[:id :integer "PRIMARY KEY" "AUTOINCREMENT"]
+                                [:path :string "UNIQUE"]]}})
 
 (defn create-tbl! [db, tbl]
   (let [args (cons (:name tbl) (:columns tbl))]
@@ -67,6 +70,16 @@
       {:row-count update-result :action :update}
       {:id (insert-track! db track-info) :action :insert})))
 
+(defn insert-mount! [db p]
+  ((keyword "last_insert_rowid()") (first (sql/insert! db :mounts {:path p}))))
+
+(defn delete-mount!
+  "returns rows effected which should be > 1 if successful"
+  [db path]
+  (first (sql/delete! db :mounts ["path=?" path])))
+
+(defn mount-points [db]
+  (map :path (sql/query db ["select path from mounts"])))
 
 (defn last-modified-index
   "{path:last_modified}"

@@ -70,6 +70,11 @@
 
 
 (defn process-dir! [d]
-  (do
-   (map (partial db/upsert-track! db/the-db) (file-tag-seq d (mk-need-info)))
-   (db/prune-tracks db/the-db)))
+  (let [fseq (file-tag-seq d (mk-need-info))
+        upsert (partial db/upsert-track! db/the-db)]
+    (dorun (map  upsert fseq))))
+
+(defn process-mounts! []
+  (let [m (db/mount-points db/the-db)]
+    (dorun (map process-dir! m))
+    (dorun (db/prune-tracks db/the-db))))

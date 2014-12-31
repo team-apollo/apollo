@@ -6,6 +6,9 @@
             [pantomime.mime :refer [mime-type-of]])
   (:import org.jaudiotagger.audio.AudioFileFilter))
 
+(.setLevel (java.util.logging.Logger/getLogger "org.jaudiotagger")
+           java.util.logging.Level/OFF)
+
 (def file-filter (new org.jaudiotagger.audio.AudioFileFilter false))
 
 (defn is-audio-file? [f]
@@ -64,3 +67,8 @@
          audio-files (filter active-predicate? files)]
      (pmap get-info audio-files)))
   ([d] (file-tag-seq d (fn [f] true))))
+
+
+(defn process-dir! [d]
+  (map (partial db/upsert-track! db/the-db)
+       (file-tag-seq d (mk-need-info))))

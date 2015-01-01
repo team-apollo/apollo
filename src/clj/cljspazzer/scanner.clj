@@ -77,4 +77,7 @@
 (defn process-mounts! []
   (let [m (db/mount-points db/the-db)]
     (dorun (map process-dir! m))
-    (dorun (db/prune-tracks db/the-db))))
+    (dorun (db/prune-tracks! db/the-db))))
+
+
+

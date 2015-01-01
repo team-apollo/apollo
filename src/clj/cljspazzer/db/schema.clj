@@ -78,8 +78,12 @@
   [db path]
   (first (sql/delete! db :mounts ["path=?" path])))
 
-(defn mount-points [db]
-  (map :path (sql/query db ["select path from mounts"])))
+(defn mount-points
+  "returned with trailing / to denote directory, io/file does the
+  normalization I think"
+  [db]
+  (map (fn [x] (str (.getAbsolutePath (io/file (:path x))) "/"))
+       (sql/query db ["select path from mounts"])))
 
 (defn last-modified-index
   "{path:last_modified}"
@@ -91,8 +95,19 @@
                                        r)) rows))]
     result))
 
-(defn prune-tracks
+(defn starts-with? [s prefix]
+  (if (> (count prefix) (count s))
+    false
+    (= prefix (subs s 0 (count prefix)))))
+
+(defn managed? [f mounts]
+  (some (partial starts-with? (.getAbsolutePath f)) mounts))
+
+(defn prune-tracks!
   "get rid of rows where the files no longer exist"
   [db]
-  (let [files (filter (fn [f] (not (.exists f))) (map io/file (keys (last-modified-index db))))]
+  (let [fkeys (keys (last-modified-index db))
+        mounts (mount-points db)
+        should-prune? (fn [f] (or (not (.exists f)) (not (managed? f mounts))))
+        files (filter should-prune? (map io/file fkeys))]
     (map (partial delete-track! db) (map (fn [f] (.getAbsolutePath f)) files))))

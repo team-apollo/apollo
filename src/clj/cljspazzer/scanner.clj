@@ -3,6 +3,7 @@
             [claudio.id3 :as id3] ;; might want to ditch this, it's pretty limited
             [clojure.string :as s]
             [cljspazzer.db.schema :as db]
+            [cljspazzer.utils :refer [canonicalize]]
             [pantomime.mime :refer [mime-type-of]]
             [clojure.tools.logging :as log])
   (:import org.jaudiotagger.audio.AudioFileFilter))
@@ -20,13 +21,6 @@
 
 (defn hm-filter-null [hm]
   (into {} (filter val-not-null? hm)))
-
-(defn canonicalize [s]
-  (let [result (s/trim (s/lower-case s))]
-    (if (and (> (count s) 4)
-         (= "the " (subs result 0 4)))
-      (s/trim (subs result 4))
-      result)))
 
 (defn get-info [f]
   (let [id3tags (try

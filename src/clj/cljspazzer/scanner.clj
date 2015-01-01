@@ -26,7 +26,7 @@
     (if (and (> (count s) 4)
          (= "the " (subs result 0 4)))
       (s/trim (subs result 4))
-      (s/trim result))))
+      result)))
 
 (defn get-info [f]
   (let [id3tags (try

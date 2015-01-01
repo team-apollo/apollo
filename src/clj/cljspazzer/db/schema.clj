@@ -1,6 +1,7 @@
 (ns cljspazzer.db.schema
   (:require [clojure.java.jdbc :as sql]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [cljspazzer.utils :as utils]))
 
 (def the-db {:classname "org.sqlite.JDBC",
              :subprotocol "sqlite",
@@ -13,6 +14,7 @@
                                [:title :string]
                                [:artist :string]
                                [:year :string]
+                               [:track :integer]
                                [:disc_no :integer]
                                [:album :string]
                                [:artist_canonical :string]
@@ -111,3 +113,17 @@
         should-prune? (fn [f] (or (not (.exists f)) (not (managed? f mounts))))
         files (filter should-prune? (map io/file fkeys))]
     (map (partial delete-track! db) (map (fn [f] (.getAbsolutePath f)) files))))
+
+;; queries for web endpoints
+(defn artist-list [db]
+  (sql/query db ["select distinct artist_canonical as artist from tracks order by artist"]))
+
+(defn album-list-by-artist [db artist]
+  (sql/query db ["select distinct album_canonical, year from tracks where artist_canonical=? order by year" (utils/canonicalize artist)]))
+
+
+(defn tracks-by-album [db album]
+  (sql/query db ["select * from tracks where album_canonical=? order by disc_no, track" (utils/canonicalize album)]))
+
+(defn problem-tracks [db]
+  (sql/query db ["select path from tracks where artist_canonical=? and album_canonical=? and title_canonical=? order by path" "" "" ""]))

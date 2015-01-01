@@ -1,25 +1,14 @@
 (ns cljspazzer.http.artist
-  (:require [ring.util.response :refer [response]]))
+  (:require [ring.util.response :refer [response]]
+            [cljspazzer.db.schema :as s]
+            [cljspazzer.utils :as utils]))
 
 (defn artists-detail [id]
-  (response {:artist
-             {:id 1
-              :name "...And You Will Know Us by the Trail of Dead"
-              :albums [{:album
-                        {:id 1
-                         :name "Madonna"
-                         :year 1998
-                         :details_url "/api/artists/1/albums/1"
-                         :tracks [{:track
-                                   {:id 1
-                                    :num 1
-                                    :disc 1
-                                    :title "Catatonic"
-                                    :details_url "/api/artists/1/albums/1/tracks/1"}}]}}]}}))
+  (let [result (s/album-list-by-artist s/the-db id)]
+    (if (> (count result) 1)
+      (response {:artist (utils/canonicalize id)
+                 :albums result})
+      {:status 404})))
 
 (defn artists-index [req]
-  (response {:artists
-             [{:artist
-               {:id 1
-                :name "...And You Will Know Us by the Trail of Dead"
-                :details_url "/api/artists/1"}}]}))
+  (response {:artists (s/artist-list s/the-db)}))

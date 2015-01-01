@@ -104,7 +104,7 @@
   (some (partial starts-with? (.getAbsolutePath f)) mounts))
 
 (defn prune-tracks!
-  "get rid of rows where the files no longer exist"
+  "get rid of rows where the files no longer exist or are no longer managed"
   [db]
   (let [fkeys (keys (last-modified-index db))
         mounts (mount-points db)

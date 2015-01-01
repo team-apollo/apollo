@@ -3,7 +3,8 @@
             [claudio.id3 :as id3] ;; might want to ditch this, it's pretty limited
             [clojure.string :as s]
             [cljspazzer.db.schema :as db]
-            [pantomime.mime :refer [mime-type-of]])
+            [pantomime.mime :refer [mime-type-of]]
+            [clojure.tools.logging :as log])
   (:import org.jaudiotagger.audio.AudioFileFilter))
 
 (.setLevel (java.util.logging.Logger/getLogger "org.jaudiotagger")
@@ -29,9 +30,9 @@
 
 (defn get-info [f]
   (let [id3tags (try
-                  (id3/read-tag f)
+                  (some identity [(id3/read-tag f) {}])
                   (catch Exception e
-                    (print e)
+                    (log/error e (format "problems reading tags from %s" (.getAbsolutePath f)))
                     {}))
         id3tags-fixed (hm-filter-null id3tags)
         result (assoc id3tags-fixed

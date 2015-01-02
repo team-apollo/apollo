@@ -8,11 +8,14 @@
 (defroute home-path "/" []
   (.log js/console "home path"))
 
-(defroute artist-path "/artist/:artist" [artist]
+(defroute artist-path "/artists/:artist" [artist]
   (.log js/console "artist-path " artist))
 
-(defroute album-path "/artist/:artist/albums/:album" [artist album]
+(defroute album-path "/artists/:artist/albums/:album" [artist album]
   (.log js/console "album-path " artist " " album))
+
+(defroute "*" []
+  (.log js/console "route not found"))
 
 (defn main []
   (secretary/set-config! :prefix "#")

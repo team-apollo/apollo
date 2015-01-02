@@ -34,5 +34,4 @@
                            :optimizations :none
                            :cache-analysis true
                            :pretty-print false
-                           :source-map "resources/public/javascripts/cljspazzer/main.js.map"
                            :output-dir "resources/public/javascripts/cljspazzer/"}}]})

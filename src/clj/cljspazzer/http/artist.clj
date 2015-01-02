@@ -5,7 +5,7 @@
 
 (defn artists-detail [id]
   (let [result (s/album-list-by-artist s/the-db id)]
-    (if (> (count result) 1)
+    (if (> (count result) 0)
       (response {:artist (utils/canonicalize id)
                  :albums result})
       {:status 404})))

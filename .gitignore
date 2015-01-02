@@ -10,3 +10,4 @@ pom.xml.asc
 *~
 /spazzer.db*
 /resources/public/javascripts/cljspazzer
+.DS_Store

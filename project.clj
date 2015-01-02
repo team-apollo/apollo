@@ -15,7 +15,8 @@
                  [claudio "0.1.2"]
                  [com.novemberain/pantomime "2.3.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [secretary "1.2.1"]]
+                 [secretary "1.2.1"]
+                 [cljs-ajax "0.3.3"]]
   :source-paths ["src/clj"
                  "src/cljs"]
   :plugins [[lein-ring "0.8.13"]

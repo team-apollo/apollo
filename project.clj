@@ -16,7 +16,9 @@
                  [com.novemberain/pantomime "2.3.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [secretary "1.2.1"]
-                 [cljs-ajax "0.3.3"]]
+                 [cljs-ajax "0.3.3"]
+                 [om "0.8.0-rc1"]
+                 [bk/ring-gzip "0.1.1"]]
   :source-paths ["src/clj"
                  "src/cljs"]
   :plugins [[lein-ring "0.8.13"]
@@ -24,9 +26,12 @@
   :hooks [leiningen.cljsbuild]
   :ring {:handler cljspazzer.core/app
          :port 5050}
+  :clean-targets ^{:protect false} ["resources/public/javascripts/cljspazzer"]
   :cljsbuild {:builds
               [{:source-paths ["src/cljs"]
                 :compiler
-                {:output-to "resources/public/javascripts/main.js"
-                 :optimizations :whitespace
-                 :pretty-print true}}]})
+                {:output-to "resources/public/javascripts/cljspazzer/main.js"
+                 :optimizations :advanced
+                 :pretty-print false
+                 :source-map "resources/public/javascripts/cljspazzer/main.js.map"
+                 :output-dir "resources/public/javascripts/cljspazzer/"}}]})

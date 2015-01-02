@@ -9,4 +9,4 @@ pom.xml.asc
 /.nrepl-port
 *~
 /spazzer.db*
-
+/resources/public/javascripts/cljspazzer

@@ -4,11 +4,23 @@
             [goog.events :as events]
             [ajax.core :as ajax]
             [goog.string :as gstring]
-            [goog.string.format])
+            [goog.string.format]
+            [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true])
   (:import goog.History))
 
 (defn error-handler [response]
   (.log js/console "something bad happened " response))
+
+
+(defn widget [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/h1 nil (:text data)))))
+
+(om/root widget {:text "I'm on my way I'm making it"}
+         {:target (. js/document (getElementById "app"))})
 
 (defroute home-path "/" []
   (.log js/console "home path")

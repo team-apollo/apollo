@@ -18,7 +18,8 @@
                  [secretary "1.2.1"]
                  [cljs-ajax "0.3.3"]
                  [om "0.8.0-rc1"]
-                 [bk/ring-gzip "0.1.1"]]
+                 [bk/ring-gzip "0.1.1"]
+                 [kioo "0.4.0"]]
   :source-paths ["src/clj"
                  "src/cljs"]
   :plugins [[lein-ring "0.8.13"]
@@ -29,9 +30,9 @@
   :clean-targets ^{:protect false} ["resources/public/javascripts/cljspazzer"]
   :cljsbuild {:builds
               [{:source-paths ["src/cljs"]
-                :compiler
-                {:output-to "resources/public/javascripts/cljspazzer/main.js"
-                 :optimizations :advanced
-                 :pretty-print false
-                 :source-map "resources/public/javascripts/cljspazzer/main.js.map"
-                 :output-dir "resources/public/javascripts/cljspazzer/"}}]})
+                :compiler {:output-to "resources/public/javascripts/cljspazzer/main.js"
+                           :optimizations :none
+                           :cache-analysis true
+                           :pretty-print false
+                           :source-map "resources/public/javascripts/cljspazzer/main.js.map"
+                           :output-dir "resources/public/javascripts/cljspazzer/"}}]})

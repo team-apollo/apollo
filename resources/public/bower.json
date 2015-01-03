@@ -1,0 +1,13 @@
+{
+  "name": "cljspazzer bower config libs(private)",
+  "version": "0.0.0",
+  "authors": [
+    "Tom Willis <twillis@topgunhq.com>"
+  ],
+  "license": "private",
+  "private": true,
+  "dependencies": {
+    "fontawesome": "~4.2.0",
+    "react": "~0.12.2"
+  }
+}

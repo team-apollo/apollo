@@ -1,37 +1,41 @@
 (ns cljspazzer.client.core
-  (:require-macros [secretary.core :refer [defroute]]
-                   [kioo.om :refer [defsnippet deftemplate]])
+  (:require-macros [secretary.core :refer [defroute]])
   (:require [secretary.core :as secretary]
             [goog.events :as events]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [kioo.om :refer [content set-attr do-> substitute listen]]
-            [kioo.core :refer [handle-wrapper]]
             [cljspazzer.client.services :as services]
-            [cljspazzer.client.utils :as utils])
+            [cljspazzer.client.utils :as utils]
+            [cljspazzer.client.pages :as pages])
   
   (:import goog.History))
 
 (def app-state (atom {}))
 
-(defsnippet artist-item "templates/artists.html" [:.artist-item]
-  [artist]
-  {[:a] (do-> (content artist)
-              (set-attr :href (utils/format "#/artists/%s" (utils/encode artist))))})
+(defn loading-page [data]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div nil "loading..."))))
 
-(deftemplate artists-template "templates/artists.html"
-  [artists]
-  {[:.artist-list] (content (map artist-item artists))})
 
-(defn view-artists [data]
-  (om/component (artists-template (:artists data))))
+(defn show-page [data]
+  (reify
+    om/IRender
+    (render [this]
+      (let [page (or (:active-page data) loading-page)]
+        (om/build page data)))))
 
-(om/root view-artists app-state
+
+(om/root show-page app-state
          {:target (. js/document (getElementById "app"))})
+
 
 (defroute home-path "/" []
   (.log js/console "home-path ")
-  (services/artist-list (fn [result] (swap! app-state assoc :artists result))))
+  (services/artist-list (fn [result]
+                          (swap! app-state assoc :artists result)
+                          (swap! app-state assoc :active-page pages/view-artists))))
 
 (defroute artist-path "/artists/:artist" [artist]
   (.log js/console "artist-path " artist)

@@ -1,12 +1,14 @@
 (ns cljspazzer.client.core
-  (:require-macros [secretary.core :refer [defroute]])
+  (:require-macros [secretary.core :refer [defroute]]
+                   [cljs.core.async.macros :refer [go]])
   (:require [secretary.core :as secretary]
             [goog.events :as events]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljspazzer.client.services :as services]
             [cljspazzer.client.utils :as utils]
-            [cljspazzer.client.pages :as pages])
+            [cljspazzer.client.pages :as pages]
+            [cljs.core.async :refer [<!]])
   
   (:import goog.History))
 
@@ -32,18 +34,20 @@
 
 
 (defroute home-path "/" []
-  (.log js/console "home-path ")
-  (services/artist-list (fn [result]
-                          (swap! app-state assoc :artists result)
-                          (swap! app-state assoc :active-page pages/view-artists))))
+  (go
+    (.log js/console "home-path ")
+    (swap! app-state assoc :artists (<! (services/artist-list)))
+    (swap! app-state assoc :active-page pages/view-artists)))
 
 (defroute artist-path "/artists/:artist" [artist]
-  (.log js/console "artist-path " artist)
-  (services/artist-detail artist (fn [response] (.log js/console (clj->js response)))))
+  (go
+    (.log js/console "artist-path " artist)
+    (.log js/console (clj->js (<! (services/artist-detail artist))))))
 
 (defroute album-path "/artists/:artist/albums/:album" [artist album]
-  (.log js/console "album-path " artist " " album)
-  (services/album-detail artist album (fn [response] (.log js/console clj->js response))))
+  (go
+    (.log js/console "album-path " artist " " album)
+    (.log js/console (clj->js (<! (services/album-detail artist album))))))
 
 
 (defroute "*" []

@@ -34,7 +34,7 @@
 (defsnippet artist-item "templates/artists.html" [:li]
   [artist]
   {[:a] (do-> (content artist)
-              (set-attr :href (gstring/format "#/artists/%s" artist)))})
+                (set-attr :href (gstring/format "#/artists/%s" (js/encodeURIComponent artist))))})
 
 (deftemplate artists-template "templates/artists.html"
   [artists]
@@ -55,14 +55,14 @@
 
 (defroute artist-path "/artists/:artist" [artist]
   (.log js/console "artist-path " artist)
-  (ajax/GET (gstring/format "/api/artists/%s" artist)
+  (ajax/GET (gstring/format "/api/artists/%s" (js/encodeURIComponent artist))
             {:error-handler error-handler
              :handler (fn [response]
                         (.log js/console (str response)))}))
 
 (defroute album-path "/artists/:artist/albums/:album" [artist album]
   (.log js/console "album-path " artist " " album)
-  (ajax/GET (gstring/format "/api/artists/%s/albums/%s" artist album)
+  (ajax/GET (gstring/format "/api/artists/%s/albums/%s" (js/encodeURIComponent artist) (js/encodeURIComponent album))
             {:error-handler error-handler
              :handler (fn [response]
                         (.log js/console (str response)))}))

@@ -35,4 +35,5 @@
                            :optimizations :none
                            :cache-analysis true
                            :pretty-print false
+                           :source-map true
                            :output-dir "resources/public/javascripts/cljspazzer/"}}]})

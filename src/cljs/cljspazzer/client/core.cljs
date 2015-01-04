@@ -37,7 +37,8 @@
   (go
     (.log js/console "home-path ")
     (swap! app-state assoc :artists (<! (services/artist-list)))
-    (swap! app-state assoc :active-page pages/view-artists)))
+    (swap! app-state assoc :active-page pages/view-browse)))
+
 
 (defroute artist-path "/artists/:artist" [artist]
   (go

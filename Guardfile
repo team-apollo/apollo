@@ -24,6 +24,6 @@
 # and, you'll have to watch "config/Guardfile" instead of "Guardfile"
 guard :shell do
     watch(/resources\/templates\/.*/) {
-      `touch src/cljs/cljspazzer/client/core.cljs`
+      `touch src/cljs/cljspazzer/client/pages.cljs`
     }
 end

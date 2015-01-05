@@ -10,26 +10,26 @@ FIXME
 
 ### Dependencies
 
-    - [Leiningen](http://leiningen.org/)
-    - [Guard](http://guardgem.org/)
+- [Leiningen](http://leiningen.org/)
+- [Guard](http://guardgem.org/)
 
 ### Running server
 
-    ```bash
-    $ lein ring server
-    ```
+```bash
+$ lein ring server
+```
 
 ### compiling client code
 
-    ```bash
-    $ lein cljsbuild auto
-    ```
+```bash
+$ lein cljsbuild auto
+```
 
 ### compiling templates
 
-    ```bash
-    $ guard
-    ```
+```bash
+$ guard
+```
 
 
 ## License

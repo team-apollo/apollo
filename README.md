@@ -15,20 +15,26 @@ FIXME
 
 ### Running server
 
-    ``lein ring server``
+    ```bash
+    $ lein ring server
+    ```
 
 ### compiling client code
 
-    ``lein cljsbuild auto``
+    ```bash
+    $ lein cljsbuild auto
+    ```
 
 ### compiling templates
 
-    ``guard``
+    ```bash
+    $ guard
+    ```
 
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2015 FIXME
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

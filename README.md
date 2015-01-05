@@ -1,10 +1,30 @@
 # cljspazzer
 
-A Clojure library designed to ... well, that part is up to you.
+A personal music collection app
 
 ## Usage
 
 FIXME
+
+## Hacking
+
+### Dependencies
+
+    - [Leiningen](http://leiningen.org/)
+    - [Guard](http://guardgem.org/)
+
+### Running server
+
+    ``lein ring server``
+
+### compiling client code
+
+    ``lein cljsbuild auto``
+
+### compiling templates
+
+    ``guard``
+
 
 ## License
 

@@ -13,3 +13,5 @@ pom.xml.asc
 .DS_Store
 /resources/public/lib/
 /node_modules/
+/log/
+/supervisord.conf

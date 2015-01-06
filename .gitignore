@@ -12,3 +12,4 @@ pom.xml.asc
 /resources/public/javascripts/cljspazzer
 .DS_Store
 /resources/public/lib/
+/node_modules/

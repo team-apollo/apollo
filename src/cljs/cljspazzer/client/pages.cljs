@@ -6,6 +6,7 @@
             [kioo.core :refer [handle-wrapper]]
             [cljspazzer.client.utils :as utils]))
 
+
 (defsnippet artist-item "templates/browser.html" [:.artist-item]
   [artist]
   {
@@ -24,16 +25,17 @@
   )
 (defsnippet album-item "templates/browser.html" [:.album-item]
   [album]
-  {
-   [:.album-heading] (content (:name album))
-   [:.track-list] (content (map track-item (:tracks album)))
-   })
+  {[:.album-heading] (content
+                      (utils/format "%s(%s)" (album "album_canonical") (album "year")))
+   [:.track-list] (content (map track-item (:tracks album)))})
 
 (defsnippet album-list "templates/browser.html" [:.album-list]
   [artist albums]
   {
    [:.album-item] (content (map album-item albums))
-   [:.artist-heading] (content artist)
+   [:.artist-heading] (if (not (nil? artist))
+                        (content artist)
+                        (content ""))
    }
   )
 
@@ -41,10 +43,10 @@
   {
    [:.artist-list] (content (map artist-item (:artists data)))
    [:.artist-nav] (content (map index-item "abcdefghijklmnopqrstuvwxyz"))
-   [:.album-list] (content (album-list (:active-artist data "converge")
-                                       (:albums data [{:name "foo" :tracks ["track1" "track2"]}
-                                                      ])
-                                       ))})
+   [:.album-list] (content (album-list (:active-artist data)
+                                       (:albums data)
+                                       ))}
+  )
 
 (defn view-browse [data]
   (om/component (browse-page data)))

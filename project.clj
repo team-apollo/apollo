@@ -20,6 +20,7 @@
                  [om "0.8.0-rc1"]
                  [bk/ring-gzip "0.1.1"]
                  [kioo "0.4.0"]
+                 [sablono "0.2.22"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
   :source-paths ["src/clj"
                  "src/cljs"]

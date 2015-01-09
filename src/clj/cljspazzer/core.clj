@@ -16,12 +16,12 @@
   (GET "/api/artists/:artist-id/albums/:album-id"
        [artist-id album-id]
        (album-detail artist-id album-id))
+  (GET "/api/artists/search/:prefix"
+       [prefix]
+       (artist-search prefix))
   (GET "/api/artists/:artist-id"
        [artist-id]
        (artists-detail artist-id))
-  (GET "/api/artists"
-       []
-       artists-index)
   (GET "/"
        []
        {:status 302

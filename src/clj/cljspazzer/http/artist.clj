@@ -12,3 +12,6 @@
 
 (defn artists-index [req]
   (response {:artists (s/artist-list s/the-db)}))
+
+(defn artist-search [prefix]
+  (response {:artists (s/artist-search s/the-db prefix)}))

@@ -118,6 +118,11 @@
 (defn artist-list [db]
   (sql/query db ["select distinct artist_canonical as artist from tracks order by artist"]))
 
+(defn artist-search [db prefix]
+  (cond (= prefix "all") (artist-list db)
+        (= prefix "#") (sql/query db [(format "select distinct artist_canonical as artist from tracks where artist_canonical < 'a'")])
+    :else (sql/query db [(format "select distinct artist_canonical as artist from tracks where artist_canonical like '%s%%'" prefix)])))
+
 (defn album-list-by-artist [db artist]
   (sql/query db ["select distinct album_canonical, year from tracks where artist_canonical=? order by year" (utils/canonicalize artist)]))
 

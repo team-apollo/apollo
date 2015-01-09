@@ -1,5 +1,6 @@
 .collection-nav > ul > li{
     display:inline-block;
+    padding: .1em;
 }
 /*I made this here http://yui.github.io/skinbuilder/?mode=pure*/
 body {

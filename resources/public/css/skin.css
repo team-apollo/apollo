@@ -1,3 +1,6 @@
+.collection-nav > ul > li{
+    display:inline-block;
+}
 /*I made this here http://yui.github.io/skinbuilder/?mode=pure*/
 body {
     background-color: #ffffff;

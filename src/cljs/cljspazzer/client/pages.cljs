@@ -17,7 +17,7 @@
 (defn browse-page [data]
   (html [:div.browse
          [:div.pure-g
-          [:div.collection-nav.pure-u-5-5 [:ul (map nav-item nav-seq)]]]
+          [:div.collection-nav.pure-u-1 [:ul (map nav-item nav-seq)]]]
          [:div.content.pure-g
           [:div.artist-list.pure-u-1-5
            [:ul (map artist-item (:artists data))]]

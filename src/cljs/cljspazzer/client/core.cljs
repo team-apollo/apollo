@@ -35,15 +35,24 @@
 
 (defroute home-path "/" []
   (go
-    (.log js/console "home-path ")
-    (swap! app-state assoc :artists (<! (services/artist-list)))
-    (swap! app-state assoc :active-page pages/view-browse)))
+    (swap! app-state assoc :artists (<! (services/artist-list-prefix "all")))
+    (swap! app-state assoc :active-page pages/view-browse)
+    (swap! app-state assoc :active-nav "all")
+    (swap! app-state assoc :active-artist nil)
+    (swap! app-state assoc :albums nil)))
 
+(defroute nav-path "/nav/:prefix" [prefix]
+  (go
+    (swap! app-state assoc :artists (<! (services/artist-list-prefix prefix)))
+    (swap! app-state assoc :active-page pages/view-browse)
+    (swap! app-state assoc :active-nav prefix)
+    (swap! app-state assoc :active-artist nil)
+    (swap! app-state assoc :albums nil)))
 
 (defroute artist-path "/artists/:artist" [artist]
   (go
-    (if (nil? (:artists app-state))
-      (swap! app-state assoc :artists (<! (services/artist-list))))
+    (if (nil? (:artists @app-state))
+      (swap! app-state assoc :artists (<! (services/artist-list-prefix (:active-nav @app-state "all")))))
     (let [response (<! (services/artist-detail artist))]
       (swap! app-state assoc :active-artist (response "artist"))
       (swap! app-state assoc :active-page pages/view-browse)

@@ -8,21 +8,23 @@
 (defn error-handler [response]
   (.log js/console "something bad happened " (clj->js response)))
 
-(defn artist-list []
-  (let [out (chan)]
-    (ajax/GET "/api/artists"
-              {:error-handler error-handler
-               :handler (fn [response]
-                          (let [not-blank? (fn [x] (not (= x "")))
-                                artists (filter  not-blank? (map (fn [a] (a "artist")) (response "artists")))]
-                            (put! out artists)))})
-   out))
+
+(defn artist-list-prefix 
+  ([prefix]
+   (let [out (chan)]
+     (ajax/GET (utils/format "/api/artists/search/%s" prefix)
+               {:error-handler error-handler
+                :handler (fn [response]
+                           (let [not-blank? (fn [x] (not (= x "")))
+                                 artists (filter  not-blank? (map (fn [a] (a "artist")) (response "artists")))]
+                             (put! out artists)))})
+     out)))
 
 (defn artist-detail [artist]
   (let [out (chan)]
     (ajax/GET (utils/format "/api/artists/%s" (utils/encode artist))
-            {:error-handler error-handler
-             :handler (fn [response] (put! out response))})
+              {:error-handler error-handler
+               :handler (fn [response] (put! out response))})
     out))
 
 (defn album-detail [artist album]

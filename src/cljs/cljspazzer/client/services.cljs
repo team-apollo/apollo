@@ -29,7 +29,9 @@
 
 (defn album-detail [artist album]
   (let [out (chan)]
-    (ajax/GET (utils/format "/api/artists/%s/albums/%s" (utils/encode artist) (utils/encode album))
+    (ajax/GET (utils/format "/api/artists/%s/albums/%s"
+                            (utils/encode artist)
+                            (utils/encode album))
               {:error-handler error-handler
                :handler (fn [response] (put! out response))})    
     out))

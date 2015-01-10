@@ -22,7 +22,7 @@
         artist (t "artist_canonical")
         album (t "album_canonical")]
     [:li
-     [:a {:href (utils/format "#/artists/%s/albums/%s/tracks/%s"
+     [:a {:href (utils/format "/api/artists/%s/albums/%s/tracks/%s"
                               (utils/encode artist)
                               (utils/encode album)
                               (utils/encode (t "id")))}

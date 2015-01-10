@@ -132,3 +132,9 @@
 
 (defn problem-tracks [db]
   (sql/query db ["select path from tracks where artist_canonical=? and album_canonical=? and title_canonical=? order by path" "" "" ""]))
+
+(defn track-by-artist-by-album [db artist album id]
+  (first (sql/query db ["select * from tracks where artist_canonical=? and album_canonical=? and id=?"
+                 (utils/canonicalize artist)
+                 (utils/canonicalize album)
+                 id])))

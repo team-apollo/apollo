@@ -28,16 +28,14 @@ $ java -jar target/cljspazzer-0.1.0-SNAPSHOT-standalone.jar
 
 - [Leiningen](http://leiningen.org/)
 - [NodeJs](http://nodejs.org/)
-- [Gulp](http://gulpjs.com/)
+- [Bower](http://bower.io/)
 
 
-#### Setting up Gulp
+#### Setting up js libs(reactjs/fontawesome)
 
 ```bash
-# from the project directory
-$ npm install gulp
-$ npm install touch
-
+# from the project directory/resources/public
+$ bower install
 ```
 
 ### Running server
@@ -57,17 +55,6 @@ $ lein cljsbuild auto
 ```
 
 Now anytime a *.cljs file is updated things will be re-built
-
-
-### compiling templates
-
-```bash
-# from the project directory
-$ gulp
-```
-
-Now any time you update a file in resources/templates/ gulp will cause
-the pages.cljs to be re-compiled.
 
 ### getting initial tag data
 

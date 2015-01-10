@@ -60,8 +60,12 @@
 
 (defroute album-path "/artists/:artist/albums/:album" [artist album]
   (go
-    (.log js/console "album-path " artist " " album)
-    (.log js/console (clj->js (<! (services/album-detail artist album))))))
+    (if (nil? (:artists @app-state))
+      (swap! app-state assoc :artists (<! (services/artist-list-prefix (:active-nav @app-state "all")))))
+    (let [response (<! (services/album-detail artist album))]
+      (swap! app-state assoc :active-artist artist)
+      (swap! app-state assoc :active-page pages/view-browse)
+      (swap! app-state assoc :active-album (response "album")))))
 
 
 (defroute "*" []

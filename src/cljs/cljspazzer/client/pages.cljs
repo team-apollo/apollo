@@ -11,19 +11,46 @@
 (defn artist-item [x]
   [:li [:a {:href (utils/format "#/artists/%s" (utils/encode x))} x]])
 
-(defn album-item [x]
-  [:li (utils/format "%s - (%s)" (x "album_canonical") (x "year"))])
+(defn album-item [active-artist album]
+  [:li [:a {:href (utils/format "#/artists/%s/albums/%s"
+                                (utils/encode active-artist)
+                                (utils/encode (album "album_canonical")))}
+        (utils/format "%s - (%s)" (album "album_canonical") (album "year"))]])
+
+(defn track-detail [track]
+  (let [t (track "track")
+        artist (t "artist_canonical")
+        album (t "album_canonical")]
+    [:li
+     [:a {:href (utils/format "#/artists/%s/albums/%s/tracks/%s"
+                              (utils/encode artist)
+                              (utils/encode album)
+                              (utils/encode (t "id")))}
+      (utils/format "%s. %s" (t "track") (t "title"))]]))
+
+(defn album-detail [artist album]
+  (if (and (not (nil? artist)) (not (nil? album)))
+   [:div 
+   [:h1 artist]
+   [:h2 (utils/format "%s - (%s)" (album "name") (album "year"))]
+   [:ul.tracks
+    (map track-detail (album "tracks"))]
+   ])
+  )
 
 (defn browse-page [data]
-  (html [:div.browse
-         [:div.pure-g
-          [:div.collection-nav.pure-u-1 [:ul (map nav-item nav-seq)]]]
-         [:div.content.pure-g
-          [:div.artist-list.pure-u-1-5
-           [:ul (map artist-item (:artists data))]]
-          [:div.artist-detail.pure-u-3-5
-           [:h1 (:active-artist data)]
-           [:ul (map album-item (:albums data))]]]]))
+  (let [active-artist (:active-artist data)]
+    (html [:div.browse
+           [:div.pure-g
+            [:div.collection-nav.pure-u-1 [:ul (map nav-item nav-seq)]]]
+           [:div.content.pure-g
+            [:div.artist-list.pure-u-1-5
+             [:ul (map artist-item (:artists data))]]
+            [:div.artist-detail.pure-u-2-5
+             [:h1 active-artist]
+             [:ul (map (partial album-item active-artist) (:albums data))]]
+            [:div.album-detail.pure-u-2-5
+             (album-detail active-artist (:active-album data))]]])))
 
 (defn view-browse [data]
   (om/component (browse-page data)))

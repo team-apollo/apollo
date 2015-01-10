@@ -1,6 +1,48 @@
 (ns cljspazzer.http.album
   (:require [ring.util.response :refer [response]]
-            [cljspazzer.db.schema :as s]))
+            [cljspazzer.db.schema :as s]
+            [cljspazzer.utils :as utils]
+            [clojure.java.io :as io]
+            [clojure.tools.logging :as log])
+  (:import
+    [java.io FileOutputStream ByteArrayOutputStream ByteArrayInputStream]
+    [java.util.zip ZipEntry ZipFile ZipOutputStream]))
+
+
+(defn make-zip-file [entries]
+  (let [result (new ByteArrayOutputStream)
+        z (new ZipOutputStream result)]
+    (with-open [out z]
+      (doseq [entry entries] ;;destructure?
+        (let [v (val entry)
+              zip-entry (:zip-entry v)
+              file (:file v)]
+          (.putNextEntry out zip-entry)
+          (io/copy file out)
+          (.closeEntry out))))
+    (.toByteArray result)))
+
+(defn album-zip [artist-id album-id]
+  (log/error [artist-id album-id])
+  (let [db-result (s/tracks-by-album s/the-db album-id)
+        artists (map :artist_canonical  db-result)
+        albums (map :album_canonical db-result)
+        paths (map :path db-result)
+        result-file-name (format "%s - %s.zip"
+                                 (utils/canonicalize artist-id)
+                                 (utils/canonicalize album-id))
+        zip-entries (into {}
+                           (map (fn [p] {(:path p)
+                                         {:zip-entry (new ZipEntry (utils/track-file-name p))
+                                         :file (io/file (:path p))}}) db-result))
+        zip-bytes (make-zip-file zip-entries)
+        ]
+    (log/error (count zip-bytes))
+    {
+     :body (new ByteArrayInputStream zip-bytes)
+     :headers {"Content-Disposition" (format "attachment;filename=%s" result-file-name)}
+     }
+    ))
 
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)

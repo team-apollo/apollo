@@ -12,10 +12,15 @@
   [:li [:a {:href (utils/format "#/artists/%s" (utils/encode x))} x]])
 
 (defn album-item [active-artist album]
-  [:li [:a {:href (utils/format "#/artists/%s/albums/%s"
-                                (utils/encode active-artist)
-                                (utils/encode (album "album_canonical")))}
-        (utils/format "%s - (%s)" (album "album_canonical") (album "year"))]])
+  [:li
+   [:a {:href (utils/format "#/artists/%s/albums/%s"
+                            (utils/encode active-artist)
+                            (utils/encode (album "album_canonical")))}
+    (utils/format "%s - (%s)" (album "album_canonical") (album "year"))]
+   [:a {:href (utils/format "/api/artists/%s/albums/%s/zip"
+                            (utils/encode active-artist)
+                            (utils/encode (album "album_canonical")))} "download(zip)"]
+   ])
 
 (defn track-detail [track]
   (let [t (track "track")

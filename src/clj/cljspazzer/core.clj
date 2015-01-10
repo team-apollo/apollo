@@ -16,6 +16,9 @@
   (GET "/api/artists/:artist-id/albums/:album-id"
        [artist-id album-id]
        (album-detail artist-id album-id))
+  (GET "/api/artists/:artist-id/albums/:album-id/zip"
+       [artist-id album-id]
+       (album-zip artist-id album-id))
   (GET "/api/artists/search/:prefix"
        [prefix]
        (artist-search prefix))

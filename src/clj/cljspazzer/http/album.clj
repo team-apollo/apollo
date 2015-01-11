@@ -23,7 +23,6 @@
     (.toByteArray result)))
 
 (defn album-zip [artist-id album-id]
-  (log/error [artist-id album-id])
   (let [db-result (s/tracks-by-album s/the-db album-id)
         artists (map :artist_canonical  db-result)
         albums (map :album_canonical db-result)
@@ -37,7 +36,6 @@
                                          :file (io/file (:path p))}}) db-result))
         zip-bytes (make-zip-file zip-entries)
         ]
-    (log/error (count zip-bytes))
     {
      :body (new ByteArrayInputStream zip-bytes)
      :headers {"Content-Disposition" (format "attachment;filename=%s" result-file-name)}

@@ -67,6 +67,14 @@
       (swap! app-state assoc :active-page pages/view-browse)
       (swap! app-state assoc :active-album (response "album")))))
 
+(defroute admin-path "/admin" []
+  (go
+    (swap! app-state assoc :mounts (<! (services/mounts)))
+    (swap! app-state assoc :active-page pages/view-admin)))
+
+(defroute debug-path "/debug" []
+  (swap! app-state assoc :debug "hi there")
+  (swap! app-state assoc :active-page pages/view-debug))
 
 (defroute "*" []
   (.log js/console "route not found"))

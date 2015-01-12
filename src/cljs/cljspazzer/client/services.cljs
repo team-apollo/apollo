@@ -35,3 +35,18 @@
               {:error-handler error-handler
                :handler (fn [response] (put! out response))})    
     out))
+
+
+(defn mounts []
+  (let [out (chan)]
+    (ajax/GET "/api/mounts"
+              {:error-handler error-handler
+               :handler (fn [response] (put! out response))})
+    out))
+
+(defn add-mount [new-mount]
+  (let [out (chan)]
+    (ajax/POST "/api/mounts"
+               {:error-handler error-handler
+                :handler (fn [response] (put! out response))})
+    out))

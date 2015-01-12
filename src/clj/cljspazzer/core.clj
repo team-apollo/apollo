@@ -5,6 +5,7 @@
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.gzip :refer [wrap-gzip]]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
+            [cljspazzer.http.admin :refer :all]
             [cljspazzer.http.artist :refer :all]
             [cljspazzer.http.album :refer :all]
             [cljspazzer.http.track :refer :all]))
@@ -25,8 +26,9 @@
   (GET "/api/artists/:artist-id"
        [artist-id]
        (artists-detail artist-id))
-  (GET "/"
-       []
+  (GET "/api/mounts" []
+       (mounts))
+  (GET "/" []
        {:status 302
         :headers {"Location" "/index.html"}}))
 

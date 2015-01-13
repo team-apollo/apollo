@@ -103,13 +103,13 @@ You should now have a directory registered with the application that will be sca
 in your repl
 
 ````bash
-user=> (use 'cljspazzer.db.scanner)
+user=> (use 'cljspazzer.scanner)
 nil
-user=> (in-ns 'cljspazzer.db.scanner)
-#<Namespace cljspazzer.db.scanner>
-cljspazzer.db.scanner=> (process-mounts!)
+user=> (in-ns 'cljspazzer.scanner)
+#<Namespace cljspazzer.scanner>
+cljspazzer.scanner=> (process-mounts!)
 nil
-cljspazzer.db.scanner=> 
+cljspazzer.scanner=> 
 ````
 
 There should now be data in the database derived from files contained in one or more mounted directories added in the previous step.

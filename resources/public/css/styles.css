@@ -1,16 +1,71 @@
+body {
+  background: #f2ece4; }
+
+ul {
+  padding: 0; }
+
 .artist-list li {
   display: inline-block;
   width: 200px;
   margin: 0 1em 1em 0; }
+  .artist-list li:hover img {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
+    opacity: 1; }
   .artist-list li img {
     width: 100%;
     height: auto;
     margin-bottom: 0.25em;
     box-shadow: 0 0 0 transparent;
-    transition: box-shadow 0.3s; }
-    .artist-list li img:hover {
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.25); }
+    transition: box-shadow 0.3s, opacity 0.3s;
+    opacity: 0.75; }
   .artist-list li a {
     text-decoration: none;
+    clear: both;
     color: #3f3f3f;
     text-transform: capitalize; }
+    .artist-list li a span {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      display: block; }
+
+*:focus {
+  outline: 0 none !important; }
+
+.collection-nav {
+  width: 250px;
+  position: fixed;
+  height: 100%;
+  background: #262522;
+  letter-spacing: 1; }
+  .collection-nav h3 {
+    color: white; }
+  .collection-nav ul li {
+    padding: 0;
+    margin: 0 4px 4px 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
+    .collection-nav ul li:nth-of-type(5n) {
+      margin-right: 0; }
+    .collection-nav ul li a {
+      background: #363229;
+      display: block;
+      text-align: center;
+      width: 46px;
+      height: 47.5px;
+      line-height: 47.5px;
+      text-decoration: none;
+      color: white;
+      text-transform: uppercase; }
+      .collection-nav ul li a:hover {
+        background: #534d3f; }
+      .collection-nav ul li a:focus, .collection-nav ul li a.active {
+        background: #a69886; }
+
+.content {
+  margin-left: 250px;
+  padding-left: 1em; }

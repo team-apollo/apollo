@@ -54,15 +54,19 @@
     (html
      [:div.browse
       [:div.pure-g
-       [:div.collection-nav.pure-u-1 [:ul (map nav-item nav-seq)]]]
+       [:div.collection-nav
+        [:h3 "Artists"]
+        [:ul (map nav-item nav-seq)]]]
       [:div.content.pure-g
-       [:div.artist-list.pure-u-5-5
-        [:ul (map artist-item (:artists data))]]
-       [:div.artist-detail.pure-u-2-5
-        [:h1 active-artist]
-        [:ul (map (partial album-item active-artist) (:albums data))]]
-       [:div.album-detail.pure-u-2-5
-        (album-detail active-artist (:active-album data))]]])))
+       [:div.pure-u-5-5
+        [:h3 "XX Artists"]
+        [:div.artist-list
+         [:ul (map artist-item (:artists data))]]
+        [:div.artist-detail.pure-u-2-5
+         [:h3 active-artist]
+         [:ul (map (partial album-item active-artist) (:albums data))]]
+        [:div.album-detail.pure-u-2-5
+         (album-detail active-artist (:active-album data))]]]])))
 
 (defn delete-mount [mount]
   (fn [e]

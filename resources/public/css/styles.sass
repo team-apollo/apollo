@@ -1,18 +1,75 @@
+body
+  background: #F2ECE4
+
 ul
+  padding: 0
+
 .artist-list
   li
     display: inline-block
     width: 200px
     margin: 0 1em 1em 0
+    &:hover
+      img
+        box-shadow: 0 0 15px transparentize(black, .75)
+        opacity: 1
     img
       width: 100%
       height: auto
       margin-bottom: .25em
       box-shadow: 0 0 0 transparentize(black, 1)
-      transition: box-shadow .3s
-      &:hover
-        box-shadow: 0 0 15px transparentize(black, .75)
+      transition: box-shadow .3s, opacity .3s
+      opacity: .75
     a
       text-decoration: none
+      clear: both
       color: #3f3f3f
       text-transform: capitalize
+      span
+        text-overflow: ellipsis
+        overflow: hidden
+        white-space: nowrap
+        display: block
+
+*:focus
+  outline: 0 none !important
+
+.collection-nav
+  width: 250px
+  position: fixed
+  height: 100%
+  background: #262522
+  letter-spacing: 1
+  h3
+    color: white
+  ul
+    li
+      padding: 0
+      margin: 0 4px 4px 0
+      -webkit-touch-callout: none
+      -webkit-user-select: none
+      -khtml-user-select: none
+      -moz-user-select: none
+      -ms-user-select: none
+      user-select: none
+      &:nth-of-type(5n)
+        margin-right: 0
+      a
+        background: #363229
+        display: block
+        text-align: center
+        width: 46px
+        height: 47.5px
+        line-height: 47.5px
+        text-decoration: none
+        color: white
+        text-transform: uppercase
+        &:hover
+          background: lighten(#363229, 10)
+        &:focus, &.active
+          background: #A69886
+
+
+.content
+  margin-left: 250px
+  padding-left: 1em

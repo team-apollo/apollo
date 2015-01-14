@@ -47,6 +47,19 @@
 (defn add-mount [new-mount]
   (let [out (chan)]
     (ajax/POST "/api/mounts"
-               {:error-handler error-handler
+               {:params {:new-mount new-mount}
+                :keywords? true
+                :format :url
+                :error-handler error-handler
                 :handler (fn [response] (put! out response))})
+    out))
+
+(defn delete-mount [mount]
+  (let [out (chan)]
+    (ajax/DELETE "/api/mounts"
+                 {:params {:mount mount}
+                  :keywords? true
+                  :format :url
+                  :error-handler error-handler
+                  :handler (fn [response] (put! out response))})
     out))

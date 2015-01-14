@@ -1,9 +1,11 @@
 (ns cljspazzer.client.pages
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]
             [cljspazzer.client.utils :as utils]
             [cljspazzer.client.services :as services]
-            [cljs.core.async :refer [<!]]))
+            [cljs.core.async :refer [<!]]
+            [secretary.core :as secretary]))
 
 (def nav-seq (concat (map str "#abcdefghijklmnopqrstuvwxyz") ["all"]))
 
@@ -60,9 +62,24 @@
        [:div.album-detail.pure-u-2-5
         (album-detail active-artist (:active-album data))]]])))
 
+(defn delete-mount [mount]
+  (fn [e]
+    (go
+      (<! (services/delete-mount path))
+      (secretary/dispatch! "#/admin"))))
+
 (defn mount-item [m]
   (let [path (m "mount")]
-    [:li path [:a {:href ""} "delete"]]))
+    [:li path [:a {
+                   :on-click (fn [e] (delete-mount path) false)}
+               "delete"]]))
+
+(defn add-mount [owner]
+  (let [v (.-value (om/get-node owner "new-mount"))]
+    (go
+      (.log js/console v)
+      (.log js/console (clj->js (<! (services/add-mount v))))
+      (secretary/dispatch! "#/admin"))))
 
 (defn view-admin [data owner]
   (reify
@@ -82,9 +99,8 @@
                  [:a.button
                   {:href "#"
                    :on-click (fn [e]
-                               (let [v (.-value (om/get-node owner "new-mount"))]
-                                 (.log js/console v)
-                                 false))}
+                               (add-mount owner)
+                               false)}
                   "create"]]]])))))
 
 (defn view-browse [data]

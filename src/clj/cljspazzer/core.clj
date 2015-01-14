@@ -1,6 +1,7 @@
 (ns cljspazzer.core
   (:require [ring.middleware.resource :as m]
             [compojure.core :refer :all]
+            [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.json :as j]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.gzip :refer [wrap-gzip]]
@@ -28,12 +29,17 @@
        (artists-detail artist-id))
   (GET "/api/mounts" []
        (mounts))
+  (POST "/api/mounts" [new-mount]
+        (add-new-mount new-mount))
+  (DELETE "/api/mounts" [mount]
+          (delete-mount mount))
   (GET "/" []
        {:status 302
         :headers {"Location" "/index.html"}}))
 
 (def app
   (-> app-handler
+      (wrap-params)
       (j/wrap-json-response)
       (m/wrap-resource "public")
       (wrap-not-modified)

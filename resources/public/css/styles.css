@@ -1,0 +1,16 @@
+.artist-list li {
+  display: inline-block;
+  width: 200px;
+  margin: 0 1em 1em 0; }
+  .artist-list li img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 0.25em;
+    box-shadow: 0 0 0 transparent;
+    transition: box-shadow 0.3s; }
+    .artist-list li img:hover {
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.25); }
+  .artist-list li a {
+    text-decoration: none;
+    color: #3f3f3f;
+    text-transform: capitalize; }

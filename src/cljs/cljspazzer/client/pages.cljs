@@ -13,7 +13,9 @@
   [:li [:a {:href (utils/format "#/nav/%s" (utils/encode x))} x]])
 
 (defn artist-item [x]
-  [:li [:a {:href (utils/format "#/artists/%s" (utils/encode x))} x]])
+  [:li
+   [:a {:href (utils/format "#/artists/%s" (utils/encode x))}[:img {:src "http://placehold.it/250x250.png"}] x]])
+   
 
 (defn album-item [active-artist album]
   [:li
@@ -54,7 +56,7 @@
       [:div.pure-g
        [:div.collection-nav.pure-u-1 [:ul (map nav-item nav-seq)]]]
       [:div.content.pure-g
-       [:div.artist-list.pure-u-1-5
+       [:div.artist-list.pure-u-5-5
         [:ul (map artist-item (:artists data))]]
        [:div.artist-detail.pure-u-2-5
         [:h1 active-artist]

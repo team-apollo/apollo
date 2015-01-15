@@ -131,10 +131,15 @@
   (sql/query db ["select * from tracks where album_canonical=? order by disc_no, track" (utils/canonicalize album)]))
 
 (defn problem-tracks [db]
-  (sql/query db ["select path from tracks where artist_canonical=? and album_canonical=? and title_canonical=? order by path" "" "" ""]))
+  (sql/query db ["select path from tracks where artist_canonical=? and album_canonical=? and title_canonical=? order by path"]))
 
 (defn track-by-artist-by-album [db artist album id]
   (first (sql/query db ["select * from tracks where artist_canonical=? and album_canonical=? and id=?"
                  (utils/canonicalize artist)
                  (utils/canonicalize album)
                  id])))
+
+(defn get-album-and-artist-by-path [db path]
+  (let [f (io/file path)
+        p (if (.isDirectory f) path (.getParent f))]
+    (sql/query db [(format "select distinct artist_canonical, album_canonical from tracks where path like '%s%%' order by artist_canonical, album_canonical" p)])))

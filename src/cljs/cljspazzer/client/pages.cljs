@@ -19,6 +19,9 @@
 
 (defn album-item [active-artist album]
   [:li
+   [:img {:src (utils/format "/api/artists/%s/albums/%s/image"
+                          (utils/encode active-artist)
+                          (utils/encode (album "album_canonical")))}]
    [:a {:href (utils/format "#/artists/%s/albums/%s"
                             (utils/encode active-artist)
                             (utils/encode (album "album_canonical")))}
@@ -44,6 +47,10 @@
     [:div 
      [:h1 artist]
      [:h2 (utils/format "%s - (%s)" (album "name") (album "year"))]
+     [:img {:src
+            (utils/format "/api/artists/%s/albums/%s/image"
+                          (utils/encode artist)
+                          (utils/encode (album "name")))}]
      [:ul.tracks
       (map track-detail (album "tracks"))]
      ])
@@ -83,8 +90,7 @@
 (defn add-mount [owner]
   (let [v (.-value (om/get-node owner "new-mount"))]
     (go
-      (.log js/console v)
-      (.log js/console (clj->js (<! (services/add-mount v))))
+      (<! (services/add-mount v))
       (secretary/dispatch! "#/admin"))))
 
 (defn view-admin [data owner]

@@ -42,6 +42,18 @@
      }
     ))
 
+(defn images-for-tracks [tracks]
+  (let [parents (into #{} (map (fn [t] (.getParentFile (io/file (:path t)))) tracks))
+        result (filter utils/is-image? (flatten (map (fn [p] (seq (.listFiles p))) parents)))]
+    result))
+
+(defn album-image [artist-id album-id]
+  (let [tracks (s/tracks-by-album s/the-db album-id)
+        img (first (images-for-tracks tracks))]
+    (if (nil? img)
+      {:status 404}
+      (response img))))
+
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)
         first-result (first db-result)

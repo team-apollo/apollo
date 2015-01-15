@@ -2,6 +2,10 @@
   (:require [clojure.string :as s]
             [pantomime.mime :refer [mime-type-of extension-for-name]]))
 
+(defn is-image? [f]
+  (and (.isFile f)
+       (= "image" (subs (mime-type-of f) 0 5))))
+
 (defn get-extension [path]
   (let [mime-type (mime-type-of path)]
     (cond

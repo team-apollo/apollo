@@ -39,7 +39,8 @@
     (swap! app-state assoc :active-page pages/view-browse)
     (swap! app-state assoc :active-nav "all")
     (swap! app-state assoc :active-artist nil)
-    (swap! app-state assoc :albums nil)))
+    (swap! app-state assoc :albums nil)
+    (swap! app-state assoc :active-album nil)))
 
 (defroute nav-path "/nav/:prefix" [prefix]
   (go
@@ -47,7 +48,8 @@
     (swap! app-state assoc :active-page pages/view-browse)
     (swap! app-state assoc :active-nav prefix)
     (swap! app-state assoc :active-artist nil)
-    (swap! app-state assoc :albums nil)))
+    (swap! app-state assoc :albums nil)
+    (swap! app-state assoc :active-album nil)))
 
 (defroute artist-path "/artists/:artist" [artist]
   (go
@@ -56,7 +58,8 @@
     (let [response (<! (services/artist-detail artist))]
       (swap! app-state assoc :active-artist (response "artist"))
       (swap! app-state assoc :active-page pages/view-browse)
-      (swap! app-state assoc :albums (response "albums")))))
+      (swap! app-state assoc :albums (response "albums"))
+      (swap! app-state assoc :active-album nil))))
 
 (defroute album-path "/artists/:artist/albums/:album" [artist album]
   (go

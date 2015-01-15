@@ -1,9 +1,10 @@
 (ns cljspazzer.http.album
-  (:require [ring.util.response :refer [response]]
+  (:require [ring.util.response :refer [response, file-response header]]
             [cljspazzer.db.schema :as s]
             [cljspazzer.utils :as utils]
             [clojure.java.io :as io]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [pantomime.mime :refer [mime-type-of]])
   (:import
     [java.io FileOutputStream ByteArrayOutputStream ByteArrayInputStream]
     [java.util.zip ZipEntry ZipFile ZipOutputStream]))
@@ -38,7 +39,8 @@
         ]
     {
      :body (new ByteArrayInputStream zip-bytes)
-     :headers {"Content-Disposition" (format "attachment;filename=%s" result-file-name)}
+     :headers {"Content-Disposition" (format "attachment;filename=%s" result-file-name)
+               "Content-Type" (mime-type-of zip-bytes)}
      }
     ))
 
@@ -52,7 +54,7 @@
         img (first (images-for-tracks tracks))]
     (if (nil? img)
       {:status 404}
-      (response img))))
+      {:body img :headers {"Content-Type" (mime-type-of img)}})))
 
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)

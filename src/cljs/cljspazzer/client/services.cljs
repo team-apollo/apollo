@@ -12,7 +12,7 @@
 (defn artist-list-prefix 
   ([prefix]
    (let [out (chan)]
-     (ajax/GET (utils/format "/api/artists/search/%s" prefix)
+     (ajax/GET (utils/format "/api/artists/search/%s" (utils/encode prefix))
                {:error-handler error-handler
                 :handler (fn [response]
                            (let [not-blank? (fn [x] (not (= x "")))

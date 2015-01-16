@@ -18,3 +18,5 @@ pom.xml.asc
 /supervisord.conf
 /.repl*
 /out/
+.sass-cache/
+css

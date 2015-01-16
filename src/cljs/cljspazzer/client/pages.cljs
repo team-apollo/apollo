@@ -66,15 +66,19 @@
         [:h3 "Artists"]
         [:ul (map nav-item nav-seq)]]]
       [:div.content.pure-g
-       [:div.pure-u-5-5
         [:h3 "XX Artists"]
         [:div.artist-list
-         [:ul (map artist-item (:artists data))]]
+          [:ul (map artist-item (:artists data))]]
         [:div.artist-detail
-         [:h3 active-artist]
-         [:ul (map (partial album-item active-artist) (:albums data))]]
-        [:div.album-detail.pure-u-2-5
-         (album-detail active-artist (:active-album data))]]]])))
+          [:div.pure-u-4-5
+            [:h3 "XX Albums"]
+            [:ul (map (partial album-item active-artist) (:albums data))]]
+          [:div.pure-u-1-5
+            [:h3 active-artist]
+            [:img {:src "http://placehold.it/450x450.png"}]]]
+        [:div.pure-u-1
+          [:div.album-detail
+            (album-detail active-artist (:active-album data))]]]])))
 
 (defn delete-mount [mount]
   (fn [e]

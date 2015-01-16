@@ -1,0 +1,68 @@
+body
+  background: $background
+  color: $font-color
+
+ul
+  padding: 0
+
+.artist-list
+  li
+    display: inline-block
+    position: relative
+    width: 200px
+    margin: 0 1em 1em 0
+    &:hover
+      img
+        opacity: 1
+      span
+        opacity: 1
+        background: transparentize($background, .2)
+    img
+      width: 100%
+      height: auto
+      transition: opacity .3s
+      opacity: .75
+    a
+      text-decoration: none
+      position: relative
+      clear: both
+      overflow: hidden
+      display: block
+      color: #3f3f3f
+      text-transform: capitalize
+      span
+        background: transparentize($background, .4)
+        transition: opacity .3s, background .3s
+        opacity: .6
+        color: white
+        position: absolute
+        left: 0
+        bottom: 0
+        padding: .5em
+        display: block
+        width: 95%
+
+.artist-detail
+  @extend .artist-list
+  i
+    padding: .5em
+    color: white
+    opacity: 0
+    transition: opacity .3s
+  li
+    a
+      &.download
+        position: absolute
+        top: 0
+        left: 0
+        overflow: visible
+    &:hover
+      i
+        opacity: 1
+
+*:focus
+  outline: 0 none !important
+
+.content
+  margin-left: 250px
+  padding-left: 1em

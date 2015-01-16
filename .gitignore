@@ -12,6 +12,9 @@ pom.xml.asc
 /resources/public/javascripts/cljspazzer
 .DS_Store
 /resources/public/lib/
+/resources/public/css/styles.css
 /node_modules/
 /log/
 /supervisord.conf
+/.repl*
+/out/

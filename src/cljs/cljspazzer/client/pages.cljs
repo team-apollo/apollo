@@ -71,7 +71,7 @@
        [:div.pure-u-5-5
         [:h3 (utils/format "%s Artists" artist-count)]
         [:div.artist-list
-         [:ul (map artist-item (:artists data))]]
+          [:ul (map artist-item (:artists data))]]
         [:div.artist-detail
          [:h3 active-artist]
          [:img {:src (utils/format "/api/artists/%s/image" (utils/encode active-artist))}]

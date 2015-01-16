@@ -4,30 +4,55 @@ body {
 ul {
   padding: 0; }
 
-.artist-list li {
+.artist-list li, .artist-detail li {
   display: inline-block;
+  position: relative;
   width: 200px;
   margin: 0 1em 1em 0; }
-  .artist-list li:hover img {
+  .artist-list li:hover img, .artist-detail li:hover img {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
     opacity: 1; }
-  .artist-list li img {
+  .artist-list li:hover span, .artist-detail li:hover span {
+    opacity: 1;
+    background: rgba(38, 37, 34, 0.8); }
+  .artist-list li img, .artist-detail li img {
     width: 100%;
     height: auto;
-    margin-bottom: 0.25em;
     box-shadow: 0 0 0 transparent;
     transition: box-shadow 0.3s, opacity 0.3s;
     opacity: 0.75; }
-  .artist-list li a {
+  .artist-list li a, .artist-detail li a {
     text-decoration: none;
+    position: relative;
     clear: both;
+    overflow: hidden;
+    display: block;
     color: #3f3f3f;
     text-transform: capitalize; }
-    .artist-list li a span {
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      display: block; }
+    .artist-list li a span, .artist-detail li a span {
+      background: rgba(38, 37, 34, 0.6);
+      transition: opacity 0.3s, background 0.3s;
+      opacity: 0.6;
+      color: white;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      padding: 0.5em;
+      display: block;
+      width: 95%; }
+
+.artist-detail i {
+  padding: 0.5em;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s; }
+.artist-detail li a.download {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible; }
+.artist-detail li:hover i {
+  opacity: 1; }
 
 *:focus {
   outline: 0 none !important; }

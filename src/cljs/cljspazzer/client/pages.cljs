@@ -19,17 +19,18 @@
 
 (defn album-item [active-artist album]
   [:li
-   [:img {:src (utils/format "/api/artists/%s/albums/%s/image"
-                          (utils/encode active-artist)
-                          (utils/encode (album "album_canonical")))}]
-   [:a {:href (utils/format "#/artists/%s/albums/%s"
-                            (utils/encode active-artist)
-                            (utils/encode (album "album_canonical")))}
-    (utils/format "%s - (%s)" (album "album_canonical") (album "year"))]
-   [:a {:href (utils/format "/api/artists/%s/albums/%s/zip"
-                            (utils/encode active-artist)
-                            (utils/encode (album "album_canonical")))} "download(zip)"]
-   ])
+    [:a {:href (utils/format "#/artists/%s/albums/%s"
+        (utils/encode active-artist)
+        (utils/encode (album "album_canonical")))}
+      [:img {:src (utils/format "/api/artists/%s/albums/%s/image"
+            (utils/encode active-artist)
+            (utils/encode (album "album_canonical")))}]
+      (utils/format "%s" (album "album_canonical"))]
+    [:a.download {:href (utils/format "/api/artists/%s/albums/%s/zip"
+        (utils/encode active-artist)
+        (utils/encode (album "album_canonical")))}
+      [:i.fa.fa-download.fa-lg]]
+])
 
 (defn track-detail [track]
   (let [t (track "track")
@@ -69,7 +70,7 @@
         [:h3 "XX Artists"]
         [:div.artist-list
          [:ul (map artist-item (:artists data))]]
-        [:div.artist-detail.pure-u-2-5
+        [:div.artist-detail
          [:h3 active-artist]
          [:ul (map (partial album-item active-artist) (:albums data))]]
         [:div.album-detail.pure-u-2-5

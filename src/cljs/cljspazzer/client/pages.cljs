@@ -79,7 +79,7 @@
 (defn delete-mount [mount]
   (fn [e]
     (go
-      (<! (services/delete-mount path))
+      (<! (services/delete-mount mount))
       (secretary/dispatch! "#/admin"))))
 
 (defn mount-item [m]

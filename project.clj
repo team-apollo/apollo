@@ -26,7 +26,8 @@
   :plugins [[lein-ring "0.8.13"]
             [lein-cljsbuild "1.0.4-SNAPSHOT"]
             [lein-haml-sass "0.2.7-SNAPSHOT"]]
-  :hooks [leiningen.cljsbuild]
+  :hooks [leiningen.cljsbuild
+          leiningen.sass]
   :ring {:handler cljspazzer.core/app
          :port 5050}
   :clean-targets ^{:protect false} ["resources/public/javascripts/cljspazzer"]
@@ -47,4 +48,4 @@
          ;; :delete-output-dir true ;; -> when running lein clean it will delete the output directory if it does not contain any file
          ;; :ignore-hooks [:clean :compile :deps] ;; -> if you use the hooks, this option allows you to remove some hooks that you don't want to run
          ;; :gem-version "3.2.1"
-         })
+          })

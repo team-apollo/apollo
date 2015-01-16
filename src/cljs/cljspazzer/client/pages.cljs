@@ -14,7 +14,8 @@
 
 (defn artist-item [x]
   [:li
-   [:a {:href (utils/format "#/artists/%s" (utils/encode x))}[:img {:src "http://placehold.it/250x250.png"}] x]])
+   [:a {:href (utils/format "#/artists/%s" (utils/encode x))}
+    [:img {:src "http://placehold.it/250x250.png"}] x]])
    
 
 (defn album-item [active-artist album]
@@ -58,7 +59,8 @@
   )
 
 (defn browse-page [data]
-  (let [active-artist (:active-artist data)]
+  (let [active-artist (:active-artist data)
+        artist-count (count (:artists data))]
     (html
      [:div.browse
       [:div.pure-g
@@ -67,11 +69,12 @@
         [:ul (map nav-item nav-seq)]]]
       [:div.content.pure-g
        [:div.pure-u-5-5
-        [:h3 "XX Artists"]
+        [:h3 (utils/format "%s Artists" artist-count)]
         [:div.artist-list
          [:ul (map artist-item (:artists data))]]
         [:div.artist-detail
          [:h3 active-artist]
+         [:img {:src (utils/format "/api/artists/%s/image" (utils/encode active-artist))}]
          [:ul (map (partial album-item active-artist) (:albums data))]]
         [:div.album-detail.pure-u-2-5
          (album-detail active-artist (:active-album data))]]]])))

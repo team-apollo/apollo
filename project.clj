@@ -20,7 +20,8 @@
                  [org.om/om "0.8.0"]
                  [bk/ring-gzip "0.1.1"]
                  [sablono "0.2.22"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [clj-http "1.0.1"]]
   :source-paths ["src/clj"
                  "src/cljs"]
   :plugins [[lein-ring "0.8.13"]

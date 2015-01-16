@@ -30,6 +30,8 @@
   (GET "/api/artists/:artist-id"
        [artist-id]
        (artists-detail artist-id))
+  (GET "/api/artists/:artist-id/image" [artist-id]
+       (artist-image artist-id))
   (GET "/api/mounts" []
        (mounts))
   (POST "/api/mounts" [new-mount]

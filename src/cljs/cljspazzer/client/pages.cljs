@@ -16,22 +16,22 @@
   [:li
    [:a {:href (utils/format "#/artists/%s" (utils/encode x))}
     [:img {:src "http://placehold.it/250x250.png"}] x]])
-   
+
 
 (defn album-item [active-artist album]
   [:li
-    [:a {:href (utils/format "#/artists/%s/albums/%s"
-        (utils/encode active-artist)
-        (utils/encode (album "album_canonical")))}
-      [:img {:src (utils/format "/api/artists/%s/albums/%s/image"
-            (utils/encode active-artist)
-            (utils/encode (album "album_canonical")))}]
-      (utils/format "%s" (album "album_canonical"))]
-    [:a.download {:href (utils/format "/api/artists/%s/albums/%s/zip"
-        (utils/encode active-artist)
-        (utils/encode (album "album_canonical")))}
-      [:i.fa.fa-download.fa-lg]]
-])
+   [:a {:href (utils/format "#/artists/%s/albums/%s"
+                            (utils/encode active-artist)
+                            (utils/encode (album "album_canonical")))}
+    [:img {:src (utils/format "/api/artists/%s/albums/%s/image"
+                              (utils/encode active-artist)
+                              (utils/encode (album "album_canonical")))}]
+    (utils/format "%s" (album "album_canonical"))]
+   [:a.download {:href (utils/format "/api/artists/%s/albums/%s/zip"
+                                     (utils/encode active-artist)
+                                     (utils/encode (album "album_canonical")))}
+    [:i.fa.fa-download.fa-lg]]
+   ])
 
 (defn track-detail [track]
   (let [t (track "track")
@@ -60,7 +60,11 @@
 
 (defn browse-page [data]
   (let [active-artist (:active-artist data)
-        artist-count (count (:artists data))]
+        artists (:artists data)
+        artist-count (count artists)
+        albums (:albums data)
+        album-count (count albums)
+        active-album (:active-album data)]
     (html
      [:div.browse
       [:div.pure-g
@@ -68,16 +72,70 @@
         [:h3 "Artists"]
         [:ul (map nav-item nav-seq)]]]
       [:div.content.pure-g
-       [:div.pure-u-5-5
+       [:div.artist-list.pure-u-1
         [:h3 (utils/format "%s Artists" artist-count)]
-        [:div.artist-list
-          [:ul (map artist-item (:artists data))]]
-        [:div.artist-detail
+        [:ul (map artist-item artists)]]
+       [:div.artist-detail
+        [:div.pure-u-4-5
+         [:h3 (utils/format "%s Albums" album-count)]
+         [:ul (map (partial album-item active-artist) albums)]]
+        [:div.pure-u-1-5
          [:h3 active-artist]
-         [:img {:src (utils/format "/api/artists/%s/image" (utils/encode active-artist))}]
-         [:ul (map (partial album-item active-artist) (:albums data))]]
-        [:div.album-detail.pure-u-2-5
-         (album-detail active-artist (:active-album data))]]]])))
+         [:img {:src (utils/format "/api/artists/%s/image" active-artist)}]]]
+       [:div.pure-u-1
+        [:div.album-detail
+         (album-detail active-artist active-album)]]]])))
+
+(defn nav-partial []
+  [:div.collection-nav
+   [:h3 "Artists"]
+   [:ul (map nav-item nav-seq)]])
+
+(defn artist-list-partial [artists]
+  (let [artist-heading (utils/format "%s Artists" (count artists))]
+    [:div.artist-list
+     [:h3 artist-heading]
+     [:ul (map artist-item artists)]]))
+
+(defn album-list-partial [active-artist albums]
+  (let [album-heading (utils/format "%s Albums" (count albums))
+        render-album (partial album-item active-artist)]
+    [:div.album-list
+     [:h3 album-heading]
+     [:ul (map  render-album albums)]]))
+
+(defn artist-detail-partial [active-artist]
+  (let [artist-image (utils/format "/api/artists/%s/image" active-artist)]
+    [:div
+     [:h3 active-artist]
+     [:img {:src artist-image}]]))
+
+(defn browse-page-new [data]
+  (let [active-artist (:active-artist data)
+        artists (:artists data)
+        artist-count (count artists)
+        albums (:albums data)
+        album-count (count albums)
+        active-album (:active-album data)]
+    (html
+     [:div.browse
+      (nav-partial)
+      [:div.content.pure-g
+       (cond
+         (and (nil? active-artist) (nil? active-album))
+         [:div.pure-u-1
+          (artist-list-partial artists)]
+         (and (not (nil? active-artist)) (nil? active-album))
+         [:div.pure-u-1
+          [:div.pure-g.artist-detail
+           [:div.pure-u-4-5
+            (album-list-partial active-artist albums)]
+           [:div.pure-u-1-5
+            (artist-detail-partial active-artist)]]]
+         (not (nil? active-album))
+         [:div.pure-u-1
+          [:div.album-detail
+           (album-detail active-artist active-album)]])]])))
 
 (defn delete-mount [mount]
   (fn [e]
@@ -120,7 +178,7 @@
                   "create"]]]])))))
 
 (defn view-browse [data]
-  (om/component (browse-page data)))
+  (om/component (browse-page-new data)))
 
 (defn view-debug [data owner]
   (reify

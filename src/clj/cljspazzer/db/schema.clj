@@ -97,13 +97,8 @@
                                        r)) rows))]
     result))
 
-(defn starts-with? [s prefix]
-  (if (> (count prefix) (count s))
-    false
-    (= prefix (subs s 0 (count prefix)))))
-
 (defn managed? [f mounts]
-  (some (partial starts-with? (.getAbsolutePath f)) mounts))
+  (some (partial utils/starts-with? (.getAbsolutePath f)) mounts))
 
 (defn prune-tracks!
   "get rid of rows where the files no longer exist or are no longer managed"

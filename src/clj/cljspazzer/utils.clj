@@ -1,16 +1,25 @@
 (ns cljspazzer.utils
   (:require [clojure.string :as s]
-            [pantomime.mime :refer [mime-type-of extension-for-name]]))
+            [pantomime.mime :refer [mime-type-of extension-for-name]]
+            [digest]))
+
+(defn starts-with? [s prefix]
+  (if (> (count prefix) (count s))
+    false
+    (= prefix (subs s 0 (count prefix)))))
 
 (defn is-image? [f]
   (and (.isFile f)
        (= "image" (subs (mime-type-of f) 0 5))))
 
+(defn get-extension-for-mime [mime-type]
+  (cond
+    (= mime-type "audio/mpeg") ".mp3"
+    :else (extension-for-name mime-type)))
+
 (defn get-extension [path]
   (let [mime-type (mime-type-of path)]
-    (cond
-    (= mime-type "audio/mpeg") ".mp3"
-    :else (extension-for-name mime-type))))
+    (get-extension-for-mime mime-type)))
 
 (defn track-file-name [track]
   (let [{:keys [artist_canonical album_canonical title_canonical path]} track]
@@ -26,3 +35,6 @@
          (= "the " (subs result 0 4)))
       (s/trim (subs result 4))
       result)))
+
+(defn chk-sum-str [s]
+  (digest/md5 (canonicalize s)))

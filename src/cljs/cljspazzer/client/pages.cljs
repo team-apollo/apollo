@@ -81,7 +81,7 @@
          [:ul (map (partial album-item active-artist) albums)]]
         [:div.pure-u-1-5
          [:h3 active-artist]
-         [:img {:src (utils/format "/api/artists/%s/image" active-artist)}]]]
+         [:img {:src (utils/format "/api/artists/%s/image" (utils/encode active-artist))}]]]
        [:div.pure-u-1
         [:div.album-detail
          (album-detail active-artist active-album)]]]])))
@@ -105,7 +105,7 @@
      [:ul (map  render-album albums)]]))
 
 (defn artist-detail-partial [active-artist]
-  (let [artist-image (utils/format "/api/artists/%s/image" active-artist)]
+  (let [artist-image (utils/format "/api/artists/%s/image" (utils/encode active-artist))]
     [:div
      [:h3 active-artist]
      [:img {:src artist-image}]]))

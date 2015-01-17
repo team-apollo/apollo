@@ -2,6 +2,8 @@
   (:require [ring.util.response :refer [response, file-response header]]
             [cljspazzer.db.schema :as s]
             [cljspazzer.utils :as utils]
+            [cljspazzer.images :as images]
+            [cljspazzer.http.cache :as cache]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [pantomime.mime :refer [mime-type-of]])
@@ -53,7 +55,15 @@
   (let [tracks (s/tracks-by-album s/the-db album-id)
         img (first (images-for-tracks tracks))]
     (if (nil? img)
-      {:status 404}
+      (let [cache-image (images/image-from-cache artist-id album-id)]
+        (if (nil? cache-image)
+          (let [urls (map :url (images/goog-album-images artist-id album-id))
+                cacher (fn [url]
+                         (cache/cache-response url artist-id album-id))
+                goog-image (first (drop-while nil? (map cacher urls)))]
+            {:body goog-image :headers {"Content-Type" (mime-type-of goog-image)}})
+          {:body cache-image :header {"Content-Type" (mime-type-of cache-image)}})
+        )
       {:body img :headers {"Content-Type" (mime-type-of img)}})))
 
 (defn album-detail [artist-id album-id]

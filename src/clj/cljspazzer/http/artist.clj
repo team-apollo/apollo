@@ -19,6 +19,6 @@
 
 
 (defn artist-image [artist]
-  (let [goog-result (:url (last (sort-by :width (filter (fn [r] (<= (Integer/parseInt (:width r)) 1024)) (images/goog-artist-images artist)))))]
+  (let [goog-result (:url (first (images/goog-artist-images artist)))]
     {:status 302
      :headers {"Location" goog-result}}))

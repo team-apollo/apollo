@@ -92,7 +92,7 @@
         album-count (count albums)
         active-album (:active-album data)
         artist-image (utils/format "/api/artists/%s/image?force-fetch=1" (utils/encode active-artist))
-        artist-image-url (utils/format "url('%s')" artist-image)]
+        artist-image-url (utils/format "url(\"%s\")" artist-image)]
     (html
      [:div.browse
       (nav-partial)

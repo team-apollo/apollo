@@ -60,34 +60,6 @@
      ])
   )
 
-(defn browse-page [data]
-  (let [active-artist (:active-artist data)
-        artists (:artists data)
-        artist-count (count artists)
-        albums (:albums data)
-        album-count (count albums)
-        active-album (:active-album data)]
-    (html
-     [:div.browse
-      [:div.pure-g
-       [:div.collection-nav
-        [:h3 "Artists"]
-        [:ul (map nav-item nav-seq)]]]
-      [:div.content.pure-g
-       [:div.artist-list.pure-u-1
-        [:h3 (utils/format "%s Artists" artist-count)]
-        [:ul (map artist-item artists)]]
-       [:div.artist-detail
-        [:div.pure-u-4-5
-         [:h3 (utils/format "%s Albums" album-count)]
-         [:ul (map (partial album-item active-artist) albums)]]
-        [:div.pure-u-1-5
-         [:h3 active-artist]
-         [:img {:src (utils/format "/api/artists/%s/image" (utils/encode active-artist))}]]]
-       [:div.pure-u-1
-        [:div.album-detail
-         (album-detail active-artist active-album)]]]])))
-
 (defn nav-partial []
   [:div.collection-nav
    [:h3 "Artists"]
@@ -112,7 +84,7 @@
      [:h3 active-artist]
      [:img {:src artist-image}]]))
 
-(defn browse-page-new [data]
+(defn browse-page [data]
   (let [active-artist (:active-artist data)
         artists (:artists data)
         artist-count (count artists)
@@ -183,7 +155,7 @@
                   "create"]]]])))))
 
 (defn view-browse [data]
-  (om/component (browse-page-new data)))
+  (om/component (browse-page data)))
 
 (defn view-debug [data owner]
   (reify

@@ -1,6 +1,20 @@
 .album-detail
+  height: 100%
   img
     width: 100%
+
+.artist-bg
+  -webkit-filter: grayscale(100%) blur(8px)
+  filter: grayscale(100%) blur(8px)
+  opacity: .5
+  background-repeat: no-repeat
+  background-size: cover
+  height: 100%
+  width: 100%
+  position: absolute
+  left: 0
+  top: 0
+  z-index: -1
 
 .artist-detail
   @extend .album-detail

@@ -118,7 +118,9 @@
         artist-count (count artists)
         albums (:albums data)
         album-count (count albums)
-        active-album (:active-album data)]
+        active-album (:active-album data)
+        artist-image (utils/format "/api/artists/%s/image?force-fetch=1" (utils/encode active-artist))
+        artist-image-url (utils/format "url('%s')" artist-image)]
     (html
      [:div.browse
       (nav-partial)
@@ -133,7 +135,8 @@
            [:div.pure-u-4-5
             (album-list-partial active-artist albums)]
            [:div.pure-u-1-5
-            (artist-detail-partial active-artist)]]]
+            (artist-detail-partial active-artist)]
+           [:div.artist-bg {:style {:background-image artist-image-url}}]]]
          (not (nil? active-album))
          [:div.pure-u-1
           [:div.album-detail

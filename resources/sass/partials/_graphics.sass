@@ -5,6 +5,7 @@
 
 .artist-bg
   -webkit-filter: grayscale(100%) blur(8px)
+  -ms-filter: grayscale(100%) blur(8px)
   filter: grayscale(100%) blur(8px)
   opacity: .5
   background-repeat: no-repeat
@@ -15,6 +16,10 @@
   left: 0
   top: 0
   z-index: -1
+
+.album-list
+  i.fa-download
+    text-shadow: 0 0 10px $background
 
 .artist-detail
   @extend .album-detail

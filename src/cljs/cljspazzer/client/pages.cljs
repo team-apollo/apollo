@@ -104,9 +104,9 @@
          (and (not (nil? active-artist)) (nil? active-album))
          [:div.pure-u-1
           [:div.pure-g.artist-detail
-           [:div.pure-u-4-5
+           [:div.pure-u-17-24
             (album-list-partial active-artist albums)]
-           [:div.pure-u-1-5
+           [:div.pure-u-7-24
             (artist-detail-partial active-artist)]
            [:div.artist-bg {:style {:background-image artist-image-url}}]]]
          (not (nil? active-album))

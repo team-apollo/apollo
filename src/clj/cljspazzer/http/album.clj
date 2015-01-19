@@ -52,7 +52,9 @@
     result))
 
 (defn album-image [artist-id album-id]
-  (let [tracks (s/tracks-by-album s/the-db album-id)
+  (let [tracks (filter (fn [t]
+                         (= (utils/canonicalize artist-id) (:artist_canonical t)))
+                       (s/tracks-by-album s/the-db album-id))
         img (first (images-for-tracks tracks))]
     (if (nil? img)
       (let [cache-image (images/image-from-cache artist-id album-id)]

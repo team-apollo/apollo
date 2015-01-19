@@ -13,9 +13,11 @@
   [:li [:a {:href (utils/format "#/nav/%s" (utils/encode x))} x]])
 
 (defn artist-item [x]
-  [:li
+  (let [artist-image (utils/format "/api/artists/%s/image" (utils/encode x))]
+    [:li
    [:a {:href (utils/format "#/artists/%s" (utils/encode x))}
-    [:img {:src "http://placehold.it/250x250.png"}] x]])
+    ;; [:img {:src artist-image}]
+    x]]))
 
 
 (defn album-item [active-artist album]
@@ -105,7 +107,7 @@
      [:ul (map  render-album albums)]]))
 
 (defn artist-detail-partial [active-artist]
-  (let [artist-image (utils/format "/api/artists/%s/image" (utils/encode active-artist))]
+  (let [artist-image (utils/format "/api/artists/%s/image?force-fetch=1" (utils/encode active-artist))]
     [:div
      [:h3 active-artist]
      [:img {:src artist-image}]]))

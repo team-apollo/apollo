@@ -19,16 +19,20 @@
 (defn artist-search [prefix]
   (response {:artists (s/artist-search s/the-db prefix)}))
 
-(defn artist-image [artist]
+(defn artist-image [artist force-fetch]
   (let [cache-image (images/image-from-cache artist)]
     (if (nil? cache-image)
-      (do
+      (if (not (nil? force-fetch))
+        (do
         (prn (format "attempting to get image from internet for %s" artist))
         (let [urls (map :url (images/goog-artist-images artist))
             cacher (fn [url]
-                     (cache/cache-response url artist))
-            goog-image (first (drop-while nil? (map cacher urls)))]
-        {:body goog-image :headers {"Content-Type" (mime-type-of goog-image)}}))
+                     (cache/cache-image-response url artist))
+              goog-image (first (drop-while nil? (map cacher urls)))]
+          (if (not (nil? goog-image))
+            {:body goog-image :headers {"Content-Type" (mime-type-of goog-image)}}
+            {:status 404})))
+        {:status 404})
       {:body cache-image :headers {"Content-Type" (mime-type-of cache-image)}})))
 
 

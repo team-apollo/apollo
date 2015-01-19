@@ -59,7 +59,7 @@
         (if (nil? cache-image)
           (let [urls (map :url (images/goog-album-images artist-id album-id))
                 cacher (fn [url]
-                         (cache/cache-response url artist-id album-id))
+                         (cache/cache-image-response url artist-id album-id))
                 goog-image (first (drop-while nil? (map cacher urls)))]
             {:body goog-image :headers {"Content-Type" (mime-type-of goog-image)}})
           {:body cache-image :header {"Content-Type" (mime-type-of cache-image)}})

@@ -5,7 +5,7 @@ body
 ul
   padding: 0
 
-.artist-list
+.artist-detail
   li
     display: inline-block
     position: relative
@@ -17,6 +17,8 @@ ul
       span
         opacity: 1
         background: transparentize($background, .2)
+      i
+        opacity: 1
     img
       width: 100%
       height: auto
@@ -30,6 +32,11 @@ ul
       display: block
       color: #3f3f3f
       text-transform: capitalize
+      &.download
+        position: absolute
+        top: 0
+        left: 0
+        overflow: visible
       span
         background: transparentize($background, .4)
         transition: opacity .3s, background .3s
@@ -41,24 +48,63 @@ ul
         padding: .5em
         display: block
         width: 95%
-
-.artist-detail
-  @extend .artist-list
   i
     padding: .5em
     color: white
     opacity: 0
     transition: opacity .3s
+
+.artist-list
+  @extend .artist-detail
   li
-    a
-      &.download
-        position: absolute
-        top: 0
-        left: 0
-        overflow: visible
+    display: inline-flex
+    transition: box-shadow .3s
     &:hover
-      i
-        opacity: 1
+      cursor: pointer
+      box-shadow: 0 0 10px darken($background, 10)
+      a
+        background: $highlight
+        color: lighten($font-color, 10)
+        text-shadow: 0 0 10px $background
+      div
+        left: 10%
+    a
+      padding: .5em
+      background: lighten($background, 10)
+      transition: background .3s, color .3s, text-shadow .3s
+      display: block
+      width: 100%
+      height: 2.5em
+      line-height: 1.2
+      color: $font-color
+    div
+      display: initial
+      position: relative
+      left: 0
+      transition: left .3s
+
+.album-detail
+  img
+    max-width: 400px
+    float: left
+
+.tracks
+  list-style-type: none
+  margin: 0 0 0 1em
+  float: left
+  li
+    color: $font-color
+    line-height: 1.5
+    transition: background .3s
+    &:hover
+      background: darken($background, 5)
+      a
+        color: $font-color
+    a
+      color: transparentize($font-color, .25)
+      transition: color .3s
+      text-decoration: none
+      padding: .25em .5em
 
 *:focus
   outline: 0 none !important

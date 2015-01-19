@@ -15,9 +15,9 @@
 (defn artist-item [x]
   (let [artist-image (utils/format "/api/artists/%s/image" (utils/encode x))]
     [:li
-   [:a {:href (utils/format "#/artists/%s" (utils/encode x))}
+      [:a {:href (utils/format "#/artists/%s" (utils/encode x))}
     ;; [:img {:src artist-image}]
-    x]]))
+        [:div x]]]))
 
 
 (defn album-item [active-artist album]

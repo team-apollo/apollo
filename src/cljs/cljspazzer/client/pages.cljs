@@ -10,54 +10,70 @@
 (def nav-seq (concat (map str "#abcdefghijklmnopqrstuvwxyz") ["all"]))
 
 (defn nav-item [x]
-  [:li [:a {:href (utils/format "#/nav/%s" (utils/encode x))} x]])
+  (let [nav-url (utils/format "#/nav/%s" (utils/encode x))]
+    [:li [:a {:href nav-url} x]]))
 
 (defn artist-item [x]
-  (let [artist-image (utils/format "/api/artists/%s/image" (utils/encode x))]
+  (let [artist-image (utils/format "/api/artists/%s/image" (utils/encode x))
+        artist-url (utils/format "#/artists/%s" (utils/encode x))]
     [:li
-      [:a {:href (utils/format "#/artists/%s" (utils/encode x))}
-    ;; [:img {:src artist-image}]
-        [:div x]]]))
+     [:a {:href artist-url}
+      ;; [:img {:src artist-image}]
+      [:div x]]]))
 
 
 (defn album-item [active-artist album]
-  [:li
-   [:a {:href (utils/format "#/artists/%s/albums/%s"
-                            (utils/encode active-artist)
-                            (utils/encode (album "album_canonical")))}
-    [:img {:src (utils/format "/api/artists/%s/albums/%s/image"
-                              (utils/encode active-artist)
-                              (utils/encode (album "album_canonical")))}]
-    (utils/format "%s" (album "album_canonical"))]
-   [:a.download {:href (utils/format "/api/artists/%s/albums/%s/zip"
-                                     (utils/encode active-artist)
-                                     (utils/encode (album "album_canonical")))}
-    [:i.fa.fa-download.fa-lg]]
-   ])
+  (let [album-name (album "album_canonical")
+        album-url (utils/format "#/artists/%s/albums/%s"
+                                (utils/encode active-artist)
+                                (utils/encode album-name))
+        album-image (utils/format "/api/artists/%s/albums/%s/image"
+                                  (utils/encode active-artist)
+                                  (utils/encode album-name))
+        album-label (utils/format "%s" album-name)
+        album-zip-url (utils/format "/api/artists/%s/albums/%s/zip"
+                                    (utils/encode active-artist)
+                                    (utils/encode album-name))]
+    [:li
+     [:a {:href album-url}
+      [:img {:src album-image}]
+      album-label]
+     [:a.download {:href album-zip-url}
+      [:i.fa.fa-download.fa-lg]]
+     ]))
 
 (defn track-detail [track]
   (let [t (track "track")
+        track-num (t "track")
+        track-title (t "title")
+        track-id (t "id")
         artist (t "artist_canonical")
-        album (t "album_canonical")]
+        album (t "album_canonical")
+        track-url (utils/format "/api/artists/%s/albums/%s/tracks/%s"
+                                (utils/encode artist)
+                                (utils/encode album)
+                                (utils/encode track-id))
+        track-label (utils/format "%s. %s" track-num track-title)]
     [:li
-     [:a {:href (utils/format "/api/artists/%s/albums/%s/tracks/%s"
-                              (utils/encode artist)
-                              (utils/encode album)
-                              (utils/encode (t "id")))}
-      (utils/format "%s. %s" (t "track") (t "title"))]]))
+     [:a {:href track-url}
+      track-label]]))
 
 (defn album-detail [artist album]
-  (if (and (not (nil? artist)) (not (nil? album)))
-    [:div 
-     [:h1 artist]
-     [:h2 (utils/format "%s - (%s)" (album "name") (album "year"))]
-     [:img {:src
-            (utils/format "/api/artists/%s/albums/%s/image"
-                          (utils/encode artist)
-                          (utils/encode (album "name")))}]
-     [:ul.tracks
-      (map track-detail (album "tracks"))]
-     ])
+  (let [album-name (album "name")
+        album-year (album "year")
+        album-label (utils/format "%s - (%s)" album-name album-year)
+        album-image (utils/format "/api/artists/%s/albums/%s/image"
+                                  (utils/encode artist)
+                                  (utils/encode album-name))
+        tracks (album "tracks")]
+    (if (and (not (nil? artist)) (not (nil? album)))
+      [:div 
+       [:h1 artist]
+       [:h2 album-label]
+       [:img {:src album-image}]
+       [:ul.tracks
+        (map track-detail tracks)]
+       ]))
   )
 
 (defn nav-partial []

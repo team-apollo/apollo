@@ -4,7 +4,8 @@
             [cljspazzer.utils :as utils]
             [cljspazzer.images :as images]
             [pantomime.mime :refer [mime-type-of]]
-            [cljspazzer.http.cache :as cache]))
+            [cljspazzer.http.cache :as cache]
+            [clojure.tools.logging :as log]))
 
 (defn artists-detail [id]
   (let [result (s/album-list-by-artist s/the-db id)]
@@ -24,7 +25,7 @@
     (if (nil? cache-image)
       (if (not (nil? force-fetch))
         (do
-        (prn (format "attempting to get image from internet for %s" artist))
+        (log/info (format "attempting to get image from internet for %s" artist))
         (let [urls (map :url (images/goog-artist-images artist))
             cacher (fn [url]
                      (cache/cache-image-response url artist))

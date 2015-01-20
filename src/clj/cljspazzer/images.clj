@@ -1,7 +1,8 @@
 (ns cljspazzer.images
   (:require [clj-http.client :as client]
             [cljspazzer.http.cache :as cache]
-            [cljspazzer.utils :as utils]))
+            [cljspazzer.utils :as utils]
+            [clojure.tools.logging :as log]))
 
 (def goog-image-qry-url "http://ajax.googleapis.com/ajax/services/search/images")
 
@@ -9,7 +10,7 @@
 ;; used as a last resort
 
 (defn goog-images [qry-phrase]
-  (prn (format "querying google ... '%s'" qry-phrase))
+  (log/info (format "querying google ... '%s'" qry-phrase))
   (let [response (client/get goog-image-qry-url {:query-params {:q qry-phrase
                                                  :v "1.0"
                                                  :rsz "8"}

@@ -2,11 +2,12 @@
   (:require [clojure.java.io :as io]
             [clj-http.client :as client]
             [cljspazzer.utils :as utils]
-            [pantomime.mime :refer [mime-type-of]]))
+            [pantomime.mime :refer [mime-type-of]]
+            [clojure.tools.logging :as log]))
 
 (defn make-key [& keys]
   (let [result (utils/chk-sum-str (interpose ":" keys))]
-    (prn {:result result :keys keys})
+    (log/info {:result result :keys keys})
     result))
 
 (defn cache-root []
@@ -17,7 +18,7 @@
 
 (defn cache-response
   ([url the-cache-root keep? & name]
-   (prn (format "caching %s for %s" url name))
+   (log/info (format "caching %s for %s" url name))
    (let [res (client/get url {:as :byte-array
                               :throw-exceptions false})
          status (:status res)
@@ -29,7 +30,7 @@
          file-name (format "%s/%s%s" cache-path k extension)]
      (if (and (= 200 status) (keep? res))
        (with-open [w (io/output-stream file-name)]
-         (prn (format "saving %s" file-name))
+         (log/info (format "saving %s" file-name))
          (.write w body)
          (io/file file-name))
        nil)))

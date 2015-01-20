@@ -14,5 +14,4 @@
          (header (file-response path)
                  "Content-Disposition" (format "attachment;filename=%s" file-name))
          "Content-Type" (mime-type-of path)))
-      {:status 404})
-    ))
+      {:status 404})))

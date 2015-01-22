@@ -5,7 +5,8 @@ body
 ul
   padding: 0
 
-.content
+.right
+  float: right
 
 .artist-detail
   li
@@ -87,13 +88,12 @@ ul
 
 .album-detail
   img
-    max-width: 600px
+    max-width: 400px
     float: left
 
 .tracks
   list-style-type: none
-  margin: 0 0 0 1em
-  float: left
+  margin: 0 0 0 calc(400px + 1em)
   li
     color: $font-color
     line-height: 1.5
@@ -107,10 +107,15 @@ ul
       transition: color .3s
       text-decoration: none
       padding: .25em .5em
+      width: 100%
+      display: block
+      box-sizing: border-box
 
 *:focus
   outline: 0 none !important
 
 .content
-  margin-left: 250px
-  padding-left: 1em
+  margin-left: 300px
+  padding: 1em
+  box-sizing: border-box
+  height: 100%

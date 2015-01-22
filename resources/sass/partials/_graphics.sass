@@ -12,7 +12,7 @@
   background-size: cover
   height: 100%
   width: 100%
-  position: absolute
+  position: fixed
   left: 0
   top: 0
   z-index: -1
@@ -23,3 +23,6 @@
 
 .artist-detail
   @extend .album-detail
+  img.band
+    object-fit: cover
+    height: 250px

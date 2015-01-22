@@ -55,8 +55,9 @@
                                 (utils/encode track-id))
         track-label (utils/format "%s. %s" track-num track-title)]
     [:li
-     [:a {:href track-url}
-      track-label]]))
+      [:a {:href track-url}
+      track-label
+      [:div.right "length"]]]))
 
 (defn album-detail [artist album]
   (let [album-name (album "name")
@@ -81,6 +82,13 @@
    [:h3 "Artists"]
    [:ul (map nav-item nav-seq)]])
 
+(defn main-nav-partial []
+  [:div.main-nav
+    [:i.fa.fa-search.active {:title "Browse"}]
+    [:i.fa.fa-play-circle {:title "Play"}]
+    [:i.fa.fa-list {:title "Playlists"}]
+    [:i.fa.fa-gear {:title "Settings"}]])
+
 (defn artist-list-partial [artists]
   (let [artist-heading (utils/format "%s Artists" (count artists))]
     [:div.artist-list
@@ -98,7 +106,7 @@
   (let [artist-image (utils/format "/api/artists/%s/image?force-fetch=1" (utils/encode active-artist))]
     [:div
      [:h3 active-artist]
-     [:img {:src artist-image}]]))
+     [:img.band {:src artist-image}]]))
 
 (defn browse-page [data]
   (let [active-artist (:active-artist data)
@@ -111,6 +119,7 @@
         artist-image-url (utils/format "url(\"%s\")" artist-image)]
     (html
      [:div.browse
+      (main-nav-partial)
       (nav-partial)
       [:div.content.pure-g
        (cond

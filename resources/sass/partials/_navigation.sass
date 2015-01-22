@@ -1,7 +1,37 @@
-.collection-nav
-  width: 250px
+.main-nav
   position: fixed
   height: 100%
+  width: 50px
+  background: darken($background, 10)
+  z-index: 10
+  i
+    display: block
+    text-align: center
+    font-size: 2em
+    padding: .75em 0
+    color: transparentize($btn-bg, .5)
+    transition: color .3s
+    border-top: solid 1px $background
+    border-bottom: solid 2px darken($background, 15)
+    &:first-of-type
+      border-top: none
+    &:last-of-type
+      border-bottom: none
+    &:hover
+      color: $btn-bg
+      cursor: pointer
+      &.active
+        color: $highlight
+    &.active
+      color: $highlight
+
+.collection-nav
+  width: 250px
+  box-sizing: border-box
+  position: fixed
+  height: 100%
+  margin-left: 50px
+  padding: 1em
   background: transparentize(darken($background, 5), .1)
   letter-spacing: 1
   h3
@@ -16,14 +46,14 @@
       -moz-user-select: none
       -ms-user-select: none
       user-select: none
-      &:nth-of-type(5n)
+      &:nth-of-type(4n)
         margin-right: 0
       a
-        background: $btn-bg
+        background: transparentize($btn-bg, .5)
         transition: background .3s
         display: block
         text-align: center
-        width: 46px
+        width: 51.5px
         height: 47.5px
         line-height: 47.5px
         text-decoration: none

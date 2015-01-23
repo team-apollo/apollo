@@ -137,7 +137,8 @@
          (not (nil? active-album))
          [:div.pure-u-1
           [:div.album-detail
-           (album-detail active-artist active-album)]])]])))
+           (album-detail active-artist active-album)]
+          [:div.artist-bg {:style {:background-image artist-image-url}}]])]])))
 
 (defn delete-mount [mount]
   (fn [e]

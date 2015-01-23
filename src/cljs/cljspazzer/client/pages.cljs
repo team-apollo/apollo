@@ -83,11 +83,13 @@
    [:ul (map nav-item nav-seq)]])
 
 (defn main-nav-partial []
-  [:div.main-nav
-    [:i.fa.fa-search.active {:title "Browse"}]
-    [:i.fa.fa-play-circle {:title "Play"}]
-    [:i.fa.fa-list {:title "Playlists"}]
-    [:i.fa.fa-gear {:title "Settings"}]])
+  (let [browse-url "#/"
+        settings-url "#/admin"]
+    [:div.main-nav
+     [:a {:href browse-url} [:i.fa.fa-search.active {:title "Browse"}]]
+     [:i.fa.fa-play-circle {:title "Play"}]
+     [:i.fa.fa-list {:title "Playlists"}]
+     [:a {:href settings-url} [:i.fa.fa-gear {:title "Settings"}]]]))
 
 (defn artist-list-partial [artists]
   (let [artist-heading (utils/format "%s Artists" (count artists))]
@@ -167,6 +169,7 @@
     (render [this]
       (let [mounts ((:mounts data) "mounts")]
         (html [:div.admin
+               (main-nav-partial)
                [:div.pure-g
                 [:div.content.pure-u-1
                  [:ul (map mount-item mounts)]]

@@ -208,11 +208,22 @@
   (reify
     om/IRender
     (render [this]
-      (html [:div.player
+      (let [tracks (data :play-list [])
+            playlist-item (fn [r] [:li r])]
+        (html [:div.player
              (main-nav-partial)
              [:div.content.pure-g
               [:div.pure-u-1
-               [:h1 "player goes here"]]]]))))
+               [:h1 "player goes here"]
+               [:ul (map  playlist-item tracks)]
+               [:a.button
+                {:on-click (fn [e]
+                             (.log js/console owner)
+                             (om/transact! data :play-list (fn [v]
+                                                              (conj v "xxx")))
+
+                             )
+                 } "add"]]]])))))
 
 (defn view-debug [data owner]
   (reify

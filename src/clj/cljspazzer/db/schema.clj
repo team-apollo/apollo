@@ -21,6 +21,7 @@
                                [:album_canonical :string]
                                [:title_canonical :string]
                                [:last_modified :integer]
+                               [:duration :integer]
                                [:genre :integer]]}
              :mounts {:name "mounts"
                       :columns [[:id :integer "PRIMARY KEY" "AUTOINCREMENT"]

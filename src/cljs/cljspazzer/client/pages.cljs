@@ -42,6 +42,15 @@
       [:i.fa.fa-download.fa-lg]]
      ]))
 
+(defn format-duration [d]
+  (let [hours (quot d 3600)
+        r (rem d 3600)
+        minutes (quot r 60)
+        seconds (rem r 60)]
+    (if (> hours 0)
+    (utils/format "%i:%02i:%02i" hours minutes seconds)
+    (utils/format "%02i:%02i" minutes seconds))))
+
 (defn track-detail [track]
   (let [t (track "track")
         track-num (t "track")
@@ -49,6 +58,7 @@
         track-id (t "id")
         artist (t "artist_canonical")
         album (t "album_canonical")
+        duration (t "duration")
         track-url (utils/format "/api/artists/%s/albums/%s/tracks/%s"
                                 (utils/encode artist)
                                 (utils/encode album)
@@ -57,7 +67,7 @@
     [:li
       [:a {:href track-url}
       track-label
-      [:div.right "length"]]]))
+      [:div.right (format-duration duration)]]]))
 
 (defn album-detail [artist album]
   (let [album-name (album "name")

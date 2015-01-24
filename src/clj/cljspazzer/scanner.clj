@@ -6,7 +6,8 @@
             [cljspazzer.utils :refer [canonicalize]]
             [pantomime.mime :refer [mime-type-of]]
             [clojure.tools.logging :as log])
-  (:import org.jaudiotagger.audio.AudioFileFilter))
+  (:import org.jaudiotagger.audio.AudioFileFilter
+           org.jaudiotagger.audio.AudioFileIO))
 
 (.setLevel (java.util.logging.Logger/getLogger "org.jaudiotagger")
            java.util.logging.Level/OFF)
@@ -22,6 +23,15 @@
 (defn hm-filter-null [hm]
   (into {} (filter val-not-null? hm)))
 
+(defn get-audio-file-duration [f]
+  (let [afio (new AudioFileIO)
+        af (.readFile afio f)]
+    (try
+      (.getTrackLength (.getAudioHeader af))
+      (catch Exception e
+        (log/error e (format "problems getting track duration from %s" (.getAbsolutePath f)
+                             nil))))))
+
 (defn get-info [f]
   (let [id3tags (try
                   (some identity [(id3/read-tag f) {}])
@@ -35,6 +45,7 @@
                       :artist_canonical (canonicalize (:artist id3tags-fixed ""))
                       :album_canonical (canonicalize (:album id3tags-fixed ""))
                       :title_canonical (canonicalize (:title id3tags-fixed ""))
+                      :duration (get-audio-file-duration f)
                       :disc_no (:disc-no id3tags-fixed nil))]
     (select-keys result
                  (db/column-names

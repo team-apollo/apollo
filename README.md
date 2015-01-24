@@ -85,6 +85,8 @@ You should now have a database located at spazzer.db
 
 #### adding a directory(mount) for scanning
 
+Update: in the browser you can now do this from the settings page, ugly as it may be
+
 in your repl
 
 ````bash
@@ -100,6 +102,9 @@ cljspazzer.db.schema=>
 You should now have a directory registered with the application that will be scanned for new music files/updated tags when process-mounts! is called
 
 #### scanning your directories(mounts)
+
+Update: in the browser you can now do this from the settings page, ugly as it may be
+
 in your repl
 
 ````bash

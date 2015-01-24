@@ -49,7 +49,7 @@
         seconds (rem r 60)]
     (if (> hours 0)
     (utils/format "%i:%02i:%02i" hours minutes seconds)
-    (utils/format "%02i:%02i" minutes seconds))))
+    (utils/format "%i:%02i" minutes seconds))))
 
 (defn track-detail [track]
   (let [t (track "track")

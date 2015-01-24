@@ -143,22 +143,17 @@
           [:div.artist-bg {:style {:background-image artist-image-url}}]])]])))
 
 (defn delete-mount [mount]
-  (fn [e]
-    (go
-      (<! (services/delete-mount mount))
-      (secretary/dispatch! "#/admin"))))
+  (go
+    (<! (services/delete-mount mount))
+    (secretary/dispatch! "#/admin")))
 
 (defn mount-item [m]
   (let [path (m "mount")]
     [:li path [:a {
-                   :on-click (fn [e] (delete-mount path) false)}
+                   :on-click (fn [e]
+                               (delete-mount path)
+                               false)}
                "delete"]]))
-
-(defn add-mount [owner]
-  (let [v (.-value (om/get-node owner "new-mount"))]
-    (go
-      (<! (services/add-mount v))
-      (secretary/dispatch! "#/admin"))))
 
 (defn view-admin [data owner]
   (reify
@@ -167,21 +162,23 @@
       {:mount-input-value nil})
     om/IRender
     (render [this]
-      (let [mounts ((:mounts data) "mounts")]
+      (let [mounts ((:mounts data) "mounts")
+            on-add-mount (fn [e]
+                           (go (let [v (.-value (om/get-node owner "new-mount"))
+                                     result (<! (services/add-mount v))]
+                                 (secretary/dispatch! "#/admin")))
+                           false)]
         (html [:div.admin
                (main-nav-partial)
-               [:div.pure-g
-                [:div.content.pure-u-1
+               [:div.content.pure-g
+                [:div.pure-u-1
+                 [:h1 "scan this..."]]
+                [:div.pure-u-1
                  [:ul (map mount-item mounts)]]
                 [:div.new-mount.pure-u-1
-                 [:input {:type "text"
-                          :ref "new-mount"}]
-                 [:a.button
-                  {:href "#"
-                   :on-click (fn [e]
-                               (add-mount owner)
-                               false)}
-                  "create"]]]])))))
+                 [:input {:type "text" :ref "new-mount"}]
+                 [:a.button {:href "#" :on-click on-add-mount} "create"]]]])))))
+
 
 (defn view-browse [data]
   (om/component (browse-page data)))

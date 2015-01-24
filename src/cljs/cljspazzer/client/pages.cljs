@@ -76,12 +76,17 @@
         album-image (utils/format "/api/artists/%s/albums/%s/image"
                                   (utils/encode artist)
                                   (utils/encode album-name))
+        album-zip-url (utils/format "/api/artists/%s/albums/%s/zip"
+                                    (utils/encode artist)
+                                    (utils/encode album-name))
         tracks (album "tracks")
         artist-url (utils/format "#/artists/%s" artist)]
     (if (and (not (nil? artist)) (not (nil? album)))
       [:div 
        [:a {:href artist-url} [:h1 artist]]
        [:h2 album-label]
+       [:a.download {:href album-zip-url}
+        [:i.fa.fa-download.fa-lg]]
        [:img {:src album-image}]
        [:ul.tracks
         (map track-detail tracks)]

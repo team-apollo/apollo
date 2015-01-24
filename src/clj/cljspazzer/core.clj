@@ -38,6 +38,8 @@
         (add-new-mount new-mount))
   (DELETE "/api/mounts" [mount]
           (delete-mount mount))
+  (POST "/api/do-scan" []
+        (do-scan))
   (GET "/" []
        {:status 302
         :headers {"Location" "/index.html"}}))

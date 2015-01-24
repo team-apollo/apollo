@@ -1,6 +1,7 @@
 (ns cljspazzer.http.admin
   (:require [ring.util.response :refer [response]]
             [cljspazzer.db.schema :as db]
+            [cljspazzer.scanner :refer [process-mounts!]]
             [clojure.java.io :as io]))
 
 (defn mounts []
@@ -22,3 +23,7 @@
     (if (> row-count 0)
       (response "ok")
       (response "nope"))))
+
+(defn do-scan []
+  (process-mounts!)
+  (response "ok"))

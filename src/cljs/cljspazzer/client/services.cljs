@@ -63,3 +63,10 @@
                   :error-handler error-handler
                   :handler (fn [response] (put! out response))})
     out))
+
+(defn do-scan []
+  (let [out (chan)]
+    (ajax/POST "/api/do-scan"
+               {:error-handler error-handler
+                :handler (fn [response] (put! out response))})
+    chan))

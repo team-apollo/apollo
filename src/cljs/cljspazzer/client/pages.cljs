@@ -177,7 +177,9 @@
                  [:ul (map mount-item mounts)]]
                 [:div.new-mount.pure-u-1
                  [:input {:type "text" :ref "new-mount"}]
-                 [:a.button {:href "#" :on-click on-add-mount} "create"]]]])))))
+                 [:a.button {:href "#" :on-click on-add-mount} "create"]]
+                [:div.scan.pure-u-1
+                 [:a.button {:on-click (fn [e] (services/do-scan))} "(re)scan"]]]])))))
 
 
 (defn view-browse [data]

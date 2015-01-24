@@ -71,6 +71,9 @@
     (swap! app-state assoc :mounts (<! (services/mounts)))
     (swap! app-state assoc :active-page pages/view-admin)))
 
+(defroute player-path "/player" []
+  (swap! app-state assoc :active-page pages/view-player))
+
 (defroute debug-path "/debug" []
   (swap! app-state assoc :debug "hi there")
   (swap! app-state assoc :active-page pages/view-debug))

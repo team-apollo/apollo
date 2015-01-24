@@ -76,10 +76,11 @@
         album-image (utils/format "/api/artists/%s/albums/%s/image"
                                   (utils/encode artist)
                                   (utils/encode album-name))
-        tracks (album "tracks")]
+        tracks (album "tracks")
+        artist-url (utils/format "#/artists/%s" artist)]
     (if (and (not (nil? artist)) (not (nil? album)))
       [:div 
-       [:h1 artist]
+       [:a {:href artist-url} [:h1 artist]]
        [:h2 album-label]
        [:img {:src album-image}]
        [:ul.tracks
@@ -94,11 +95,12 @@
 
 (defn main-nav-partial []
   (let [browse-url "#/"
-        settings-url "#/admin"]
+        settings-url "#/admin"
+        player-url "#/player"]
     [:div.main-nav
      [:a {:href browse-url} [:i.fa.fa-search.active {:title "Browse"}]]
      [:i.fa.fa-play-circle {:title "Play"}]
-     [:i.fa.fa-list {:title "Playlists"}]
+     [:a {:href player-url} [:i.fa.fa-list {:title "Playlists"}]]
      [:a {:href settings-url} [:i.fa.fa-gear {:title "Settings"}]]]))
 
 (defn artist-list-partial [artists]
@@ -111,8 +113,10 @@
   (let [album-heading (utils/format "%s Albums" (count albums))
         render-album (partial album-item active-artist)]
     [:div.album-list
+     [:a {:on-click (fn [e]
+                      (secretary/dispatch! (utils/format "#/nav/%s" (first active-artist))))} "browse"]
      [:h3 album-heading]
-     [:ul (map  render-album albums)]]))
+     [:ul (map render-album albums)]]))
 
 (defn artist-detail-partial [active-artist]
   (let [artist-image (utils/format "/api/artists/%s/image?force-fetch=1" (utils/encode active-artist))]
@@ -194,6 +198,16 @@
 
 (defn view-browse [data]
   (om/component (browse-page data)))
+
+(defn view-player [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (html [:div.player
+             (main-nav-partial)
+             [:div.content.pure-g
+              [:div.pure-u-1
+               [:h1 "player goes here"]]]]))))
 
 (defn view-debug [data owner]
   (reify

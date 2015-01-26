@@ -119,8 +119,7 @@
   (let [album-heading (utils/format "%s Albums" (count albums))
         render-album (partial album-item active-artist)]
     [:div.album-list
-     [:a {:on-click (fn [e]
-                      (secretary/dispatch! (utils/format "#/nav/%s" (first active-artist))))} "browse"]
+     [:a {:href (utils/format "#/nav/%s" (first active-artist))} "browse"]
      [:h3 album-heading]
      [:ul (map render-album albums)]]))
 

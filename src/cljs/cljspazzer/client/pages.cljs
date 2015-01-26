@@ -51,7 +51,7 @@
     (utils/format "%i:%02i:%02i" hours minutes seconds)
     (utils/format "%i:%02i" minutes seconds))))
 
-(defn track-detail [track]
+(defn track-detail [track add-to-playlist]
   (let [t (track "track")
         track-num (t "track")
         track-title (t "title")
@@ -65,11 +65,12 @@
                                 (utils/encode track-id))
         track-label (utils/format "%s. %s" track-num track-title)]
     [:li
-      [:a {:href track-url}
+     [:a {
+          :on-click (fn [e] (add-to-playlist track))}
       track-label
       [:div.right (format-duration duration)]]]))
 
-(defn album-detail [artist album]
+(defn album-detail [artist album add-to-playlist]
   (let [album-name (album "name")
         album-year (album "year")
         album-label (utils/format "%s - (%s)" album-name album-year)
@@ -89,7 +90,7 @@
         [:i.fa.fa-download.fa-lg]]
        [:img {:src album-image}]
        [:ul.tracks
-        (map track-detail tracks)]
+        (map (fn [track] (track-detail track add-to-playlist)) tracks)]
        ]))
   )
 
@@ -137,7 +138,10 @@
         album-count (count albums)
         active-album (:active-album data)
         artist-image (utils/format "/api/artists/%s/image?force-fetch=1" (utils/encode active-artist))
-        artist-image-url (utils/format "url(\"%s\")" artist-image)]
+        artist-image-url (utils/format "url(\"%s\")" artist-image)
+        add-to-playlist (fn [x]
+                          (.log js/console (clj->js (:play-list data)))
+                          (om/transact! data :play-list (fn [v] (conj (or v []) (x "track")))))]
     (html
      [:div.browse
       (main-nav-partial)
@@ -158,7 +162,7 @@
          (not (nil? active-album))
          [:div.pure-u-1
           [:div.album-detail
-           (album-detail active-artist active-album)]
+           (album-detail active-artist active-album add-to-playlist)]
           [:div.artist-bg {:style {:background-image artist-image-url}}]])]])))
 
 (defn delete-mount [mount]
@@ -209,21 +213,19 @@
     om/IRender
     (render [this]
       (let [tracks (data :play-list [])
-            playlist-item (fn [r] [:li r])]
-        (html [:div.player
-             (main-nav-partial)
-             [:div.content.pure-g
-              [:div.pure-u-1
-               [:h1 "player goes here"]
-               [:ul (map  playlist-item tracks)]
-               [:a.button
-                {:on-click (fn [e]
-                             (.log js/console owner)
-                             (om/transact! data :play-list (fn [v]
-                                                              (conj v "xxx")))
-
-                             )
-                 } "add"]]]])))))
+            playlist-item (fn [r] [:li (r "title")])]
+        (html
+         [:div.player
+          (main-nav-partial)
+          [:div.content.pure-g
+           [:div.pure-u-1
+            [:h1 "player goes here"]
+            [:ul (map  playlist-item tracks)]
+            [:a.button
+             {:on-click (fn [e] (om/transact! data :play-list
+                                              (fn [v]
+                                                (conj v "xxx"))))
+              } "add"]]]])))))
 
 (defn view-debug [data owner]
   (reify

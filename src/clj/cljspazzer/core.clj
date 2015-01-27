@@ -51,5 +51,6 @@
       (m/wrap-resource "public")
       (wrap-not-modified)
       (wrap-content-type)
-      (wrap-gzip)))
+      (wrap-gzip)
+      ))
 

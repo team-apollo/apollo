@@ -63,10 +63,13 @@
                 cacher (fn [url]
                          (cache/cache-image-response url artist-id album-id))
                 goog-image (first (drop-while nil? (map cacher urls)))]
-            {:body goog-image :headers {"Content-Type" (mime-type-of goog-image)}})
-          {:body cache-image :header {"Content-Type" (mime-type-of cache-image)}})
+            (header (file-response (.getAbsolutePath goog-image)) "Content-Type" (mime-type-of goog-image))
+            )
+          (header (file-response (.getAbsolutePath cache-image)) "Content-Type" (mime-type-of cache-image))
+          )
         )
-      {:body img :headers {"Content-Type" (mime-type-of img)}})))
+      (header (file-response (.getAbsolutePath img)) "Content-Type" (mime-type-of img))
+      )))
 
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)

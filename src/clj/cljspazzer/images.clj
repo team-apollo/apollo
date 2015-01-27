@@ -38,6 +38,5 @@
   (let [root (cache/cache-root)
         k (str (apply cache/make-key keys) ".")
         candidates (filter (fn [f] (utils/starts-with? (.getName f) k)) (seq (.listFiles root)))
-        result (first (reverse (sort-by (fn [f] (.lastModified f)) candidates)))
-        ]
+        result (first (reverse (sort-by (fn [f] (.lastModified f)) candidates)))]
     result))

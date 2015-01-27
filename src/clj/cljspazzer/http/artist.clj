@@ -1,5 +1,5 @@
 (ns cljspazzer.http.artist
-  (:require [ring.util.response :refer [response]]
+  (:require [ring.util.response :refer [response file-response header]]
             [cljspazzer.db.schema :as s]
             [cljspazzer.utils :as utils]
             [cljspazzer.images :as images]
@@ -31,9 +31,9 @@
                      (cache/cache-image-response url artist))
               goog-image (first (drop-while nil? (map cacher urls)))]
           (if (not (nil? goog-image))
-            {:body goog-image :headers {"Content-Type" (mime-type-of goog-image)}}
+            (header (file-response (.getAbsolutePath goog-image)) "Content-Type" (mime-type-of goog-image))
             {:status 404})))
         {:status 404})
-      {:body cache-image :headers {"Content-Type" (mime-type-of cache-image)}})))
+      (header (file-response (.getAbsolutePath cache-image)) "Content-Type" (mime-type-of cache-image)))))
 
 

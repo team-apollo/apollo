@@ -26,7 +26,9 @@
     om/IRender
     (render [this]
       (let [page (or (:active-page data) loading-page)]
-        (om/build page data)))))
+        (om.dom/span nil
+                (om/build pages/audio-elem data)
+                (om/build page data))))))
 
 
 (om/root show-page app-state
@@ -75,7 +77,6 @@
   (swap! app-state assoc :active-page pages/view-player))
 
 (defroute debug-path "/debug" []
-  (swap! app-state assoc :debug "hi there")
   (swap! app-state assoc :active-page pages/view-debug))
 
 (defroute "*" []

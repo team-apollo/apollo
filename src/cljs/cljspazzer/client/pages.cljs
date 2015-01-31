@@ -4,10 +4,14 @@
             [sablono.core :as html :refer-macros [html]]
             [cljspazzer.client.utils :as utils]
             [cljspazzer.client.services :as services]
-            [cljs.core.async :refer [<!]]
+            [cljs.core.async :refer [<! put! chan]]
             [secretary.core :as secretary]))
 
 (def nav-seq (concat (map str "#abcdefghijklmnopqrstuvwxyz") ["all"]))
+
+(def track-list (chan))
+(def player-ctrl (chan))
+
 
 (defn nav-item [x]
   (let [nav-url (utils/format "#/nav/%s" (utils/encode x))]
@@ -66,7 +70,7 @@
         track-label (utils/format "%s. %s" track-num track-title)]
     [:li
      [:a {
-          :on-click (fn [e] (add-to-playlist track))}
+          :on-click (fn [e] (put! track-list track-url))}
       track-label
       [:div.right (format-duration duration)]]]))
 
@@ -226,11 +230,64 @@
                                                 (conj v "xxx"))))
               } "add"]]]])))))
 
+
+(defn ctrl-audio-node [node action]
+  (let [seek-offset 5]
+    (case action
+    :stop (do (.pause node)
+              (aset node "currentTime" 0))
+    :play (.play node)
+    :pause (.pause node)
+    :seek-backward (aset node "currentTime" (- (.-currentTime node) 1))
+    :seek-forward (aset node "currentTime" (+ (.-currentTime node) 1)))))
+
+
+(defn audio-elem [data owner]
+  (reify
+    om/IInitState
+    (init-state [this]
+      (go (loop []
+            (let [track-src (<! track-list)
+                  my-play-list (om/get-state owner :play-list)
+                  node (om/get-state owner :audio)]
+              (aset node "src" track-src)
+              (ctrl-audio-node node :play)
+              (om/set-state! owner :current-src track-src))
+            (recur)))
+      (go (loop []
+            (let [ctrl (<! player-ctrl)
+                  node (om/get-state owner :audio)]
+              (om/set-state! owner :ctrl ctrl)
+              (ctrl-audio-node node ctrl))
+            (recur)))
+      {:current-src "/api/artists/fantômas/albums/delìrium còrdia/tracks/228"
+       :current-offset 0
+       :ctrl :stop
+       :audio (js/Audio.)})
+    om/IRender
+    (render [this]
+      (let [my-play-list (om/get-state owner :play-list)
+            ctrl-current (om/get-state owner :ctrl)
+            node (om/get-state owner :audio)
+            is-playing? (not (.-paused node))]
+        (html [:div
+               [:ul
+                ;; [:li [:i.fa.fa-fast-backward]]
+                [:li {:on-click (fn [e] (put! player-ctrl :seek-backward))}
+                 [:i.fa.fa-step-backward]]
+                [:li {:on-click (fn [e] (put! player-ctrl (if is-playing? :pause :play)))}
+                 (if is-playing?
+                   [:i.fa.fa-pause]
+                   [:i.fa.fa-play])]
+                [:li {:on-click (fn [e] (put! player-ctrl :stop))}
+                 [:i.fa.fa-stop]]
+                [:li {:on-click (fn [e] (put! player-ctrl :seek-forward))}
+                 [:i.fa.fa-step-forward]]
+                ;; [:li [:i.fa.fa-fast-forward]]
+                ]])))))
+
 (defn view-debug [data owner]
   (reify
     om/IInitState
     (init-state [this]
-      {:debug (:debug data)})
-    om/IRender
-    (render [this]
-      (html [:h1 (om/get-state owner :debug)]))))
+      (html [:h1 "Debug"]))))

@@ -8,10 +8,18 @@
             [secretary.core :as secretary]))
 
 (def nav-seq (concat (map str "#abcdefghijklmnopqrstuvwxyz") ["all"]))
-
+(def audio-node (js/Audio.))
 (def track-list (chan))
 (def player-ctrl (chan))
+(def stream-position (chan))
+(aset audio-node "onended" (fn [e] (put! player-ctrl :next)
+                             false))
+;; (aset audio-node "onabort" (fn [e] (put! player-ctrl :next)
+;;                              false))
+;; (aset audio-node "onerror" (fn [e] (put! player-ctrl :next)
+;;                              false))
 
+(aset audio-node "ontimeupdate" (fn[e] (put! stream-position :changed)))
 
 (defn nav-item [x]
   (let [nav-url (utils/format "#/nav/%s" (utils/encode x))]
@@ -52,8 +60,14 @@
         minutes (quot r 60)
         seconds (rem r 60)]
     (if (> hours 0)
-    (utils/format "%i:%02i:%02i" hours minutes seconds)
-    (utils/format "%i:%02i" minutes seconds))))
+      (utils/format "%i:%02i:%02i" hours minutes seconds)
+      (utils/format "%i:%02i" minutes seconds))))
+
+(defn mk-track-url [artist album track-id]
+  (utils/format "/api/artists/%s/albums/%s/tracks/%s"
+                (utils/encode artist)
+                (utils/encode album)
+                (utils/encode track-id)))
 
 (defn track-detail [track add-to-playlist]
   (let [t (track "track")
@@ -63,14 +77,11 @@
         artist (t "artist_canonical")
         album (t "album_canonical")
         duration (t "duration")
-        track-url (utils/format "/api/artists/%s/albums/%s/tracks/%s"
-                                (utils/encode artist)
-                                (utils/encode album)
-                                (utils/encode track-id))
+        track-url (mk-track-url artist album track-id)
         track-label (utils/format "%s. %s" track-num track-title)]
     [:li
      [:a {
-          :on-click (fn [e] (put! track-list track-url))}
+          :on-click (fn [e] (put! track-list [track-url]))}
       track-label
       [:div.right (format-duration duration)]]]))
 
@@ -85,13 +96,18 @@
                                     (utils/encode artist)
                                     (utils/encode album-name))
         tracks (album "tracks")
-        artist-url (utils/format "#/artists/%s" artist)]
+        artist-url (utils/format "#/artists/%s" artist)
+        track-ids (map (fn [t] ((t "track") "id")) tracks)
+        track-urls (map (partial mk-track-url artist album-name)
+                        track-ids)
+        play-album (fn [e] (put! track-list track-urls))]
     (if (and (not (nil? artist)) (not (nil? album)))
       [:div 
        [:a {:href artist-url} [:h1 artist]]
        [:h2 album-label]
        [:a.download {:href album-zip-url}
         [:i.fa.fa-download.fa-lg]]
+       [:i.fa.fa-play-circle.fa-lg {:on-click play-album}]
        [:img {:src album-image}]
        [:ul.tracks
         (map (fn [track] (track-detail track add-to-playlist)) tracks)]
@@ -231,48 +247,87 @@
               } "add"]]]])))))
 
 
-(defn ctrl-audio-node [node action]
+(defn ctrl-audio-node [action]
   (let [seek-offset 5]
     (case action
-    :stop (do (.pause node)
-              (aset node "currentTime" 0))
-    :play (.play node)
-    :pause (.pause node)
-    :seek-backward (aset node "currentTime" (- (.-currentTime node) 1))
-    :seek-forward (aset node "currentTime" (+ (.-currentTime node) 1)))))
-
+      :stop (do (.pause audio-node)
+                (aset audio-node "currentTime" 0))
+      :play (.play audio-node)
+      :pause (.pause audio-node)
+      :seek-backward (aset audio-node "currentTime" (- (.-currentTime audio-node) 1))
+      :seek-forward (aset audio-node "currentTime" (+ (.-currentTime audio-node) 1))
+      (.pause audio-node))))
 
 (defn audio-elem [data owner]
   (reify
     om/IInitState
     (init-state [this]
-      (go (loop []
-            (let [track-src (<! track-list)
-                  my-play-list (om/get-state owner :play-list)
-                  node (om/get-state owner :audio)]
-              (aset node "src" track-src)
-              (ctrl-audio-node node :play)
-              (om/set-state! owner :current-src track-src))
-            (recur)))
-      (go (loop []
-            (let [ctrl (<! player-ctrl)
-                  node (om/get-state owner :audio)]
-              (om/set-state! owner :ctrl ctrl)
-              (ctrl-audio-node node ctrl))
-            (recur)))
-      {:current-src "/api/artists/fantômas/albums/delìrium còrdia/tracks/228"
+      (let [set-track (fn [track offset]
+                        (om/set-state! owner :current-offset offset)
+                        (aset audio-node "src" track)
+                        (ctrl-audio-node :play))]
+        (go (loop []
+              (let [track-src (<! track-list)]
+                (aset audio-node "src" (first track-src))
+                (ctrl-audio-node :play)
+                (om/set-state! owner :current-src track-src)
+                (om/set-state! owner :current-offset 1))
+              (recur)))
+        (go (loop []
+              (let [ctrl (<! player-ctrl)
+                    current-offset (or (om/get-state owner :current-offset) 0)
+                    previous-offset (dec current-offset)
+                    next-offset (inc current-offset)
+                    track-src (om/get-state owner :current-src)
+                    next-track (last (take next-offset track-src))
+                    previous-track (last (take previous-offset track-src))
+                    ]
+                (om/set-state! owner :ctrl ctrl)
+                (.log js/console (clj->js [current-offset previous-offset next-offset (count track-src)]))
+                (cond
+                  (and (= ctrl :next) (> next-offset (count track-src)))
+                  (ctrl-audio-node :stop)
+                  (and (= ctrl :next) (not (nil? next-track)))
+                  (set-track next-track next-offset)
+                  (and (= ctrl :previous) (not (nil? previous-track)))
+                  (set-track previous-track previous-offset)
+                  :else (ctrl-audio-node ctrl)))
+              (recur)))
+        (go (loop []
+              (<! stream-position)
+              (let [c (.-currentTime audio-node)
+                    e (.-duration audio-node)]
+                (if (= 0 c)
+                  (do
+                    (om/set-state! owner :current-position 0)
+                    (om/set-state! owner :end-position 0))
+                  (do
+                    (om/set-state! owner :current-position c)
+                    (om/set-state! owner :end-position e))))
+              (recur)))
+        )
+      
+      
+      {:current-src ""
        :current-offset 0
        :ctrl :stop
-       :audio (js/Audio.)})
+       :track-src []
+       :current-position 0
+       :end-position 0})
     om/IRender
     (render [this]
-      (let [my-play-list (om/get-state owner :play-list)
-            ctrl-current (om/get-state owner :ctrl)
-            node (om/get-state owner :audio)
-            is-playing? (not (.-paused node))]
+      (let [ctrl-current (om/get-state owner :ctrl)
+            is-playing? (not (.-paused audio-node))
+            current-position (om/get-state owner :current-position)
+            end-position (om/get-state owner :end-position)]
         (html [:div
+               [:progress {:max end-position :value current-position}]
+               [:div (utils/format "%s/%s"
+                                   (format-duration current-position)
+                                   (format-duration end-position))]
                [:ul
-                ;; [:li [:i.fa.fa-fast-backward]]
+                [:li {:on-click (fn [e] (put! player-ctrl :previous))}
+                 [:i.fa.fa-fast-backward]]
                 [:li {:on-click (fn [e] (put! player-ctrl :seek-backward))}
                  [:i.fa.fa-step-backward]]
                 [:li {:on-click (fn [e] (put! player-ctrl (if is-playing? :pause :play)))}
@@ -283,7 +338,8 @@
                  [:i.fa.fa-stop]]
                 [:li {:on-click (fn [e] (put! player-ctrl :seek-forward))}
                  [:i.fa.fa-step-forward]]
-                ;; [:li [:i.fa.fa-fast-forward]]
+                [:li {:on-click (fn [e] (put! player-ctrl :next))}
+                 [:i.fa.fa-fast-forward]]
                 ]])))))
 
 (defn view-debug [data owner]

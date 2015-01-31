@@ -66,7 +66,7 @@
   (first (sql/delete! db :tracks ["path=?" path])))
 
 (defn upsert-track!
-  "returns {id:??}for intert or {row-count:??} for update"
+  "returns {id:??}for insert or {row-count:??} for update"
   [db track-info]
   (let [update-result (update-track! db track-info)]
     (if (> update-result 0)

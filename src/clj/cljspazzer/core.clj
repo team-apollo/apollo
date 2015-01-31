@@ -6,6 +6,7 @@
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.gzip :refer [wrap-gzip]]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
+            [ring.middleware.partial-content :refer [wrap-partial-content]]
             [cljspazzer.http.admin :refer :all]
             [cljspazzer.http.artist :refer :all]
             [cljspazzer.http.album :refer :all]
@@ -52,5 +53,5 @@
       (wrap-not-modified)
       (wrap-content-type)
       (wrap-gzip)
-      ))
+      (wrap-partial-content)))
 

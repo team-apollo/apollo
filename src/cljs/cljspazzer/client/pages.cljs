@@ -12,12 +12,10 @@
 (def track-list (chan))
 (def player-ctrl (chan))
 (def stream-position (chan))
+(def now-playing (chan))
+
 (aset audio-node "onended" (fn [e] (put! player-ctrl :next)
                              false))
-;; (aset audio-node "onabort" (fn [e] (put! player-ctrl :next)
-;;                              false))
-;; (aset audio-node "onerror" (fn [e] (put! player-ctrl :next)
-;;                              false))
 
 (aset audio-node "ontimeupdate" (fn[e] (put! stream-position :changed)))
 
@@ -63,13 +61,20 @@
       (utils/format "%i:%02i:%02i" hours minutes seconds)
       (utils/format "%i:%02i" minutes seconds))))
 
-(defn mk-track-url [artist album track-id]
-  (utils/format "/api/artists/%s/albums/%s/tracks/%s"
-                (utils/encode artist)
-                (utils/encode album)
-                (utils/encode track-id)))
+(defn mk-track-url
+  ([artist album track-id]
+   (utils/format "/api/artists/%s/albums/%s/tracks/%s"
+                 (utils/encode artist)
+                 (utils/encode album)
+                 (utils/encode track-id)))
+  ([track]
+   (let [t (track "track")
+         artist (t "artist_canonical")
+         album (t "album_canonical")
+         id (t "id")]
+     (mk-track-url artist album id))))
 
-(defn track-detail [track add-to-playlist]
+(defn track-detail [track]
   (let [t (track "track")
         track-num (t "track")
         track-title (t "title")
@@ -81,11 +86,11 @@
         track-label (utils/format "%s. %s" track-num track-title)]
     [:li
      [:a {
-          :on-click (fn [e] (put! track-list [track-url]))}
+          :on-click (fn [e] (put! track-list [track]))}
       track-label
       [:div.right (format-duration duration)]]]))
 
-(defn album-detail [artist album add-to-playlist]
+(defn album-detail [artist album]
   (let [album-name (album "name")
         album-year (album "year")
         album-label (utils/format "%s - (%s)" album-name album-year)
@@ -97,10 +102,7 @@
                                     (utils/encode album-name))
         tracks (album "tracks")
         artist-url (utils/format "#/artists/%s" artist)
-        track-ids (map (fn [t] ((t "track") "id")) tracks)
-        track-urls (map (partial mk-track-url artist album-name)
-                        track-ids)
-        play-album (fn [e] (put! track-list track-urls))]
+        play-album (fn [e] (put! track-list tracks))]
     (if (and (not (nil? artist)) (not (nil? album)))
       [:div 
        [:a {:href artist-url} [:h1 artist]]
@@ -110,7 +112,7 @@
        [:i.fa.fa-play-circle.fa-lg {:on-click play-album}]
        [:img {:src album-image}]
        [:ul.tracks
-        (map (fn [track] (track-detail track add-to-playlist)) tracks)]
+        (map (fn [track] (track-detail track)) tracks)]
        ]))
   )
 
@@ -157,10 +159,7 @@
         album-count (count albums)
         active-album (:active-album data)
         artist-image (utils/format "/api/artists/%s/image?force-fetch=1" (utils/encode active-artist))
-        artist-image-url (utils/format "url(\"%s\")" artist-image)
-        add-to-playlist (fn [x]
-                          (.log js/console (clj->js (:play-list data)))
-                          (om/transact! data :play-list (fn [v] (conj (or v []) (x "track")))))]
+        artist-image-url (utils/format "url(\"%s\")" artist-image)]
     (html
      [:div.browse
       (main-nav-partial)
@@ -181,7 +180,7 @@
          (not (nil? active-album))
          [:div.pure-u-1
           [:div.album-detail
-           (album-detail active-artist active-album add-to-playlist)]
+           (album-detail active-artist active-album)]
           [:div.artist-bg {:style {:background-image artist-image-url}}]])]])))
 
 (defn delete-mount [mount]
@@ -262,16 +261,26 @@
   (reify
     om/IInitState
     (init-state [this]
+      
+      
+      
+      {:current-src ""
+       :current-offset 0
+       :ctrl :stop
+       :track-src []
+       :current-position 0
+       :end-position 0})
+    om/IWillMount
+    (will-mount [this]
       (let [set-track (fn [track offset]
                         (om/set-state! owner :current-offset offset)
-                        (aset audio-node "src" track)
-                        (ctrl-audio-node :play))]
+                        (aset audio-node "src" (mk-track-url track))
+                        (ctrl-audio-node :play)
+                        (put! now-playing track))]
         (go (loop []
               (let [track-src (<! track-list)]
-                (aset audio-node "src" (first track-src))
-                (ctrl-audio-node :play)
-                (om/set-state! owner :current-src track-src)
-                (om/set-state! owner :current-offset 1))
+                (set-track (first track-src) 1)
+                (om/set-state! owner :current-src track-src))
               (recur)))
         (go (loop []
               (let [ctrl (<! player-ctrl)
@@ -283,7 +292,6 @@
                     previous-track (last (take previous-offset track-src))
                     ]
                 (om/set-state! owner :ctrl ctrl)
-                (.log js/console (clj->js [current-offset previous-offset next-offset (count track-src)]))
                 (cond
                   (and (= ctrl :next) (> next-offset (count track-src)))
                   (ctrl-audio-node :stop)
@@ -305,15 +313,7 @@
                     (om/set-state! owner :current-position c)
                     (om/set-state! owner :end-position e))))
               (recur)))
-        )
-      
-      
-      {:current-src ""
-       :current-offset 0
-       :ctrl :stop
-       :track-src []
-       :current-position 0
-       :end-position 0})
+        ))
     om/IRender
     (render [this]
       (let [ctrl-current (om/get-state owner :ctrl)
@@ -347,3 +347,35 @@
     om/IInitState
     (init-state [this]
       (html [:h1 "Debug"]))))
+
+
+(defn view-now-playing [data owner]
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:now-playing {"track" {}}})
+    om/IWillMount
+    (will-mount [this]
+      (go
+        (loop []
+          (let [current-track (<! now-playing)]
+            (om/set-state! owner :now-playing current-track))
+          (recur))))
+    om/IRender
+    (render [this]
+      (let [current-track (om/get-state owner :now-playing)
+            t (current-track "track")
+            artist (t "artist_canonical")
+            album (t "album_canonical")
+            title (t "title_canonical")
+            track-num (t "track")
+            year (t "year")
+            artist-nav (utils/format "#/artist/%s" (utils/encode artist))
+            album-nav (utils/format "%s/albums/%s" artist-nav (utils/encode album))
+
+            album-image (utils/format "/api/artists/%s/albums/%s/image" (utils/encode artist) (utils/encode album))
+            artist-image (utils/format "/api/artists/%s/image" (utils/encode artist))
+            track-heading (utils/format "%s - %s (%s)" artist title year)]
+        (html [:div
+               (if (not (nil? artist))
+                 [:h1 track-heading])])))))

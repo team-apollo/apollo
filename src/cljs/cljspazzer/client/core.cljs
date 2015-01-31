@@ -27,8 +27,9 @@
     (render [this]
       (let [page (or (:active-page data) loading-page)]
         (om.dom/span nil
-                (om/build pages/audio-elem data)
-                (om/build page data))))))
+                     (om/build pages/audio-elem data)
+                     (om/build pages/view-now-playing data)
+                     (om/build page data))))))
 
 
 (om/root show-page app-state

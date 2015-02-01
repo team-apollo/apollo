@@ -103,7 +103,7 @@
                                     (utils/encode artist)
                                     (utils/encode album-name))
         tracks (album "tracks")
-        artist-url (utils/format "#/artists/%s" artist)
+        artist-url (utils/format "#/artists/%s" (utils/encode artist))
         play-album (fn [e] (put! track-list tracks))
         compilation? (album "compilation")]
     (if (and (not (nil? artist)) (not (nil? album)))

@@ -8,6 +8,8 @@
             [cljspazzer.client.services :as services]
             [cljspazzer.client.utils :as utils]
             [cljspazzer.client.pages :as pages]
+            [cljspazzer.client.views.admin :as admin]
+            [cljspazzer.client.player :refer [audio-elem view-now-playing]]
             [cljs.core.async :refer [<!]])
   
   (:import goog.History))
@@ -27,8 +29,8 @@
     (render [this]
       (let [page (or (:active-page data) loading-page)]
         (om.dom/span nil
-                     (om/build pages/audio-elem data)
-                     (om/build pages/view-now-playing data)
+                     (om/build audio-elem data)
+                     (om/build view-now-playing data)
                      (om/build page data))))))
 
 
@@ -72,7 +74,7 @@
 (defroute admin-path "/admin" []
   (go
     (swap! app-state assoc :mounts (<! (services/mounts)))
-    (swap! app-state assoc :active-page pages/view-admin)))
+    (swap! app-state assoc :active-page admin/view-admin)))
 
 (defroute player-path "/player" []
   (swap! app-state assoc :active-page pages/view-player))

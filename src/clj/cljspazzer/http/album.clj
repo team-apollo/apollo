@@ -94,18 +94,20 @@
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)
         first-result (first db-result)
-        {artist :artist_canonical album :album_canonical year :year} first-result
+        {artist :artist_canonical album :album album_canonical :album_canonical year :year} first-result
         just-artist (fn [t] (= (utils/canonicalize artist-id) (:artist_canonical t)))]
     (if (> (count db-result) 0)
       (if (not (is-compilation? db-result))
         (response {:album {:artist artist
                            :compilation false
                            :name album
+                           :album_canonical album_canonical
                            :year year
                            :tracks (map (fn [r] {:track r}) (filter just-artist db-result))}})
         (response {:album {:artist artist
                            :compilation true
                            :name album
+                           :album_canonical album_canonical
                            :year year
                            :tracks (map (fn [r] {:track r}) db-result)}}))      
       {:status 404})))

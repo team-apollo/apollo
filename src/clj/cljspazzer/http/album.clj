@@ -71,13 +71,41 @@
       (header (file-response (.getAbsolutePath img)) "Content-Type" (mime-type-of img))
       )))
 
+(defn is-compilation? [tracks]
+  (let [artists (map :artist_canonical tracks)
+        first-artist (first artists)
+        years (map :year tracks)
+        first-year (first years)
+        albums (map :album_canonical tracks)
+        first-album (first albums)
+        same-artist? (every? (fn [a] (= a first-artist)) artists)
+        same-year? (every? (fn [y] (= y first-year)) years)
+        same-album? (every? (fn [al] (= al first-album)) albums)
+        tracks-grouped-by-artist (group-by :artist_canonical tracks)
+        track-counts-by-artist (into {} (map (fn [[k v]] [k (count v)]) tracks-grouped-by-artist))]
+    (if (and (not same-artist?)
+             same-year?
+             same-album?)
+      (if (not-any? (fn [t-count] (> t-count 5)) (vals track-counts-by-artist))
+        true
+        false)
+      false)))
+
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)
         first-result (first db-result)
-        {artist :artist_canonical album :album_canonical year :year} first-result]
+        {artist :artist_canonical album :album_canonical year :year} first-result
+        just-artist (fn [t] (= (utils/canonicalize artist-id) (:artist_canonical t)))]
     (if (> (count db-result) 0)
-      (response {:album {:artist artist
-                     :name album
-                     :year year
-                         :tracks (map (fn [r] {:track r}) db-result)}})
+      (if (not (is-compilation? db-result))
+        (response {:album {:artist artist
+                           :compilation false
+                           :name album
+                           :year year
+                           :tracks (map (fn [r] {:track r}) (filter just-artist db-result))}})
+        (response {:album {:artist artist
+                           :compilation true
+                           :name album
+                           :year year
+                           :tracks (map (fn [r] {:track r}) db-result)}}))      
       {:status 404})))

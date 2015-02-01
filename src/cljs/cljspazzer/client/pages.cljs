@@ -74,7 +74,7 @@
          id (t "id")]
      (mk-track-url artist album id))))
 
-(defn track-detail [track]
+(defn track-detail [track compilation?]
   (let [t (track "track")
         track-num (t "track")
         track-title (t "title")
@@ -83,7 +83,9 @@
         album (t "album_canonical")
         duration (t "duration")
         track-url (mk-track-url artist album track-id)
-        track-label (utils/format "%s. %s" track-num track-title)]
+        track-label (if compilation?
+                      (utils/format "%s. %s by %s" track-num track-title artist)
+                      (utils/format "%s. %s" track-num track-title))]
     [:li
      [:a {
           :on-click (fn [e] (put! track-list [track]))}
@@ -102,7 +104,8 @@
                                     (utils/encode album-name))
         tracks (album "tracks")
         artist-url (utils/format "#/artists/%s" artist)
-        play-album (fn [e] (put! track-list tracks))]
+        play-album (fn [e] (put! track-list tracks))
+        compilation? (album "compilation")]
     (if (and (not (nil? artist)) (not (nil? album)))
       [:div 
        [:a {:href artist-url} [:h1 artist]]
@@ -112,7 +115,7 @@
        [:i.fa.fa-play-circle.fa-lg {:on-click play-album}]
        [:img {:src album-image}]
        [:ul.tracks
-        (map (fn [track] (track-detail track)) tracks)]
+        (map (fn [track] (track-detail track compilation?)) tracks)]
        ]))
   )
 

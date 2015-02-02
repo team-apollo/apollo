@@ -22,8 +22,9 @@
     (get-extension-for-mime mime-type)))
 
 (defn track-file-name [track]
-  (let [{:keys [artist_canonical album_canonical title_canonical path]} track]
-    (format "%s - %s - %s%s"
+  (let [{:keys [artist_canonical album_canonical title_canonical path track]} track]
+    (format "%02d - %s - %s - %s%s"
+            (or track 0)
             artist_canonical
             album_canonical
             title_canonical

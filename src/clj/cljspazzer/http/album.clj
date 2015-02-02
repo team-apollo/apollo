@@ -11,6 +11,27 @@
     [java.io FileOutputStream ByteArrayOutputStream ByteArrayInputStream]
     [java.util.zip ZipEntry ZipFile ZipOutputStream]))
 
+(defn is-compilation? [tracks]
+  (let [artists (map :artist_canonical tracks)
+        first-artist (first artists)
+        years (map :year tracks)
+        first-year (first years)
+        albums (map :album_canonical tracks)
+        first-album (first albums)
+        same-artist? (every? (fn [a] (= a first-artist)) artists)
+        same-year? (every? (fn [y] (= y first-year)) years)
+        same-album? (every? (fn [al] (= al first-album)) albums)
+        tracks-grouped-by-artist (group-by :artist_canonical tracks)
+        track-counts-by-artist (into {} (map (fn [[k v]] [k (count v)]) tracks-grouped-by-artist))]
+    (if (and (not same-artist?)
+             same-year?
+             same-album?)
+      (if (not-any? (fn [t-count] (> t-count 5)) (vals track-counts-by-artist))
+        true
+        false)
+      false)))
+
+(defn just-artist [artist-id] (fn [t] (= (utils/canonicalize artist-id) (:artist_canonical t))))
 
 (defn make-zip-file [entries]
   (let [result (new ByteArrayOutputStream)
@@ -26,7 +47,8 @@
     (.toByteArray result)))
 
 (defn album-zip [artist-id album-id]
-  (let [db-result (s/tracks-by-album s/the-db album-id)
+  (let [db-result-raw (s/tracks-by-album s/the-db album-id)
+        db-result (if (is-compilation? db-result-raw) db-result-raw (filter (just-artist artist-id) db-result-raw))
         artists (map :artist_canonical  db-result)
         albums (map :album_canonical db-result)
         paths (map :path db-result)
@@ -71,31 +93,10 @@
       (header (file-response (.getAbsolutePath img)) "Content-Type" (mime-type-of img))
       )))
 
-(defn is-compilation? [tracks]
-  (let [artists (map :artist_canonical tracks)
-        first-artist (first artists)
-        years (map :year tracks)
-        first-year (first years)
-        albums (map :album_canonical tracks)
-        first-album (first albums)
-        same-artist? (every? (fn [a] (= a first-artist)) artists)
-        same-year? (every? (fn [y] (= y first-year)) years)
-        same-album? (every? (fn [al] (= al first-album)) albums)
-        tracks-grouped-by-artist (group-by :artist_canonical tracks)
-        track-counts-by-artist (into {} (map (fn [[k v]] [k (count v)]) tracks-grouped-by-artist))]
-    (if (and (not same-artist?)
-             same-year?
-             same-album?)
-      (if (not-any? (fn [t-count] (> t-count 5)) (vals track-counts-by-artist))
-        true
-        false)
-      false)))
-
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)
         first-result (first db-result)
-        {artist :artist_canonical album :album album_canonical :album_canonical year :year} first-result
-        just-artist (fn [t] (= (utils/canonicalize artist-id) (:artist_canonical t)))]
+        {artist :artist_canonical album :album album_canonical :album_canonical year :year} first-result]
     (if (> (count db-result) 0)
       (if (not (is-compilation? db-result))
         (response {:album {:artist artist
@@ -103,7 +104,7 @@
                            :name album
                            :album_canonical album_canonical
                            :year year
-                           :tracks (map (fn [r] {:track r}) (filter just-artist db-result))}})
+                           :tracks (map (fn [r] {:track r}) (filter (just-artist artist-id) db-result))}})
         (response {:album {:artist artist
                            :compilation true
                            :name album

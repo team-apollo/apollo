@@ -8,7 +8,7 @@
             [cljspazzer.client.views.artists :as artists]
             [cljspazzer.client.views.tracks :as tracks]
             [cljspazzer.client.views.nav :as nav]
-            [cljs.core.async :refer [<! put! chan]]
+            [cljs.core.async :refer [<! put! chan pub]]
             [sablono.core :as html :refer-macros [html]]
             ))
 

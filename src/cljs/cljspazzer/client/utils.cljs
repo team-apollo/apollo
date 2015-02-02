@@ -14,5 +14,9 @@
       (format "%i:%02i:%02i" hours minutes seconds)
       (format "%i:%02i" minutes seconds))))
 
-(defn contains? [s k]
-  (not (= (count (filter (fn [t](= k t)) s)) 0)))
+(defn s-contains? [s k]
+  (not
+   (=
+    (count
+     (filter
+      (fn [t](= k t)) s)) 0)))

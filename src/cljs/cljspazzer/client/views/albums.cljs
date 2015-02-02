@@ -40,7 +40,7 @@
         render-album (partial album-item active-artist)
         nav-str (apply str nav/nav-seq)
         artist-first (first active-artist)
-        back (if (utils/contains? nav-str artist-first)
+        back (if (utils/s-contains? nav-str artist-first)
                artist-first
                "#")
         back-link (utils/format "#/nav/%s" back)]

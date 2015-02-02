@@ -3,6 +3,7 @@
             [cljspazzer.client.channels :as channels]
             [cljspazzer.client.views.artists :as artists]
             [cljspazzer.client.views.tracks :as tracks]
+            [cljspazzer.client.views.nav :as nav]
             [cljspazzer.client.channels :as channels]
             [cljs.core.async :refer [<! put! chan]]))
 
@@ -37,7 +38,12 @@
 (defn album-list-partial [active-artist albums]
   (let [album-heading (utils/format "%s Albums" (count albums))
         render-album (partial album-item active-artist)
-        back-link (utils/format "#/nav/%s" (first active-artist))]
+        nav-str (apply str nav/nav-seq)
+        artist-first (first active-artist)
+        back (if (utils/contains? nav-str artist-first)
+               artist-first
+               "#")
+        back-link (utils/format "#/nav/%s" back)]
     [:div.album-list
      [:a {:href back-link} "browse"]
      [:h3 album-heading]

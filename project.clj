@@ -27,7 +27,7 @@
   :source-paths ["src/clj"
                  "src/cljs"]
   :plugins [[lein-ring "0.8.13"]
-            [lein-cljsbuild "1.0.4-SNAPSHOT"]
+            [lein-cljsbuild "1.0.4"]
             [lein-haml-sass "0.2.7-SNAPSHOT"]]
   :hooks [leiningen.cljsbuild
           leiningen.sass]

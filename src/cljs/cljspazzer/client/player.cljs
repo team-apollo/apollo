@@ -126,12 +126,15 @@
             title (t "title_canonical")
             track-num (t "track")
             year (t "year")
-            artist-nav (utils/format "#/artist/%s" (utils/encode artist))
+            artist-nav (utils/format "#/artists/%s" (utils/encode artist))
             album-nav (utils/format "%s/albums/%s" artist-nav (utils/encode album))
 
             album-image (albums/mk-album-image artist t)
             artist-image (artists/mk-artist-image artist true)
             track-heading (utils/format "%s - %s (%s)" artist title year)]
-        (html [:div
-               (if (not (nil? artist))
-                 [:h1 track-heading])])))))
+        (html (if (not (nil? artist))
+                [:div
+                 [:a {:href album-nav}
+                  [:img {:src album-image}]]
+                 [:span track-heading]
+               ]))))))

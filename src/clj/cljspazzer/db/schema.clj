@@ -112,7 +112,7 @@
 
 ;; queries for web endpoints
 (defn artist-list [db]
-  (sql/query db ["select distinct artist_canonical as artist from tracks order by artist"]))
+  (sql/query db ["select distinct artist from tracks where artist is not null order by artist_canonical"]))
 
 (defn artist-search [db prefix]
   (cond (= prefix "all") (artist-list db)

@@ -26,9 +26,7 @@
     (if (and (not same-artist?)
              same-year?
              same-album?)
-      (if (not-any? (fn [t-count] (> t-count 5)) (vals track-counts-by-artist))
-        true
-        false)
+      (not-any? (fn [t-count] (> t-count 5)) (vals track-counts-by-artist))
       false)))
 
 (defn just-artist [artist-id] (fn [t] (= (utils/canonicalize artist-id) (:artist_canonical t))))
@@ -55,60 +53,50 @@
         result-file-name (format "%s - %s.zip"
                                  (utils/canonicalize artist-id)
                                  (utils/canonicalize album-id))
-        zip-entries (into {}
-                           (map (fn [p] {(:path p)
-                                         {:zip-entry (new ZipEntry (utils/track-file-name p))
-                                         :file (io/file (:path p))}}) db-result))
-        zip-bytes (make-zip-file zip-entries)
-        ]
-    {
-     :body (new ByteArrayInputStream zip-bytes)
+        zip-entries (into {} (map (fn [p] {(:path p)
+                                           {:zip-entry (new ZipEntry (utils/track-file-name p))
+                                            :file (io/file (:path p))}}) db-result))
+        zip-bytes (make-zip-file zip-entries)]
+    {:body (new ByteArrayInputStream zip-bytes)
      :headers {"Content-Disposition" (format "attachment;filename=%s" result-file-name)
-               "Content-Type" (mime-type-of zip-bytes)}
-     }
-    ))
+               "Content-Type" (mime-type-of zip-bytes)}}))
 
 (defn images-for-tracks [tracks]
   (let [parents (into #{} (map (fn [t] (.getParentFile (io/file (:path t)))) tracks))
         result (filter utils/is-image? (flatten (map (fn [p] (seq (.listFiles p))) parents)))]
     result))
 
+(defn first-album-image-from-google [artist album]
+  (let [urls (map :url (images/goog-album-images artist album))
+        cacher (fn [url] (cache/cache-image-response url artist album))]
+    (log/info (format "attempting to get image from internet for %s %s" artist album))
+    (first (drop-while nil? (map cacher urls)))))
+
+
 (defn album-image [artist-id album-id]
   (let [tracks (filter (fn [t]
                          (= (utils/canonicalize artist-id) (:artist_canonical t)))
                        (s/tracks-by-album s/the-db album-id))
-        img (first (images-for-tracks tracks))]
-    (if (nil? img)
-      (let [cache-image (images/image-from-cache artist-id album-id)]
-        (if (nil? cache-image)
-          (let [urls (map :url (images/goog-album-images artist-id album-id))
-                cacher (fn [url]
-                         (cache/cache-image-response url artist-id album-id))
-                goog-image (first (drop-while nil? (map cacher urls)))]
-            (header (file-response (.getAbsolutePath goog-image)) "Content-Type" (mime-type-of goog-image))
-            )
-          (header (file-response (.getAbsolutePath cache-image)) "Content-Type" (mime-type-of cache-image))
-          )
-        )
-      (header (file-response (.getAbsolutePath img)) "Content-Type" (mime-type-of img))
-      )))
+        
+        img (or (first (images-for-tracks tracks))
+                (images/image-from-cache artist-id album-id)
+                (first-album-image-from-google artist-id album-id))]
+    (header (file-response (.getAbsolutePath img)) "Content-Type" (mime-type-of img))))
+
 
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)
         first-result (first db-result)
-        {artist :artist_canonical album :album album_canonical :album_canonical year :year} first-result]
+        {artist :artist_canonical album :album album_canonical :album_canonical year :year} first-result
+        compilation? (is-compilation? db-result)
+        tracks (if compilation?
+                 db-result
+                 (filter (just-artist artist-id) db-result))]
     (if (> (count db-result) 0)
-      (if (not (is-compilation? db-result))
-        (response {:album {:artist artist
-                           :compilation false
+      (response {:album {:artist artist
+                           :compilation compilation?
                            :name album
                            :album_canonical album_canonical
                            :year year
-                           :tracks (map (fn [r] {:track r}) (filter (just-artist artist-id) db-result))}})
-        (response {:album {:artist artist
-                           :compilation true
-                           :name album
-                           :album_canonical album_canonical
-                           :year year
-                           :tracks (map (fn [r] {:track r}) db-result)}}))      
+                           :tracks (map (fn [r] {:track r}) tracks)}})      
       {:status 404})))

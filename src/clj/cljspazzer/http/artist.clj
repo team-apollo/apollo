@@ -20,20 +20,18 @@
 (defn artist-search [prefix]
   (response {:artists (s/artist-search s/the-db prefix)}))
 
+(defn first-artist-image-from-google [artist]
+  (let [urls (map :url (images/goog-artist-images artist))
+        cacher (fn [url] (cache/cache-image-response url artist))]
+    (log/info (format "attempting to get image from internet for %s" artist))
+    (first (drop-while nil? (map cacher urls)))))
+
 (defn artist-image [artist force-fetch]
-  (let [cache-image (images/image-from-cache artist)]
-    (if (nil? cache-image)
-      (if (not (nil? force-fetch))
-        (do
-        (log/info (format "attempting to get image from internet for %s" artist))
-        (let [urls (map :url (images/goog-artist-images artist))
-            cacher (fn [url]
-                     (cache/cache-image-response url artist))
-              goog-image (first (drop-while nil? (map cacher urls)))]
-          (if (not (nil? goog-image))
-            (header (file-response (.getAbsolutePath goog-image)) "Content-Type" (mime-type-of goog-image))
-            {:status 404})))
-        {:status 404})
-      (header (file-response (.getAbsolutePath cache-image)) "Content-Type" (mime-type-of cache-image)))))
+  (let [img (or (images/image-from-cache artist)
+                (if (not (nil? force-fetch))
+                  (first-artist-image-from-google artist)))]
+    (if (not (nil? img))
+      (header (file-response (.getAbsolutePath img)) "Content-Type" (mime-type-of img))
+      {:status 404})))
 
 

@@ -1,3 +1,10 @@
+a
+  color: transparentize($font-color, .5)
+  text-decoration: none
+  transition: color .3s
+  &:hover
+    color: $font-color
+
 .main-nav
   position: fixed
   height: 100%
@@ -63,3 +70,11 @@
           background: lighten($btn-bg, 10)
         &:focus, &.active
           background: $highlight
+
+.album-list, .album-detail
+  h3
+    a
+      margin-right: .75em
+
+
+

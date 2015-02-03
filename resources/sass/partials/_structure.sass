@@ -5,8 +5,14 @@ body
 ul
   padding: 0
 
+.left
+  float: left
+
 .right
   float: right
+
+.clear
+  clear: both
 
 .artist-detail
   li
@@ -34,7 +40,6 @@ ul
       overflow: hidden
       display: block
       color: #3f3f3f
-      text-transform: capitalize
       &.download
         position: absolute
         top: 0
@@ -51,11 +56,11 @@ ul
         padding: .5em
         display: block
         width: 95%
-  i
-    padding: .5em
-    color: white
-    opacity: 0
-    transition: opacity .3s
+    i
+      padding: .5em
+      color: white
+      opacity: 0
+      transition: opacity .3s
 
 .artist-list
   @extend .artist-detail
@@ -85,11 +90,6 @@ ul
       position: relative
       left: 0
       transition: left .3s
-
-.album-detail
-  img
-    max-width: 400px
-    float: left
 
 .tracks
   list-style-type: none

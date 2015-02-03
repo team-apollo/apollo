@@ -83,7 +83,7 @@
             is-playing? (not (.-paused audio-node))
             current-position (om/get-state owner :current-position)
             end-position (om/get-state owner :end-position)]
-        (html [:div
+        (html [:div.player
                [:progress {:max end-position :value current-position}]
                [:div (utils/format "%s/%s"
                                    (utils/format-duration current-position)

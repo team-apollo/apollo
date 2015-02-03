@@ -45,9 +45,10 @@
                "#")
         back-link (utils/format "#/nav/%s" back)]
     [:div.album-list
-     [:a {:href back-link} "browse"]
-     [:h3 album-heading]
-     [:ul (map render-album albums)]]))
+     [:h3.left
+      [:a {:href back-link} [:i.fa.fa-angle-left.fa-fw] "Back"]]
+     [:h3.left album-heading]
+     [:ul.clear (map render-album albums)]]))
 
 (defn album-detail [artist album]
   (let [album-name (album "name")
@@ -61,12 +62,14 @@
         compilation? (album "compilation")]
     (if (and (not (nil? artist)) (not (nil? album)))
       [:div 
-       [:a {:href artist-url} [:h1 artist]]
-       [:h2 album-label]
+       [:h3
+        [:a {:href artist-url} [:i.fa.fa-angle-left.fa-fw] "Back"]]
        [:a.download {:href album-zip-url}
         [:i.fa.fa-download.fa-lg]]
        [:i.fa.fa-play-circle.fa-lg {:on-click play-album}]
-       [:img {:src album-image}]
+       [:div.info
+         [:img {:src album-image}]
+         [:h2 album-label]]
        [:ul.tracks
         (map (fn [track] (tracks/track-detail track compilation?)) tracks)]
        ]))

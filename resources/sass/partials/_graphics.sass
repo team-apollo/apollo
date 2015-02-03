@@ -1,7 +1,11 @@
 .album-detail
   height: 100%
-  img
+  .info
     width: 100%
+    max-width: 400px
+    float: left
+    img
+      width: 100%
 
 .artist-bg
   -webkit-filter: grayscale(100%) blur(8px)
@@ -26,3 +30,56 @@
   img.band
     object-fit: cover
     height: 250px
+
+.player
+  position: fixed
+  bottom: 0
+  right: 0
+  left: 50px
+  height: 2em
+  background: transparentize(darken($background, 10), .5)
+  width: calc(100% - 50px)
+  z-index: 100
+  padding: .5em
+  box-sizing: border-box
+  user-select: none
+  -webkit-user-select: none
+  > div
+    float: left
+    user-select: none
+    -webkit-user-select: none
+    line-height: 1
+    color: grayscale(darken($font-color, 40))
+    &:hover
+      cursor: default
+  ul
+    float: right
+    margin-top: 0
+  li
+    display: inline-block
+    user-select: none
+    -webkit-user-select: none
+    margin: 0 .5em
+    color: grayscale(lighten($background, 35))
+    transition: color .3s
+    &:hover
+      cursor: pointer
+      color: $font-color
+  progress[value]
+    -webkit-appearance: none
+    -moz-appearance: none
+    appearance: none
+    width: 50%
+    float: left
+    margin: .25em .5em 0 0
+    height: .5em
+    border: none
+    &::-webkit-progress-bar
+      background-color: lighten($background, 5)
+      box-shadow: 0 2px 3px transparentize($background, .4) inset
+    &::-webkit-progress-value
+      background-color: $highlight
+      box-shadow: 0 2px 3px transparentize($background, .4) inset
+    &::-moz-progress-bar
+      background-color: lighten($background, 5)
+      box-shadow: 0 2px 3px transparentize($background, .4) inset

@@ -23,6 +23,12 @@
       :seek-forward (aset audio-node "currentTime" (+ (.-currentTime audio-node) 1))
       (.pause audio-node))))
 
+(defn set-track [track offset owner]
+  (om/set-state! owner :current-offset offset)
+  (aset audio-node "src" (tracks/mk-track-url track))
+  (ctrl-audio-node :play)
+  (put! channels/now-playing track))
+
 (defn audio-elem [data owner]
   (reify
     om/IInitState
@@ -35,14 +41,9 @@
        :end-position 0})
     om/IWillMount
     (will-mount [this]
-      (let [set-track (fn [track offset]
-                        (om/set-state! owner :current-offset offset)
-                        (aset audio-node "src" (tracks/mk-track-url track))
-                        (ctrl-audio-node :play)
-                        (put! channels/now-playing track))]
-        (go (loop []
+      (go (loop []
               (let [track-src (<! channels/track-list)]
-                (set-track (first track-src) 1)
+                (set-track (first track-src) 1 owner)
                 (om/set-state! owner :current-src track-src))
               (recur)))
         (go (loop []
@@ -53,16 +54,21 @@
                     track-src (om/get-state owner :current-src)
                     next-track (last (take next-offset track-src))
                     previous-track (last (take previous-offset track-src))
+                    current-track (last (take current-offset track-src))
                     ]
                 (om/set-state! owner :ctrl ctrl)
                 (cond
                   (and (= ctrl :next) (> next-offset (count track-src)))
                   (ctrl-audio-node :stop)
                   (and (= ctrl :next) (not (nil? next-track)))
-                  (set-track next-track next-offset)
+                  (set-track next-track next-offset owner)
                   (and (= ctrl :previous) (not (nil? previous-track)))
-                  (set-track previous-track previous-offset)
-                  :else (ctrl-audio-node ctrl)))
+                  (set-track previous-track previous-offset owner)
+                  :else (do (ctrl-audio-node ctrl)
+                            (when (= ctrl :stop)
+                              (put! channels/now-playing {"track" {}}))
+                            (when (= ctrl :play)
+                              (put! channels/now-playing current-track)))))
               (recur)))
         (go (loop []
               (<! channels/stream-position)
@@ -75,8 +81,7 @@
                   (do
                     (om/set-state! owner :current-position c)
                     (om/set-state! owner :end-position e))))
-              (recur)))
-        ))
+              (recur))))
     om/IRender
     (render [this]
       (let [ctrl-current (om/get-state owner :ctrl)

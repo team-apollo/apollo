@@ -87,16 +87,17 @@
 (defn album-detail [artist-id album-id]
   (let [db-result (s/tracks-by-album s/the-db album-id)
         first-result (first db-result)
-        {artist :artist_canonical album :album album_canonical :album_canonical year :year} first-result
+        {artist :artist artist_canonical :artist_canonical album :album album_canonical :album_canonical year :year} first-result
         compilation? (is-compilation? db-result)
         tracks (if compilation?
                  db-result
                  (filter (just-artist artist-id) db-result))]
     (if (> (count db-result) 0)
       (response {:album {:artist artist
-                           :compilation compilation?
-                           :name album
-                           :album_canonical album_canonical
-                           :year year
-                           :tracks (map (fn [r] {:track r}) tracks)}})      
+                         :artist_canonical artist_canonical
+                         :compilation compilation?
+                         :name album
+                         :album_canonical album_canonical
+                         :year year
+                         :tracks (map (fn [r] {:track r}) tracks)}})      
       {:status 404})))

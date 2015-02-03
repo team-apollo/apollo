@@ -25,7 +25,7 @@
 (defn album-item [active-artist album]
   (let [album-url (mk-album-url active-artist album)
         album-image (mk-album-image active-artist album)
-        album-label (utils/format "%s" (album "album_canonical"))
+        album-label (utils/format "%s" (album "album"))
         album-zip-url (mk-album-zip-url active-artist album)]
     [:li
      [:a {:href album-url}

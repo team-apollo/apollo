@@ -11,8 +11,8 @@
                  (utils/encode track-id)))
   ([track]
    (let [t (track "track")
-         artist (t "artist_canonical")
-         album (t "album_canonical")
+         artist (t "artist")
+         album (t "album")
          id (t "id")]
      (mk-track-url artist album id))))
 
@@ -21,8 +21,8 @@
         track-num (t "track")
         track-title (t "title")
         track-id (t "id")
-        artist (t "artist_canonical")
-        album (t "album_canonical")
+        artist (t "artist")
+        album (t "album")
         duration (t "duration")
         track-url (mk-track-url artist album track-id)
         track-label (if compilation?

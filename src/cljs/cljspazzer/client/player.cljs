@@ -121,9 +121,9 @@
     (render [this]
       (let [current-track (om/get-state owner :now-playing)
             t (current-track "track")
-            artist (t "artist_canonical")
-            album (t "album_canonical")
-            title (t "title_canonical")
+            artist (t "artist")
+            album (t "album")
+            title (t "title")
             track-num (t "track")
             year (t "year")
             artist-nav (utils/format "#/artists/%s" (utils/encode artist))

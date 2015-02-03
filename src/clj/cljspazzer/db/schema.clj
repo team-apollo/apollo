@@ -117,7 +117,7 @@
 (defn artist-search [db prefix]
   (cond (= prefix "all") (artist-list db)
         (= prefix "#")
-        (let [db-results (sql/query db [(format "select distinct artist from tracks where artist_canonical < 'a' order by artist_canonical")])
+        (let [db-results (sql/query db [(format "select distinct artist_canonical as artist from tracks where artist_canonical < 'a' order by artist_canonical")]) ;; needs fix for canonical
               results (filter (fn [x] (not (= (:artist x) ""))) db-results)]
           (take-while (fn [x] (not (= (subs (:artist x) 0 1) "a"))) results))
     :else (sql/query db [(format "select distinct artist from tracks where artist_canonical like '%s%%' order by artist_canonical" prefix)])))

@@ -8,6 +8,7 @@
             [cljspazzer.client.views.nav :as nav]
             [cljspazzer.client.views.artists :as artists]
             [cljspazzer.client.views.albums :as albums]
+            [cljspazzer.client.player :as player]
             [cljs.core.async :refer [<! put! chan]]))
 
 
@@ -24,6 +25,7 @@
      [:div.browse
       (nav/main-nav-partial)
       (nav/nav-partial)
+      (om/build player/view-now-playing data)
       [:div.content.pure-g
        (cond
          (and (nil? active-artist) (nil? active-album))
@@ -48,13 +50,6 @@
 
 (defn view-browse [data]
   (om/component (browse-page data)))
-
-(defn view-debug [data owner]
-  (reify
-    om/IInitState
-    (init-state [this]
-      (html [:h1 "Debug"]))))
-
 
 (defn view-player [data owner]
   (reify

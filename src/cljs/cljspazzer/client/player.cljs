@@ -138,7 +138,7 @@
             artist-image (artists/mk-artist-image artist true)
             track-heading (utils/format "%s - %s (%s)" artist title year)]
         (html (if (not (nil? artist))
-                [:div
+                [:div.now-playing
                  [:a {:href album-nav}
                   [:img {:src album-image}]]
                  [:span track-heading]

@@ -8,6 +8,7 @@
             [cljspazzer.client.services :as services]
             [cljspazzer.client.utils :as utils]
             [cljspazzer.client.pages :as pages]
+            [cljspazzer.client.debug :as debug]
             [cljspazzer.client.views.admin :as admin]
             [cljspazzer.client.player :refer [audio-elem view-now-playing]]
             [cljs.core.async :refer [<!]])
@@ -30,7 +31,6 @@
       (let [page (or (:active-page data) loading-page)]
         (om.dom/span nil
                      (om/build audio-elem data)
-                     (om/build view-now-playing data)
                      (om/build page data))))))
 
 
@@ -80,7 +80,7 @@
   (swap! app-state assoc :active-page pages/view-player))
 
 (defroute debug-path "/debug" []
-  (swap! app-state assoc :active-page pages/view-debug))
+  (swap! app-state assoc :active-page debug/view-debug))
 
 (defroute "*" []
   (.log js/console "route not found"))

@@ -32,15 +32,19 @@ a
     &.active
       color: $highlight
 
-.collection-nav
+.side-content
   width: 250px
   box-sizing: border-box
   position: fixed
-  height: 100%
+  height: calc(100% - 2em)
   margin-left: 50px
   padding: 1em
   background: transparentize(darken($background, 5), .1)
+  overflow-y: auto
+
+.collection-nav
   letter-spacing: 1
+  width: 100%
   h3
     color: white
   ul

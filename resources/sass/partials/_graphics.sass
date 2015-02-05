@@ -4,8 +4,22 @@
     width: 100%
     max-width: 400px
     float: left
+    position: relative
+    i
+      font-size: 7em
+      position: absolute
+      width: 100%
+      line-height: 400px
+      text-align: center
+      transition: color .3s, text-shadow .3s
+      color: transparentize($font-color, .7)
+      &:hover
+        text-shadow: 0 0 10px transparentize($background, .5)
+        color: transparentize($font-color, .1)
+        cursor: pointer
     img
       width: 100%
+      margin-bottom: .5em
 
 .artist-bg
   opacity: .1
@@ -14,6 +28,7 @@
   height: 100%
   width: 100%
   position: fixed
+  filter: blur(6px)
   left: 0
   top: 0
   z-index: -1
@@ -27,6 +42,10 @@
   img.band
     object-fit: cover
     height: 250px
+
+.now-playing
+  img
+    width: 100%
 
 .player
   position: fixed

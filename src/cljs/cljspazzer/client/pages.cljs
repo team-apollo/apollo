@@ -24,8 +24,9 @@
     (html
      [:div.browse
       (nav/main-nav-partial)
-      (nav/nav-partial)
-      (om/build player/view-now-playing data)
+      [:div.side-content
+        (nav/nav-partial)
+        (om/build player/view-now-playing data)]
       [:div.content.pure-g
        (cond
          (and (nil? active-artist) (nil? active-album))

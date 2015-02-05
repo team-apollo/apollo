@@ -21,18 +21,20 @@ ul
     width: 200px
     margin: 0 1em 1em 0
     &:hover
-      img
-        opacity: 1
       span
-        opacity: 1
         background: transparentize($background, .2)
       i
         opacity: 1
+      img
+        filter: grayscale(0)
+        -webkit-filter: grayscale(0)
+        -moz-filter: grayscale(0)
     img
       width: 100%
       height: auto
-      transition: opacity .3s
-      opacity: .75
+      filter: grayscale(75%)
+      -webkit-filter: grayscale(75%)
+      -moz-filter: grayscale(75%)
     a
       text-decoration: none
       position: relative
@@ -47,12 +49,11 @@ ul
         overflow: visible
       span
         background: transparentize($background, .4)
-        transition: opacity .3s, background .3s
-        opacity: .6
+        transition: background .3s
         color: white
         position: absolute
         left: 0
-        bottom: 0
+        bottom: -1px
         padding: .5em
         display: block
         width: 95%
@@ -97,14 +98,12 @@ ul
   li
     color: $font-color
     line-height: 1.5
-    transition: background .3s
     &:hover
       background: darken($background, 5)
       a
         color: $font-color
     a
       color: transparentize($font-color, .25)
-      transition: color .3s
       text-decoration: none
       padding: .25em .5em
       width: 100%

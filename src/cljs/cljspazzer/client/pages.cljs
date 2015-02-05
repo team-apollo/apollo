@@ -24,26 +24,33 @@
     (html
      [:div.browse
       (nav/main-nav-partial)
-      [:div.side-content
+      [:div.left-column
         (nav/nav-partial)
         (om/build player/view-now-playing data)]
       [:div.content.pure-g
        (cond
          (and (nil? active-artist) (nil? active-album))
          [:div.pure-u-1
-          (artists/artist-list-partial artists)]
+          [:div.middle-column
+            (artists/artist-list-partial artists)]]
          (and (not (nil? active-artist)) (nil? active-album))
          [:div.pure-u-1
           [:div.pure-g.artist-detail
            [:div.pure-u-17-24
-            (albums/album-list-partial active-artist albums)]
+            [:div.middle-column
+              (albums/album-list-partial active-artist albums)]]
            [:div.pure-u-7-24
-            (artists/artist-detail-partial active-artist)]
+            [:div.right-column
+              [:ul.right-header
+                [:li.active "Info"]
+                [:li "Playlist"]]
+              (artists/artist-detail-partial active-artist)]]
            [:div.artist-bg {:style {:background-image artist-image-url}}]]]
          (not (nil? active-album))
          [:div.pure-u-1
-          [:div.album-detail
-           (albums/album-detail active-artist active-album)]
+          [:div.middle-column
+            [:div.album-detail
+             (albums/album-detail active-artist active-album)]]
           [:div.artist-bg {:style {:background-image artist-image-url}}]])]])))
 
 

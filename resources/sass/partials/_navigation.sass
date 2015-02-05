@@ -32,15 +32,27 @@ a
     &.active
       color: $highlight
 
-.side-content
-  width: 250px
-  box-sizing: border-box
-  position: fixed
-  height: calc(100% - 2em)
-  margin-left: 50px
-  padding: 1em
-  background: transparentize(darken($background, 5), .1)
-  overflow-y: auto
+ul.right-header
+  position: absolute
+  left: 0
+  top: 0
+  width: 100%
+  list-style-type: none
+  margin: 0
+  li
+    display: inline-block
+    width: 50%
+    box-sizing: border-box
+    background: transparentize($btn-bg, .5)
+    margin: 0
+    padding: .5em 1em
+    text-align: center
+    &:hover
+      background: lighten($btn-bg, 5)
+      cursor: pointer
+    &:focus, &.active
+      background: lighten($btn-bg, 10)
+
 
 .collection-nav
   letter-spacing: 1

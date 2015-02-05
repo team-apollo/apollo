@@ -53,7 +53,7 @@
 (defn album-detail [artist album]
   (let [album-name (album "name")
         album-year (album "year")
-        album-label (utils/format "%s - (%s)" album-name album-year)
+        album-label (utils/format "%s" album-name)
         album-image (mk-album-image artist album)
         album-zip-url (mk-album-zip-url artist album)
         tracks (album "tracks")
@@ -64,12 +64,13 @@
       [:div 
        [:h3
         [:a {:href artist-url} [:i.fa.fa-angle-left.fa-fw] "Back"]]
-       [:a.download {:href album-zip-url}
-        [:i.fa.fa-download.fa-lg]]
        [:div.info
-         [:i.fa.fa-play-circle.fa-lg {:on-click play-album}]
-         [:img {:src album-image}]
-         [:h2 album-label]]
+        [:i.fa.fa-play-circle.fa-lg {:on-click play-album}]
+        [:img {:src album-image}]
+        [:h2 album-name]
+        [:h3 album-year]
+        [:a.download {:href album-zip-url}
+          [:i.fa.fa-download.fa-fw] "Download Album"]]
        [:ul.tracks
         (map (fn [track] (tracks/track-detail track compilation?)) tracks)]
        ]))

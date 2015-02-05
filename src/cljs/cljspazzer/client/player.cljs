@@ -108,6 +108,8 @@
                  [:i.fa.fa-step-forward]]
                 [:li {:on-click (fn [e] (put! channels/player-ctrl :next))}
                  [:i.fa.fa-fast-forward]]
+                [:li [:i.fa.fa-repeat]]
+                [:li [:i.fa.fa-random]]
                 ]])))))
 
 (defn view-now-playing [data owner]

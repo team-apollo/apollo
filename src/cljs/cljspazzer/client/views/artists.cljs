@@ -25,5 +25,5 @@
 (defn artist-detail-partial [active-artist]
   (let [artist-image (mk-artist-image active-artist true)]
     [:div
-     [:h3 active-artist]
-     [:img.band {:src artist-image}]]))
+     [:img.band {:src artist-image}]
+     [:h2 active-artist]]))

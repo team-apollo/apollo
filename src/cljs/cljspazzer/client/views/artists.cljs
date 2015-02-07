@@ -10,11 +10,11 @@
 (defn mk-artist-url [artist]
   (utils/format "#/artists/%s" (utils/encode artist)))
 
-(defn artist-item [x]
-  (let [artist-url (mk-artist-url x)]
+(defn artist-item [artist]
+  (let [artist-url (mk-artist-url artist)]
     [:li
      [:a {:href artist-url}
-      [:div x]]]))
+      [:div artist]]]))
 
 (defn artist-list-partial [artists]
   (let [artist-heading (utils/format "%s Artists" (count artists))]
@@ -22,8 +22,8 @@
      [:h3 artist-heading]
      [:ul (map artist-item artists)]]))
 
-(defn artist-detail-partial [active-artist]
-  (let [artist-image (mk-artist-image active-artist true)]
+(defn artist-detail-partial [artist]
+  (let [artist-image (mk-artist-image artist true)]
     [:div
      [:img.band {:src artist-image}]
-     [:h2 active-artist]]))
+     [:h2 artist]]))

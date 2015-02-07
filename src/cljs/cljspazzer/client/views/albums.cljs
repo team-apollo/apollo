@@ -17,16 +17,16 @@
                 (utils/encode artist)
                 (utils/encode (album "album_canonical"))))
 
-(defn mk-album-zip-url [active-artist album]
+(defn mk-album-zip-url [artist album]
   (utils/format "/api/artists/%s/albums/%s/zip"
-                (utils/encode active-artist)
+                (utils/encode artist)
                 (utils/encode (album "album_canonical"))))
 
-(defn album-item [active-artist album]
-  (let [album-url (mk-album-url active-artist album)
-        album-image (mk-album-image active-artist album)
+(defn album-item [artist album]
+  (let [album-url (mk-album-url artist album)
+        album-image (mk-album-image artist album)
         album-label (utils/format "%s" (album "album"))
-        album-zip-url (mk-album-zip-url active-artist album)]
+        album-zip-url (mk-album-zip-url artist album)]
     [:li
      [:a {:href album-url}
       [:img {:src album-image}]
@@ -35,11 +35,11 @@
       [:i.fa.fa-download.fa-lg]]
      ]))
 
-(defn album-list-partial [active-artist albums]
+(defn album-list-partial [artist albums]
   (let [album-heading (utils/format "%s Albums" (count albums))
-        render-album (partial album-item active-artist)
+        render-album (partial album-item artist)
         nav-str (apply str nav/nav-seq)
-        artist-first (first active-artist)
+        artist-first (first artist)
         back (if (utils/s-contains? nav-str artist-first)
                artist-first
                "#")

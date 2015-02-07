@@ -1,7 +1,7 @@
 (ns cljspazzer.client.views.nav
   (:require [cljspazzer.client.utils :as utils]))
 
-(def nav-seq (concat (map str "#abcdefghijklmnopqrstuvwxyz") ["all"]))
+(def nav-seq (concat ["all"] (map str "abcdefghijklmnopqrstuvwxyz#")))
 
 (defn nav-item [x]
   (let [nav-url (utils/format "#/nav/%s" (utils/encode x))]

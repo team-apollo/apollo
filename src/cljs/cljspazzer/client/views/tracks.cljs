@@ -20,11 +20,8 @@
   (let [t (track "track")
         track-num (t "track")
         track-title (t "title")
-        track-id (t "id")
         artist (t "artist")
-        album (t "album")
         duration (t "duration")
-        track-url (mk-track-url artist album track-id)
         track-label (if compilation?
                       (utils/format "%s. %s by %s" track-num track-title artist)
                       (utils/format "%s. %s" track-num track-title))]

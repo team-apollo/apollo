@@ -53,9 +53,6 @@
              (albums/album-detail active-artist active-album)]]
           [:div.artist-bg {:style {:background-image artist-image-url}}]])]])))
 
-
-
-
 (defn view-browse [data]
   (om/component (browse-page data)))
 
@@ -70,12 +67,6 @@
           (nav/main-nav-partial)
           [:div.content.pure-g
            [:div.pure-u-1
-            [:h1 "player goes here"]
-            [:ul (map  playlist-item tracks)]
-            [:a.button
-             {:on-click (fn [e] (om/transact! data :play-list
-                                              (fn [v]
-                                                (conj v "xxx"))))
-              } "add"]]]])))))
+            "probably going away"]]])))))
 
 

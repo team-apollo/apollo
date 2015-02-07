@@ -25,6 +25,7 @@
      [:div.browse
       (nav/main-nav-partial)
       [:div.left-column
+        (artists/artist-detail-partial active-artist)
         (om/build player/view-now-playing data)]
       [:div.content.pure-g
        (cond
@@ -36,15 +37,8 @@
          (and (not (nil? active-artist)) (nil? active-album))
          [:div.pure-u-1
           [:div.pure-g.artist-detail
-           [:div.pure-u-17-24
-            [:div.middle-column
-              (albums/album-list-partial active-artist albums)]]
-           [:div.pure-u-7-24
-            [:div.right-column
-              [:ul.right-header
-                [:li.active "Info"]
-                [:li "Playlist"]]
-              (artists/artist-detail-partial active-artist)]]
+           [:div.middle-column
+            (albums/album-list-partial active-artist albums)]
            [:div.artist-bg {:style {:background-image artist-image-url}}]]]
          (not (nil? active-album))
          [:div.pure-u-1

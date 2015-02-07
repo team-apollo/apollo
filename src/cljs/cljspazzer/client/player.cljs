@@ -95,19 +95,13 @@
                                    (utils/format-duration end-position))]
                [:ul
                 [:li {:on-click (fn [e] (put! channels/player-ctrl :previous))}
-                 [:i.fa.fa-fast-backward]]
-                [:li {:on-click (fn [e] (put! channels/player-ctrl :seek-backward))}
                  [:i.fa.fa-step-backward]]
                 [:li {:on-click (fn [e] (put! channels/player-ctrl (if is-playing? :pause :play)))}
                  (if is-playing?
                    [:i.fa.fa-pause]
-                   [:i.fa.fa-play])]
-                [:li {:on-click (fn [e] (put! channels/player-ctrl :stop))}
-                 [:i.fa.fa-stop]]
-                [:li {:on-click (fn [e] (put! channels/player-ctrl :seek-forward))}
-                 [:i.fa.fa-step-forward]]
+                   [:i.fa.fa-play])]            
                 [:li {:on-click (fn [e] (put! channels/player-ctrl :next))}
-                 [:i.fa.fa-fast-forward]]
+                 [:i.fa.fa-step-forward]]
                 [:li [:i.fa.fa-repeat]]
                 [:li [:i.fa.fa-random]]
                 ]])))))

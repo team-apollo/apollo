@@ -9,7 +9,6 @@
 
 (defn nav-partial []
   [:div.collection-nav
-   [:h3 "Artists"]
    [:ul (map nav-item nav-seq)]])
 
 (defn main-nav-partial []

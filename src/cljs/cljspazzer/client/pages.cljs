@@ -25,13 +25,13 @@
      [:div.browse
       (nav/main-nav-partial)
       [:div.left-column
-        (nav/nav-partial)
         (om/build player/view-now-playing data)]
       [:div.content.pure-g
        (cond
          (and (nil? active-artist) (nil? active-album))
          [:div.pure-u-1
           [:div.middle-column
+            (nav/nav-partial)
             (artists/artist-list-partial artists)]]
          (and (not (nil? active-artist)) (nil? active-album))
          [:div.pure-u-1

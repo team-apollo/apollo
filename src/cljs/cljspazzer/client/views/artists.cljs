@@ -24,6 +24,7 @@
 
 (defn artist-detail-partial [artist]
   (let [artist-image (mk-artist-image artist true)]
-    [:div
-     [:img.band {:src artist-image}]
-     [:h2 artist]]))
+    (when (not (empty? artist))
+     [:div
+      [:img.band {:src artist-image}]
+      [:h2 artist]])))

@@ -8,6 +8,7 @@
             [cljspazzer.client.views.artists :as artists]
             [cljspazzer.client.views.tracks :as tracks]
             [cljspazzer.client.views.nav :as nav]
+            [cljspazzer.client.state :as state]
             [cljs.core.async :refer [<! put! chan pub]]
             [sablono.core :as html :refer-macros [html]]
             ))
@@ -27,7 +28,7 @@
   (om/set-state! owner :current-offset offset)
   (aset audio-node "src" (tracks/mk-track-url track))
   (ctrl-audio-node :play)
-  (put! channels/now-playing track))
+  (om/update! (state/ref-now-playing) [track]))
 
 (defn audio-elem [data owner]
   (reify
@@ -108,19 +109,9 @@
 
 (defn view-now-playing [data owner]
   (reify
-    om/IInitState
-    (init-state [this]
-      {:now-playing {"track" {}}})
-    om/IWillMount
-    (will-mount [this]
-      (go
-        (loop []
-          (let [current-track (<! channels/now-playing)]
-            (om/set-state! owner :now-playing current-track))
-          (recur))))
     om/IRender
     (render [this]
-      (let [current-track (om/get-state owner :now-playing)
+      (let [current-track (or (first (om/observe owner (state/ref-now-playing))) {"track" {}})
             t (current-track "track")
             artist (t "artist")
             album (t "album")
@@ -129,7 +120,6 @@
             year (t "year")
             artist-nav (utils/format "#/artists/%s" (utils/encode artist))
             album-nav (utils/format "%s/albums/%s" artist-nav (utils/encode album))
-
             album-image (albums/mk-album-image artist t)
             artist-image (artists/mk-artist-image artist true)
             track-heading (utils/format "%s - %s (%s)" artist title year)]

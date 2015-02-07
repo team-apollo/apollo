@@ -10,12 +10,11 @@
             [cljspazzer.client.pages :as pages]
             [cljspazzer.client.debug :as debug]
             [cljspazzer.client.views.admin :as admin]
+            [cljspazzer.client.state :refer [app-state]]
             [cljspazzer.client.player :refer [audio-elem view-now-playing]]
             [cljs.core.async :refer [<!]])
   
   (:import goog.History))
-
-(def app-state (atom {}))
 
 (defn loading-page [data]
   (reify
@@ -90,7 +89,8 @@
   (let [history (History.)]
     (events/listen history "navigate"
                    (fn [event]
-                     (secretary/dispatch! (.-token event))))
+                     (secretary/dispatch! (.-token event))
+                     true))
     (.setEnabled history true)))
 
 (main)

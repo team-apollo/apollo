@@ -31,6 +31,8 @@
         duration (t "duration")
         track-label (track-label track compilation?)]
     [:li
-     [:a {:on-click (fn [e] (put! channels/track-list [track]))}
+     [:a {:on-click (fn [e]
+                      (put! channels/track-list [track])
+                      (.preventDefault e))}
       track-label
       [:div.right (utils/format-duration duration)]]]))

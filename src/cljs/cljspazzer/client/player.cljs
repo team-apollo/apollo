@@ -46,7 +46,7 @@
               (let [track-src (<! channels/track-list)]
                 (set-track (first track-src) 1 owner)
                 (om/set-state! owner :current-src track-src)
-                (om/update! (state/ref-current-playlist) track-src))
+                (om/transact! (state/ref-player) (fn [p] (assoc p :current-playlist track-src))))
               (recur)))
         (go (loop []
               (let [ctrl (<! channels/player-ctrl)
@@ -135,7 +135,7 @@
   (reify
     om/IRender
     (render [this]
-      (let [current (om/observe owner (state/ref-current-playlist))]
+      (let [current (:current-playlist (om/observe owner (state/ref-player)))]
         (html [:ul
                (map (fn [item]
                       [:li (tracks/track-label item true)]) current)])))))

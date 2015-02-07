@@ -16,15 +16,20 @@
          id (t "id")]
      (mk-track-url artist album id))))
 
-(defn track-detail [track compilation?]
+(defn track-label [track with-artist?]
   (let [t (track "track")
         track-num (t "track")
         track-title (t "title")
-        artist (t "artist")
+        artist (t "artist")]
+    (if with-artist?
+      (utils/format "%s. %s by %s" track-num track-title artist)
+      (utils/format "%s. %s" track-num track-title))))
+
+  
+(defn track-detail [track compilation?]
+  (let [t (track "track")
         duration (t "duration")
-        track-label (if compilation?
-                      (utils/format "%s. %s by %s" track-num track-title artist)
-                      (utils/format "%s. %s" track-num track-title))]
+        track-label (track-label track compilation?)]
     [:li
      [:a {:on-click (fn [e] (put! channels/track-list [track]))}
       track-label

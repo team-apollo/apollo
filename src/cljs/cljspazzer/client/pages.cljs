@@ -25,8 +25,9 @@
      [:div.browse
       (nav/main-nav-partial)
       [:div.left-column
-        (artists/artist-detail-partial active-artist)
-        (om/build player/view-now-playing data)]
+       (artists/artist-detail-partial active-artist)
+       (om/build player/view-now-playing data)
+       (om/build player/view-current-playlist data)]
       [:div.content.pure-g
        (cond
          (and (nil? active-artist) (nil? active-album))

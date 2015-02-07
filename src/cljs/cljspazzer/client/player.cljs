@@ -8,7 +8,6 @@
             [cljspazzer.client.views.artists :as artists]
             [cljspazzer.client.views.tracks :as tracks]
             [cljspazzer.client.views.nav :as nav]
-            [cljspazzer.client.state :as state]
             [cljs.core.async :refer [<! put! chan pub]]
             [sablono.core :as html :refer-macros [html]]
             ))
@@ -28,7 +27,7 @@
   (om/set-state! owner :current-offset offset)
   (aset audio-node "src" (tracks/mk-track-url track))
   (ctrl-audio-node :play)
-  (om/transact! (state/ref-player) (fn [x] (assoc x :now-playing track))))
+  (put! channels/now-playing track))
 
 (defn audio-elem [data owner]
   (reify
@@ -67,9 +66,9 @@
                   (set-track previous-track previous-offset owner)
                   :else (do (ctrl-audio-node ctrl)
                             (when (= ctrl :stop)
-                              (om/update! data :now-playing {"track" {}}))
+                              (put! channels/now-playing {"track" {}}))
                             (when (= ctrl :play)
-                              (om/update! data :now-playing current-track)))))
+                              (put! channels/now-playing current-track)))))
               (recur)))
         (go (loop []
               (<! channels/stream-position)
@@ -109,9 +108,19 @@
 
 (defn view-now-playing [data owner]
   (reify
+    om/IInitState
+    (init-state [this]
+      {:now-playing {"track" {}}})
+    om/IWillMount
+    (will-mount [this]
+      (go
+        (loop []
+          (let [current-track (<! channels/now-playing)]
+            (om/set-state! owner :now-playing current-track))
+          (recur))))
     om/IRender
     (render [this]
-      (let [current-track (:now-playing (om/observe owner (state/ref-player)))
+      (let [current-track (om/get-state owner :now-playing)
             t (current-track "track")
             artist (t "artist")
             album (t "album")

@@ -54,11 +54,11 @@
                                  (utils/canonicalize artist-id)
                                  (utils/canonicalize album-id))
         zip-entries (into {} (map (fn [p] {(:path p)
-                                           {:zip-entry (new ZipEntry (utils/track-file-name p))
+                                           {:zip-entry (new ZipEntry (format "%s" (utils/track-file-name p)))
                                             :file (io/file (:path p))}}) db-result))
         zip-bytes (make-zip-file zip-entries)]
     {:body (new ByteArrayInputStream zip-bytes)
-     :headers {"Content-Disposition" (format "attachment;filename=%s" result-file-name)
+     :headers {"Content-Disposition" (format "attachment;filename=\"%s\"" result-file-name)
                "Content-Type" (mime-type-of zip-bytes)}}))
 
 (defn images-for-tracks [tracks]

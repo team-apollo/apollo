@@ -28,8 +28,53 @@ body
   h1, h2, p
     padding: .5em 10px
 
+.no-select
+  -webkit-touch-callout: none
+  -webkit-user-select: none
+  -khtml-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+.track-row
+  color: $font-color
+  line-height: 1.5
+  font-size: .85em
+  @extend .no-select
+  &:hover
+    background: darken($background, 5)
+    cursor: pointer
+    a, p
+      color: $font-color
+  a, p
+    color: transparentize($font-color, .25)
+    text-decoration: none
+    padding: .25em .5em
+    margin: 0
+    width: 100%
+    display: block
+    box-sizing: border-box
+  &.active
+    background: $btn-bg
+    a, p
+      color: $font-color
+
+.playlist
+  li
+    @extend .track-row
+    p
+      width: 100%
+      overflow: hidden
+      white-space: nowrap
+      text-overflow: ellipsis
+    &:hover:not(.active)
+      background: $background
+
 ul
   padding: 0
+  list-style-type: none
+  &.tracks
+    margin: 0 0 0 calc(400px + 1em)
 
 .left
   float: left
@@ -45,7 +90,7 @@ ul
   li
     display: inline-block
     position: relative
-    width: 200px
+    width: 150px
     margin: 0 1em 1em 0
     &:hover
       span
@@ -83,7 +128,8 @@ ul
         bottom: -1px
         padding: .5em
         display: block
-        width: 95%
+        width: 92%
+        font-size: .75em
     i
       padding: .5em
       color: white
@@ -121,24 +167,6 @@ ul
       left: 0
       transition: left .3s
 
-.tracks
-  list-style-type: none
-  margin: 0 0 0 calc(400px + 1em)
-  li
-    color: $font-color
-    line-height: 1.5
-    &:hover
-      background: darken($background, 5)
-      cursor: pointer
-      a
-        color: $font-color
-    a
-      color: transparentize($font-color, .25)
-      text-decoration: none
-      padding: .25em .5em
-      width: 100%
-      display: block
-      box-sizing: border-box
 
 *:focus
   outline: 0 none !important

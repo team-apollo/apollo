@@ -22,7 +22,7 @@
         track-title (t "title")
         artist (t "artist")]
     (if with-artist?
-      (utils/format "%s. %s by %s" track-num track-title artist)
+      (utils/format "%s by %s" track-title artist)
       (utils/format "%s. %s" track-num track-title))))
 
   
@@ -30,7 +30,7 @@
   (let [t (track "track")
         duration (t "duration")
         track-label (track-label track compilation?)]
-    [:li
+    [:li.track-row
      [:a {:on-click (fn [e]
                       (put! channels/track-list [track])
                       (.preventDefault e))}

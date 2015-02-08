@@ -142,9 +142,9 @@
     (render [this]
       (let [current (:current-playlist (om/observe owner (state/ref-player)))
             current-offset (:current-offset (om/observe owner (state/ref-player)))]
-        (html [:ul
+        (html [:ul.playlist
                (map-indexed
                 (fn [idx item]
                   [:li
                    {:class-name (when (= idx (dec current-offset)) "active")}
-                   (tracks/track-label item true)]) current)])))))
+                   [:p (tracks/track-label item true)]]) current)])))))

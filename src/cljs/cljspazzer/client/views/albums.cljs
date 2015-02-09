@@ -58,7 +58,7 @@
         album-zip-url (mk-album-zip-url artist album)
         tracks (album "tracks")
         artist-url (artists/mk-artist-url artist)
-        play-album (fn [e] (put! channels/track-list tracks))
+        play-album (fn [e] (put! channels/track-list [tracks 0]))
         compilation? (album "compilation")]
     (if (and (not (nil? artist)) (not (nil? album)))
       [:div 

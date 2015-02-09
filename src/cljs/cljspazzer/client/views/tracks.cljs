@@ -32,7 +32,7 @@
         track-label (track-label track compilation?)]
     [:li.track-row
      [:a {:on-click (fn [e]
-                      (put! channels/track-list [track])
+                      (put! channels/track-list [[track] 0])
                       (.preventDefault e))}
       track-label
       [:div.right (utils/format-duration duration)]]]))

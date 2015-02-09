@@ -26,8 +26,7 @@
 
 (defn set-track [track offset owner]
   (om/set-state! owner :current-offset offset)
-  (om/transact! (state/ref-player) (fn [p]
-                                     (assoc p :current-offset offset)))
+  (om/transact! (state/ref-player) (fn [p] (assoc p :current-offset offset)))
   (aset audio-node "src" (tracks/mk-track-url track))
   (ctrl-audio-node :play)
   (om/update! (state/ref-now-playing) [track]))
@@ -45,13 +44,17 @@
     om/IWillMount
     (will-mount [this]
       (go (loop []
-              (let [track-src (<! channels/track-list)]
-                (set-track (first track-src) 1 owner)
+            (let [[track-src offset] (<! channels/track-list)
+                  current-track (if (> (or offset 0) 0)
+                                  (last (take (inc offset) track-src))
+                                  (first track-src))]
+              
+                (set-track current-track (or offset 0) owner)
                 (om/set-state! owner :current-src track-src)
                 (om/transact! (state/ref-player) (fn [p]
                                                    (assoc p
                                                           :current-playlist track-src
-                                                          :current-offset 1))))
+                                                          :current-offset (or offset 0)))))
               (recur)))
         (go (loop []
               (let [ctrl (<! channels/player-ctrl)
@@ -59,9 +62,9 @@
                     previous-offset (dec current-offset)
                     next-offset (inc current-offset)
                     track-src (om/get-state owner :current-src)
-                    next-track (last (take next-offset track-src))
-                    previous-track (last (take previous-offset track-src))
-                    current-track (last (take current-offset track-src))
+                    next-track (last (take (inc next-offset) track-src))
+                    previous-track (last (take (inc previous-offset) track-src))
+                    current-track (last (take (inc current-offset) track-src))
                     ]
                 (om/set-state! owner :ctrl ctrl)
                 (cond
@@ -146,5 +149,7 @@
                (map-indexed
                 (fn [idx item]
                   [:li
-                   {:class-name (when (= idx (dec current-offset)) "active")}
-                   [:p (tracks/track-label item true)]]) current)])))))
+                   {:class-name (when (= idx current-offset) "active")}
+                   [:p {:on-click (fn [e]
+                                    (put! channels/track-list [current idx]))}
+                    (tracks/track-label item true)]]) current)])))))

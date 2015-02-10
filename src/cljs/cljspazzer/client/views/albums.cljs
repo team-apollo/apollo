@@ -24,15 +24,19 @@
 
 (defn album-item [artist album]
   (let [album-url (mk-album-url artist album)
+        album-year (album "year")
         album-image (mk-album-image artist album)
         album-label (utils/format "%s" (album "album"))
         album-zip-url (mk-album-zip-url artist album)]
-    [:li
-     [:a {:href album-url}
-      [:img {:src album-image}]
-      album-label]
-     [:a.download {:href album-zip-url}
-      [:i.fa.fa-download.fa-lg]]
+    [:li.no-select
+      [:a
+        [:img {:src album-image}] album-label album-year]
+      [:div.album-actions
+        [:i.fa.fa-play-circle]
+        [:a [:i.fa.fa-plus-circle.fa-lg]]
+        [:a {:href album-url} [:i.fa.fa-search.fa-lg]]
+        [:a.download {:href album-zip-url}
+          [:i.fa.fa-download.fa-lg]]]
      ]))
 
 (defn album-list-partial [artist albums]

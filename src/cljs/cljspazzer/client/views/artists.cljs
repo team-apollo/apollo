@@ -26,5 +26,4 @@
   (let [artist-image (mk-artist-image artist true)]
     (when (not (empty? artist))
      [:div
-      [:img.band {:src artist-image}]
       [:h2 artist]])))

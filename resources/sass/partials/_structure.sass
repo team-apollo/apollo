@@ -92,18 +92,21 @@ ul
     position: relative
     width: 150px
     margin: 0 1em 1em 0
+    box-sizing: border-box
     &:hover
-      span
-        background: transparentize($background, .2)
       i
-        opacity: 1
+        opacity: .6
       img
         filter: grayscale(0)
         -webkit-filter: grayscale(0)
         -moz-filter: grayscale(0)
+    &.active
+      border: solid 1px $highlight
     img
       width: 100%
+      object-fit: cover
       height: auto
+      min-height: 150px
       filter: grayscale(75%)
       -webkit-filter: grayscale(75%)
       -moz-filter: grayscale(75%)
@@ -114,27 +117,25 @@ ul
       overflow: hidden
       display: block
       color: #3f3f3f
-      &.download
-        position: absolute
-        top: 0
-        left: 0
-        overflow: visible
       span
-        background: transparentize($background, .4)
-        transition: background .3s
-        color: white
-        position: absolute
+        color: $font-color
+        position: relative
         left: 0
-        bottom: -1px
-        padding: .5em
         display: block
-        width: 92%
         font-size: .75em
+        text-overflow: ellipsis
+        overflow: hidden
+        white-space: nowrap
+        &:hover
+          cursor: default
+        &:first-of-type
+          padding: .5em 0 0
+        &:last-of-type
+          opacity: .5
     i
-      padding: .5em
-      color: white
       opacity: 0
       transition: opacity .3s
+      text-shadow: 0 0 3px $background
 
 .artist-list
   @extend .artist-detail
@@ -166,6 +167,37 @@ ul
       position: relative
       left: 0
       transition: left .3s
+
+.album-actions
+  position: absolute
+  left: 0
+  top: 0
+  width: 100%
+  a
+    overflow: visible !important
+  i
+    color: $font-color
+    position: absolute
+    padding: .5em
+    &:hover
+      opacity: 1 !important
+      cursor: pointer
+    &.fa-download
+      left: 0
+      top: 0
+    &.fa-plus-circle
+      top: 0
+      right: 0
+    &.fa-play-circle
+      font-size: 2.5em
+      padding: 0
+      left: 75px
+      top: 75px
+      margin-left: -17px
+      margin-top: -19px
+    &.fa-search
+      top: 111px
+      left: 0
 
 
 *:focus

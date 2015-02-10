@@ -1,10 +1,12 @@
 (ns cljspazzer.client.views.albums
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljspazzer.client.utils :as utils]
             [cljspazzer.client.channels :as channels]
             [cljspazzer.client.views.artists :as artists]
             [cljspazzer.client.views.tracks :as tracks]
             [cljspazzer.client.views.nav :as nav]
             [cljspazzer.client.channels :as channels]
+            [cljspazzer.client.services :as services]
             [cljs.core.async :refer [<! put! chan]]))
 
 (defn mk-album-url [artist album]
@@ -27,12 +29,17 @@
         album-year (album "year")
         album-image (mk-album-image artist album)
         album-label (utils/format "%s" (album "album"))
-        album-zip-url (mk-album-zip-url artist album)]
+        album-zip-url (mk-album-zip-url artist album)
+        play-album (fn [e]
+                    (go
+                      (let [album-detail (<! (services/album-detail artist (album "album")))
+                            tracks ((album-detail "album") "tracks")]
+                        (put! channels/track-list [tracks 0]))))]
     [:li.no-select
       [:a
         [:img {:src album-image}] album-label album-year]
       [:div.album-actions
-        [:i.fa.fa-play-circle]
+        [:i.fa.fa-play-circle {:on-click play-album}]
         [:a [:i.fa.fa-plus-circle.fa-lg]]
         [:a {:href album-url} [:i.fa.fa-search.fa-lg]]
         [:a.download {:href album-zip-url}

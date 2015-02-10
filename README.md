@@ -1,4 +1,4 @@
-# cljspazzer
+# apollo
 
 A personal music collection app
 
@@ -19,7 +19,7 @@ And wait.....
 ### Running
 
 ```bash
-$ java -jar target/cljspazzer-0.1.0-SNAPSHOT-standalone.jar
+$ java -jar target/apollo-0.1.0-SNAPSHOT-standalone.jar
 ```
 
 ## Hacking
@@ -72,13 +72,13 @@ Now you can interactively call clojure functions defined for the application.
 In your repl....
 
 ```bash
-user=> (use 'cljspazzer.db.schema)
+user=> (use 'apollo.db.schema)
 nil
-user=> (in-ns 'cljspazzer.db.schema)
-#<Namespace cljspazzer.db.schema>
-cljspazzer.db.schema=> (create-all-tbls! the-db)
+user=> (in-ns 'apollo.db.schema)
+#<Namespace apollo.db.schema>
+apollo.db.schema=> (create-all-tbls! the-db)
 ((0) (0))
-cljspazzer.db.schema=> 
+apollo.db.schema=> 
 ```
 
 You should now have a database located at spazzer.db
@@ -90,13 +90,13 @@ Update: in the browser you can now do this from the settings page, ugly as it ma
 in your repl
 
 ````bash
-user=> (use 'cljspazzer.db.schema)
+user=> (use 'apollo.db.schema)
 nil
-user=> (in-ns 'cljspazzer.db.schema)
-#<Namespace cljspazzer.db.schema>
-cljspazzer.db.schema=> (insert-mount! the-db "/path/to/musicfiles")
+user=> (in-ns 'apollo.db.schema)
+#<Namespace apollo.db.schema>
+apollo.db.schema=> (insert-mount! the-db "/path/to/musicfiles")
 1
-cljspazzer.db.schema=> 
+apollo.db.schema=> 
 ````
 
 You should now have a directory registered with the application that will be scanned for new music files/updated tags when process-mounts! is called
@@ -108,13 +108,13 @@ Update: in the browser you can now do this from the settings page, ugly as it ma
 in your repl
 
 ````bash
-user=> (use 'cljspazzer.scanner)
+user=> (use 'apollo.scanner)
 nil
-user=> (in-ns 'cljspazzer.scanner)
-#<Namespace cljspazzer.scanner>
-cljspazzer.scanner=> (process-mounts!)
+user=> (in-ns 'apollo.scanner)
+#<Namespace apollo.scanner>
+apollo.scanner=> (process-mounts!)
 nil
-cljspazzer.scanner=> 
+apollo.scanner=> 
 ````
 
 There should now be data in the database derived from files contained in one or more mounted directories added in the previous step.

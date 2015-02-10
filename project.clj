@@ -1,4 +1,4 @@
-(defproject cljspazzer "0.1.0-SNAPSHOT"
+(defproject apollo "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "undefined"
@@ -31,18 +31,18 @@
             [lein-haml-sass "0.2.7-SNAPSHOT"]]
   :hooks [leiningen.cljsbuild
           leiningen.sass]
-  :ring {:handler cljspazzer.core/app
+  :ring {:handler apollo.core/app
          :port 5050}
-  :clean-targets ^{:protect false} ["resources/public/javascripts/cljspazzer"]
+  :clean-targets ^{:protect false} ["resources/public/javascripts/apollo"]
   :cljsbuild {:builds
               [{:source-paths ["src/cljs"]
-                :compiler {:output-to "resources/public/javascripts/cljspazzer/main.js"
+                :compiler {:output-to "resources/public/javascripts/apollo/main.js"
                            :optimizations :none
                            :cache-analysis true
                            :pretty-print true
                            :pseudo-names true
                            :source-map true
-                           :output-dir "resources/public/javascripts/cljspazzer/"}}]}
+                           :output-dir "resources/public/javascripts/apollo/"}}]}
    :sass {:src "resources/sass"
          :output-directory "resources/public/css"
          ;; Other options (provided are default values)

@@ -9,7 +9,7 @@ pom.xml.asc
 /.nrepl-port
 *~
 /spazzer.db*
-/resources/public/javascripts/cljspazzer
+/resources/public/javascripts/apollo
 .DS_Store
 /resources/public/lib/
 /resources/public/css/styles.css

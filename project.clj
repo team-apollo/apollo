@@ -1,3 +1,13 @@
+(def cljs-src "src/cljs")
+(def clj-src "src/clj")
+(def src-paths [cljs-src clj-src])
+(def cljs-output-dir "resources/public/javascripts/apollo")
+(def cljs-output-to (format "%s/main.js" cljs-output-dir))
+(def handler 'apollo.core/app)
+(def port 5050)
+(def sass-src "resources/sass")
+(def sass-output-dir "resources/public/css")
+
 (defproject apollo "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
@@ -23,32 +33,27 @@
                  [sablono "0.3.1"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clj-http "1.0.1"]
-                 [digest "1.4.4"]]
-  :source-paths ["src/clj"
-                 "src/cljs"]
+                 [digest "1.4.4"]
+                 [figwheel "0.2.3-SNAPSHOT"]]
+  :source-paths ~src-paths
   :plugins [[lein-ring "0.8.13"]
             [lein-cljsbuild "1.0.4"]
-            [lein-haml-sass "0.2.7-SNAPSHOT"]]
+            [lein-haml-sass "0.2.7-SNAPSHOT"]
+            [lein-figwheel "0.2.3-SNAPSHOT"]]
   :hooks [leiningen.cljsbuild
           leiningen.sass]
-  :ring {:handler apollo.core/app
-         :port 5050}
-  :clean-targets ^{:protect false} ["resources/public/javascripts/apollo"]
+  :ring {:handler ~handler
+         :port ~port}
+  :clean-targets ^{:protect false} [~cljs-output-dir]
   :cljsbuild {:builds
-              [{:source-paths ["src/cljs"]
-                :compiler {:output-to "resources/public/javascripts/apollo/main.js"
+              [{:source-paths [~cljs-src]
+                :compiler {:output-to ~cljs-output-to
                            :optimizations :none
                            :cache-analysis true
                            :pretty-print true
                            :pseudo-names true
                            :source-map true
-                           :output-dir "resources/public/javascripts/apollo/"}}]}
-   :sass {:src "resources/sass"
-         :output-directory "resources/public/css"
-         ;; Other options (provided are default values)
-         :output-extension "css"
-         ;; :auto-compile-delay 250
-         ;; :delete-output-dir true ;; -> when running lein clean it will delete the output directory if it does not contain any file
-         ;; :ignore-hooks [:clean :compile :deps] ;; -> if you use the hooks, this option allows you to remove some hooks that you don't want to run
-         ;; :gem-version "3.2.1"
-          })
+                           :output-dir ~cljs-output-dir}}]}
+   :sass {:src ~sass-src
+         :output-directory ~sass-output-dir
+         :output-extension "css"})

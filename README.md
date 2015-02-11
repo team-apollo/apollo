@@ -10,8 +10,10 @@ Eventually you should just be able to run a jar, but not now, there's no ui for 
 
 ### Building
 
+To build the "fully otimized" version of the application...
+
 ```bash
-$ lein ring uberjar
+$ lein with-profile uberjar ring uberjar
 ```
 
 And wait.....

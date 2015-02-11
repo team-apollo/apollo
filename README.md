@@ -69,6 +69,10 @@ Now you can interactively call clojure functions defined for the application.
 
 #### creating initial database
 
+Update: the application looks for a database when launched, if it
+doesn't find one it will create it for you. But if you still want to
+do it the cool way, read on.
+
 In your repl....
 
 ```bash
@@ -81,7 +85,7 @@ apollo.db.schema=> (create-all-tbls! the-db)
 apollo.db.schema=> 
 ```
 
-You should now have a database located at spazzer.db
+You should now have a database located at apollo.db
 
 #### adding a directory(mount) for scanning
 

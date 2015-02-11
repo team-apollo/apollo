@@ -5,7 +5,7 @@
 
 (def the-db {:classname "org.sqlite.JDBC",
              :subprotocol "sqlite",
-             :subname "spazzer.db",
+             :subname "apollo.db",
              :make-pool? true}) ;; how to config
 
 (def tables {:tracks {:name "tracks"

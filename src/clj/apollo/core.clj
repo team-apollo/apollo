@@ -1,5 +1,6 @@
 (ns apollo.core
   (:require [clojure.java.io :as io]
+            [clojure.tools.logging :as log]
             [environ.core :refer [env]]
             [ring.middleware.resource :as m]
             [compojure.core :refer :all]
@@ -16,7 +17,8 @@
             [apollo.http.admin :refer :all]
             [apollo.http.artist :refer :all]
             [apollo.http.album :refer :all]
-            [apollo.http.track :refer :all]))
+            [apollo.http.track :refer :all]
+            [apollo.db.schema :as schema]))
 
 (def is-dev? (env :is-dev))
 
@@ -86,3 +88,10 @@
       (wrap-gzip)
       (wrap-partial-content)))
 
+(let [db-file (io/file (:subname schema/the-db))]
+ (if (not (.exists db-file))
+   (do
+     (log/info (format "%s does not exist so creating." (.getAbsolutePath db-file)))
+     (log/info (schema/create-all-tbls! schema/the-db))
+     (log/info (format "%s created, you will need to add some mounts from the admin page." (.getAbsolutePath db-file))))
+   (log/info (format "database %s exists... we're all good." (.getAbsolutePath db-file)))))

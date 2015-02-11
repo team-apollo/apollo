@@ -3,13 +3,21 @@
 
 (def nav-seq (concat ["all"] (map str "abcdefghijklmnopqrstuvwxyz#")))
 
-(defn nav-item [x]
-  (let [nav-url (utils/format "#/nav/%s" (utils/encode x))]
-    [:li [:a {:href nav-url} x]]))
 
-(defn nav-partial []
+(defn get-up-nav [prefix]
+  (let [nav-str (apply str nav-seq)]
+    (if (utils/s-contains? nav-str prefix)
+               prefix
+               "#")))
+
+(defn nav-item [x active-nav]
+  (let [nav-url (utils/format "#/nav/%s" (utils/encode x))
+        active? (= x (get-up-nav active-nav))]
+    [:li {:class-name (when active? "active")} [:a {:href nav-url} x]]))
+
+(defn nav-partial [active-nav]
   [:div.collection-nav
-   [:ul (map nav-item nav-seq)]])
+   [:ul (map nav-item nav-seq (repeat active-nav))]])
 
 (defn main-nav-partial []
   (let [browse-url "#/"

@@ -16,6 +16,7 @@
 
 (defn browse-page [data owner]
   (let [active-artist (:active-artist data)
+        active-nav (:active-nav data)
         artists (:artists data)
         artist-count (count artists)
         albums (:albums data)
@@ -41,17 +42,17 @@
       [:div.content.pure-g
        [:div.pure-u-1
         [:div.middle-column
-         (nav/nav-partial)
-           (cond
-             (and (nil? active-artist) (nil? active-album))
-             (artists/artist-list-partial artists)
-         (and (not (nil? active-artist)) (nil? active-album))
-         [:div.artist-detail
-          (albums/album-list-partial active-artist albums)]
-         (not (nil? active-album))
-         [:div.album-detail
-          (albums/album-detail active-artist active-album)
-          [:div.artist-bg {:style {:background-image artist-image-url}}]])]]]])))
+         (nav/nav-partial (or (first active-artist) active-nav))
+         (cond
+           (and (nil? active-artist) (nil? active-album))
+           (artists/artist-list-partial artists)
+           (and (not (nil? active-artist)) (nil? active-album))
+           [:div.artist-detail
+            (albums/album-list-partial active-artist albums)]
+           (not (nil? active-album))
+           [:div.album-detail
+            (albums/album-detail active-artist active-album)
+            [:div.artist-bg {:style {:background-image artist-image-url}}]])]]]])))
 
 (defn view-browse [data owner]
   (om/component (browse-page data owner)))

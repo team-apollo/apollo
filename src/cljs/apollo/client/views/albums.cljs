@@ -49,11 +49,8 @@
 (defn album-list-partial [artist albums]
   (let [album-heading (utils/format "%s Albums" (count albums))
         render-album (partial album-item artist)
-        nav-str (apply str nav/nav-seq)
         artist-first (first artist)
-        back (if (utils/s-contains? nav-str artist-first)
-               artist-first
-               "#")
+        back (nav/get-up-nav artist-first)
         back-link (utils/format "#/nav/%s" back)]
     [:div.album-list
      [:h3.left

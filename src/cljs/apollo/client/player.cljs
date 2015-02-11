@@ -145,11 +145,13 @@
     (render [this]
       (let [current (:current-playlist (om/observe owner (state/ref-player)))
             current-offset (:current-offset (om/observe owner (state/ref-player)))]
-        (html [:ul.playlist
-               (map-indexed
-                (fn [idx item]
-                  [:li
-                   {:class-name (when (= idx current-offset) "active")}
-                   [:p {:on-click (fn [e]
-                                    (put! channels/track-list [current idx]))}
-                    (tracks/track-label item true)]]) current)])))))
+        (html [:div
+               [:i.fa.fa-plus]
+               [:ul.playlist
+                (map-indexed
+                 (fn [idx item]
+                   [:li
+                    {:class-name (when (= idx current-offset) "active")}
+                    [:p {:on-click (fn [e]
+                                     (put! channels/track-list [current idx]))}
+                     (tracks/track-label item true)]]) current)]])))))

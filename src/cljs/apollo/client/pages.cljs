@@ -30,33 +30,28 @@
       (nav/main-nav-partial)
       [:div.left-column
        (artists/artist-detail-partial active-artist)
-       (if (= sub-view :now-playing)
-                (om/build player/view-now-playing data)
-                (om/build player/view-current-playlist data))
        [:ul
         [:li {:on-click (fn [e]
                           (set-subview :now-playing))} "now playing"]
         [:li {:on-click (fn [e]
-                          (set-subview :playlists))} "playlists"]]]
+                          (set-subview :playlists))} "playlists"]]
+       (if (= sub-view :now-playing)
+                (om/build player/view-now-playing data)
+                (om/build player/view-current-playlist data))]
       [:div.content.pure-g
-       (cond
-         (and (nil? active-artist) (nil? active-album))
-         [:div.pure-u-1
-          [:div.middle-column
-            (nav/nav-partial)
-            (artists/artist-list-partial artists)]]
+       [:div.pure-u-1
+        [:div.middle-column
+         (nav/nav-partial)
+           (cond
+             (and (nil? active-artist) (nil? active-album))
+             (artists/artist-list-partial artists)
          (and (not (nil? active-artist)) (nil? active-album))
-         [:div.pure-u-1
-          [:div.pure-g.artist-detail
-           [:div.middle-column
-            (albums/album-list-partial active-artist albums)]
-           [:div.artist-bg {:style {:background-image artist-image-url}}]]]
+         [:div.artist-detail
+          (albums/album-list-partial active-artist albums)]
          (not (nil? active-album))
-         [:div.pure-u-1
-          [:div.middle-column
-            [:div.album-detail
-             (albums/album-detail active-artist active-album)]]
-          [:div.artist-bg {:style {:background-image artist-image-url}}]])]])))
+         [:div.album-detail
+          (albums/album-detail active-artist active-album)
+          [:div.artist-bg {:style {:background-image artist-image-url}}]])]]]])))
 
 (defn view-browse [data owner]
   (om/component (browse-page data owner)))

@@ -21,3 +21,4 @@ pom.xml.asc
 .sass-cache/
 .images/
 css
+/figwheel_server.log

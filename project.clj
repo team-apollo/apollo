@@ -17,6 +17,7 @@
                  [ring/ring-core "1.3.2"]
                  [ring/ring-jetty-adapter "1.3.2"]
                  [ring/ring-json "0.3.1"]
+                 [ring/ring-devel "1.3.2"]
                  [ring-partial-content "1.0.0"]
                  [compojure "1.3.1"]
                  [org.clojure/clojurescript "0.0-2755"]
@@ -34,26 +35,47 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clj-http "1.0.1"]
                  [digest "1.4.4"]
-                 [figwheel "0.2.3-SNAPSHOT"]]
+                 [figwheel "0.2.3-SNAPSHOT"]
+                 [environ "1.0.0"]
+                 [enlive "1.1.5"]]
   :source-paths ~src-paths
   :plugins [[lein-ring "0.8.13"]
             [lein-cljsbuild "1.0.4"]
             [lein-haml-sass "0.2.7-SNAPSHOT"]
-            [lein-figwheel "0.2.3-SNAPSHOT"]]
-  :hooks [leiningen.cljsbuild
-          leiningen.sass]
+            [lein-environ "1.0.0"]]
   :ring {:handler ~handler
          :port ~port}
   :clean-targets ^{:protect false} [~cljs-output-dir]
-  :cljsbuild {:builds
-              [{:source-paths [~cljs-src]
-                :compiler {:output-to ~cljs-output-to
-                           :optimizations :none
-                           :cache-analysis true
-                           :pretty-print true
-                           :pseudo-names true
-                           :source-map true
-                           :output-dir ~cljs-output-dir}}]}
+  :profiles {:dev {:repl-options {:init-ns apollo.core}
+                   :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]]
+                   :hooks [leiningen.cljsbuild
+                           leiningen.sass]
+                   :env {:is-dev true}
+                   :figwheel {
+                              :http-server-root "public"
+                              :server-port ~port
+                              :css-dirs [~sass-output-dir]
+                              :ring-handler ~handler
+                              }
+                   :cljsbuild {:builds
+                               {:app {:source-paths [~cljs-src "env/dev/cljs"]
+                                 :compiler {:output-to ~cljs-output-to
+                                            :optimizations :none
+                                            :cache-analysis true
+                                            :pretty-print true
+                                            :pseudo-names true
+                                            :source-map true
+                                            :output-dir ~cljs-output-dir}}}}}
+             :uberjar {:hooks [leiningen.cljsbuild
+                               leiningen.sass]
+                       :aot :all
+                       :cljsbuild {:builds
+                                   [{:source-paths [~cljs-src]
+                                     :compiler {:output-to ~cljs-output-to
+                                                :optimizations :advanced
+                                                :cache-analysis true
+                                                :pretty-print false
+                                                :pseudo-names false}}]}}}  
    :sass {:src ~sass-src
          :output-directory ~sass-output-dir
          :output-extension "css"})

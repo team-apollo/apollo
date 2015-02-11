@@ -1,16 +1,41 @@
 (ns apollo.core
-  (:require [ring.middleware.resource :as m]
+  (:require [clojure.java.io :as io]
+            [environ.core :refer [env]]
+            [ring.middleware.resource :as m]
             [compojure.core :refer :all]
+            [ring.util.response :as r]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.json :as j]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.gzip :refer [wrap-gzip]]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
             [ring.middleware.partial-content :refer [wrap-partial-content]]
+            [ring.middleware.reload :as reload]
+            [net.cgrand.enlive-html :refer [deftemplate]]
+            [net.cgrand.enlive-html :refer [set-attr prepend append html content]]
             [apollo.http.admin :refer :all]
             [apollo.http.artist :refer :all]
             [apollo.http.album :refer :all]
             [apollo.http.track :refer :all]))
+
+(def is-dev? (env :is-dev))
+
+(def inject-devmode-html
+  (comp
+     (set-attr :class "is-dev")
+     (prepend (html [:script {:type "text/javascript" :src "/javascripts/apollo/goog/base.js"}]))
+     (prepend (html [:script {:type "text/javascript" :src "/lib/react/react.min.js"}]))
+     (append  (html [:script {:type "text/javascript"} "goog.require('apollo.client.core')"]))
+     (append  (html [:script {:type "text/javascript"} "goog.require('apollo.client.dev')"]))))
+
+(deftemplate page
+  (io/resource "index.html") [] [:body] (if is-dev? inject-devmode-html identity))
+
+(defn render [t]
+  (apply str t))
+
+(def render-to-response
+  (comp r/response render))
 
 (defroutes app-handler
   (GET "/api/artists/:artist-id/albums/:album-id/tracks/:track-id"
@@ -41,12 +66,18 @@
           (delete-mount mount))
   (POST "/api/do-scan" []
         (do-scan))
+  (GET "/index.html" [] (render-to-response (page)))
   (GET "/" []
        {:status 302
         :headers {"Location" "/index.html"}}))
 
+(def http-handler
+  (if is-dev?
+    (reload/wrap-reload app-handler)
+    app-handler))
+
 (def app
-  (-> app-handler
+  (-> http-handler
       (wrap-params)
       (j/wrap-json-response)
       (m/wrap-resource "public")

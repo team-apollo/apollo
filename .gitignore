@@ -8,7 +8,6 @@ pom.xml.asc
 /.lein-*
 /.nrepl-port
 *~
-/spazzer.db*
 /resources/public/javascripts/apollo
 .DS_Store
 /resources/public/lib/
@@ -22,3 +21,4 @@ pom.xml.asc
 .images/
 css
 /figwheel_server.log
+/apollo.db*

@@ -55,7 +55,7 @@
     [:div.album-list
      [:h3.left
       [:a {:href back-link} [:i.fa.fa-angle-left.fa-fw] "Back"]]
-     [:h3.left album-heading]
+     [:h3 album-heading]
      [:ul.clear (map render-album albums)]]))
 
 (defn album-detail [artist album]

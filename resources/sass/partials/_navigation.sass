@@ -69,6 +69,12 @@ ul.right-header
       padding: 0
       margin: 0
       width: calc(100% / 28)
+      &.active
+        a
+          background: $highlight
+      &:hover:not(.active)
+        a
+          background: lighten($btn-bg, 10)
       a
         background: transparentize($btn-bg, .5)
         transition: background .3s
@@ -82,10 +88,6 @@ ul.right-header
         text-decoration: none
         color: white
         text-transform: uppercase
-        &:hover
-          background: lighten($btn-bg, 10)
-        &:focus, &.active
-          background: $highlight
 
 .album-detail
   margin-top: 0
@@ -95,6 +97,5 @@ ul.right-header
 
 .album-list
   @extend .album-detail
-  margin-top: -2em
 
 

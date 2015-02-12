@@ -68,7 +68,7 @@
                     ]
                 (om/set-state! owner :ctrl ctrl)
                 (cond
-                  (and (= ctrl :next) (> next-offset (count track-src)))
+                  (and (= ctrl :next) (> next-offset (dec (count track-src))))
                   (ctrl-audio-node :stop)
                   (and (= ctrl :next) (not (nil? next-track)))
                   (set-track next-track next-offset owner)

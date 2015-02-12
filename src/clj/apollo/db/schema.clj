@@ -142,3 +142,9 @@
   (let [f (io/file path)
         p (if (.isDirectory f) path (.getParent f))]
     (sql/query db [(format "select distinct artist_canonical, album_canonical from tracks where path like '%s%%' order by artist_canonical, album_canonical" p)])))
+
+(defn get-albums-recently-added [db]
+  (sql/query db ["select distinct artist, album from tracks order by last_modified desc,id desc limit 100"]))
+
+(defn get-albums-by-year [db]
+  (sql/query the-db ["select distinct album, artist, year from tracks order by year, artist"]))

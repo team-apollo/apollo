@@ -25,9 +25,10 @@
 
 (defn get-audio-file-duration [f]
   (try
-    (let [afio (new AudioFileIO)
-          af (.readFile afio f)]
-      (.getTrackLength (.getAudioHeader af)))
+    (-> (AudioFileIO.) ;; sometimes this reads the wrong duration, wondering if it's a thread safety thing, need to ask smart people
+        (.readFile f)
+        .getAudioHeader
+        .getTrackLength)
     (catch Exception e
       (log/error e (format "problems getting track duration from %s" (.getAbsolutePath f)))
       nil)))

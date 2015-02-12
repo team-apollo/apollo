@@ -39,9 +39,9 @@
        (if (= sub-view :now-playing)
                 (om/build player/view-now-playing data)
                 (om/build player/view-current-playlist data))]
-      [:div.content.pure-g
+      [:div.middle-column.pure-g
        [:div.pure-u-1
-        [:div.middle-column
+        [:div.content
          (nav/nav-partial (or (first active-artist) active-nav))
          (cond
            (and (nil? active-artist) (nil? active-album))

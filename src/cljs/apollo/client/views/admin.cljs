@@ -37,11 +37,8 @@
                (nav/main-nav-partial)
                [:div.content.pure-g
                 [:div.pure-u-1
-                 [:h1 "scan this..."]]
-                [:div.pure-u-1
-                 [:ul (map mount-item mounts)]]
-                [:div.new-mount.pure-u-1
+                 [:h2 "Existing Mounts"]
+                 [:ul (map mount-item mounts)]
                  [:input {:type "text" :ref "new-mount"}]
-                 [:a.button {:href "#" :on-click on-add-mount} "create"]]
-                [:div.scan.pure-u-1
+                 [:a.button {:href "#" :on-click on-add-mount} "create"]
                  [:a.button {:on-click (fn [e] (services/do-scan))} "(re)scan"]]]])))))

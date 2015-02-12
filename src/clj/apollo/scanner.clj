@@ -24,20 +24,21 @@
   (into {} (filter val-not-null? hm)))
 
 (defn get-audio-file-duration [f]
-  (let [afio (new AudioFileIO)
-        af (.readFile afio f)]
-    (try
-      (.getTrackLength (.getAudioHeader af))
-      (catch Exception e
-        (log/error e (format "problems getting track duration from %s" (.getAbsolutePath f)
-                             nil))))))
+  (try
+    (let [afio (new AudioFileIO)
+          af (.readFile afio f)]
+      (.getTrackLength (.getAudioHeader af)))
+    (catch Exception e
+      (log/error e (format "problems getting track duration from %s" (.getAbsolutePath f)))
+      nil)))
 
 (defn get-info [f]
-  (let [id3tags (try
-                  (some identity [(id3/read-tag f) {}])
-                  (catch Exception e
-                    (log/error e (format "problems reading tags from %s" (.getAbsolutePath f)))
-                    {}))
+  (log/info (format "reading tags from %s" (.getAbsolutePath f)))
+  (let [id3tags (some identity [(try
+                                  (id3/read-tag f)
+                                  (catch  Exception e
+                                    (log/error e (format "problems reading tags from %s" (.getAbsolutePath f)))
+                                    {})) {}])
         id3tags-fixed (hm-filter-null id3tags)
         result (assoc id3tags-fixed
                       :path (.getAbsolutePath f)
@@ -84,6 +85,3 @@
   (let [m (db/mount-points db/the-db)]
     (dorun (db/prune-tracks! db/the-db))
     (dorun (map process-dir! m))))
-
-
-

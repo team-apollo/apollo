@@ -5,7 +5,8 @@
             [apollo.db.schema :as db]
             [apollo.utils :refer [canonicalize]]
             [pantomime.mime :refer [mime-type-of]]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [clojure.string :as string])
   (:import org.jaudiotagger.audio.AudioFileFilter
            org.jaudiotagger.audio.AudioFileIO))
 
@@ -13,6 +14,30 @@
            java.util.logging.Level/OFF)
 
 (def file-filter (new org.jaudiotagger.audio.AudioFileFilter false))
+
+(def field-keys (map #(.name %) (.getEnumConstants org.jaudiotagger.tag.FieldKey)))
+
+(defn get-tag-from-file [f]
+  (.getTag (org.jaudiotagger.audio.AudioFileIO/read f)))
+
+(defn ->constant [k]
+  (.get (.getField org.jaudiotagger.tag.FieldKey k) nil))
+
+(defn keywordify [k]
+  (keyword (string/replace (string/lower-case k) #"_" "-")))
+
+(defn retrieve-field [tag k]
+  (let [v (try
+            (.getFirst tag (->constant k))
+            (catch java.lang.NullPointerException e
+              (log/info (format "%s is null" k))
+              nil))]
+    (when-not (empty? v)
+      (vector (keywordify k) v))))
+
+(defn read-tag [f]
+  (when-let [tag (.getTag (org.jaudiotagger.audio.AudioFileIO/read f))]
+    (into {} (remove nil? (map (partial retrieve-field tag) field-keys)))))
 
 (defn is-audio-file? [f]
   (.accept file-filter f))
@@ -36,10 +61,11 @@
 (defn get-info [f]
   (log/info (format "reading tags from %s" (.getAbsolutePath f)))
   (let [id3tags (some identity [(try
-                                  (id3/read-tag f)
+                                  (read-tag f)
                                   (catch  Exception e
                                     (log/error e (format "problems reading tags from %s" (.getAbsolutePath f)))
-                                    {})) {}])
+                                    {}))
+                                {}])
         id3tags-fixed (hm-filter-null id3tags)
         result (assoc id3tags-fixed
                       :path (.getAbsolutePath f)

@@ -2,11 +2,17 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [ajax.core :as ajax]
             [apollo.client.utils :as utils]
-            [cljs.core.async :refer [<! put! chan]]))
+            [cljs.core.async :refer [<! put! chan]]
+            [secretary.core :as secretary]))
 
 
 (defn error-handler [response]
-  (.log js/console "something bad happened " (clj->js response)))
+  (.log js/console "something bad happened " (clj->js response))
+  (cond
+    (= 404 (:status response))
+    (secretary/dispatch! "#/not-found")
+    (= 500 (:status response))
+    (secretary/dispatch! "#/error")))
 
 
 (defn artist-list-prefix 

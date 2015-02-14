@@ -64,8 +64,7 @@
                     track-src (om/get-state owner :current-src)
                     next-track (last (take (inc next-offset) track-src))
                     previous-track (last (take (inc previous-offset) track-src))
-                    current-track (last (take (inc current-offset) track-src))
-                    ]
+                    current-track (last (take (inc current-offset) track-src))]
                 (om/set-state! owner :ctrl ctrl)
                 (cond
                   (and (= ctrl :next) (> next-offset (dec (count track-src))))
@@ -139,12 +138,17 @@
                  [:span track-heading]
                ]))))))
 
-(defn view-current-playlist [data owner]
+(defn view-playlists [data owner]
   (reify
+    om/IInitState
+    (init-state [this]
+      {:playlist []
+       :current "this is a test"})
     om/IRender
     (render [this]
       (let [current (:current-playlist (om/observe owner (state/ref-player)))
-            current-offset (:current-offset (om/observe owner (state/ref-player)))]
+            current-offset (:current-offset (om/observe owner (state/ref-player)))
+            t (om/get-state owner :current)]
         (html [:div
                [:i.fa.fa-plus]
                [:ul.playlist

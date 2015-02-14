@@ -5,6 +5,7 @@
             [goog.events :as events]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
+            [sablono.core :as html :refer-macros [html]]
             [apollo.client.services :as services]
             [apollo.client.utils :as utils]
             [apollo.client.pages :as pages]
@@ -20,18 +21,22 @@
   (reify
     om/IRender
     (render [this]
-      (dom/div nil "loading..."))))
+      (html [:div "loading..."]))))
 
+(defn not-found [data]
+  (reify
+    om/IRender
+    (render [this]
+      (html [:div "not found"]))))
 
 (defn show-page [data]
   (reify
     om/IRender
     (render [this]
       (let [page (or (:active-page data) loading-page)]
-        (om.dom/span nil
-                     (om/build audio-elem data)
-                     (om/build page data))))))
-
+        (html [:span
+               (om/build audio-elem data) ;; always visible
+               (om/build page data)])))))
 
 (om/root show-page app-state
          {:target (. js/document (getElementById "app"))})
@@ -82,7 +87,8 @@
   (swap! app-state assoc :active-page debug/view-debug))
 
 (defroute "*" []
-  (.log js/console "route not found"))
+  (.log js/console "route not found")
+  (swap! app-state assoc :active-page not-found))
 
 (defn main []
   (secretary/set-config! :prefix "#")
@@ -90,6 +96,7 @@
     (events/listen history "navigate"
                    (fn [event]
                      (secretary/dispatch! (.-token event))
+                     (swap! app-state assoc :current-token (.-token event))
                      true))
     (.setEnabled history true)))
 

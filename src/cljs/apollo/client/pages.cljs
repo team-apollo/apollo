@@ -28,7 +28,7 @@
         set-subview (fn [k] (om/transact! (state/ref-subview) (fn [p] [k])))]
     (html
      [:div.browse
-      (nav/main-nav-partial)
+      (om/build nav/main-nav data)
       [:div.left-column
        (artists/artist-detail-partial active-artist)
        [:ul
@@ -38,7 +38,7 @@
                           (set-subview :playlists))} "playlists"]]
        (if (= sub-view :now-playing)
                 (om/build player/view-now-playing data)
-                (om/build player/view-current-playlist data))]
+                (om/build player/view-playlists data))]
       [:div.middle-column.pure-g
        [:div.pure-u-1
         [:div.content
@@ -65,7 +65,7 @@
             playlist-item (fn [r] [:li (r "title")])]
         (html
          [:div.player
-          (nav/main-nav-partial)
+          (om/build nav/main-nav data)
           [:div.content.pure-g
            [:div.pure-u-1
             "probably going away"]]])))))

@@ -34,7 +34,7 @@
                                  (secretary/dispatch! "#/admin")))
                            false)]
         (html [:div.admin
-               (nav/main-nav-partial)
+               (om/build nav/main-nav data)
                [:div.content.pure-g
                 [:div.pure-u-1
                  [:h2 "Existing Mounts"]

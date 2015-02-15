@@ -10,8 +10,7 @@
             [apollo.client.views.nav :as nav]
             [apollo.client.state :as state]
             [cljs.core.async :refer [<! put! chan pub]]
-            [sablono.core :as html :refer-macros [html]]
-            ))
+            [sablono.core :as html :refer-macros [html]]))
 
 (defn ctrl-audio-node [action]
   (let [seek-offset 5]
@@ -49,48 +48,48 @@
                                   (last (take (inc offset) track-src))
                                   (first track-src))]
               
-                (set-track current-track (or offset 0) owner)
-                (om/set-state! owner :current-src track-src)
-                (om/transact! (state/ref-player) (fn [p]
-                                                   (assoc p
-                                                          :current-playlist track-src
-                                                          :current-offset (or offset 0)))))
-              (recur)))
-        (go (loop []
-              (let [ctrl (<! channels/player-ctrl)
-                    current-offset (or (om/get-state owner :current-offset) 0)
-                    previous-offset (dec current-offset)
-                    next-offset (inc current-offset)
-                    track-src (om/get-state owner :current-src)
-                    next-track (last (take (inc next-offset) track-src))
-                    previous-track (last (take (inc previous-offset) track-src))
-                    current-track (last (take (inc current-offset) track-src))]
-                (om/set-state! owner :ctrl ctrl)
-                (cond
-                  (and (= ctrl :next) (> next-offset (dec (count track-src))))
-                  (ctrl-audio-node :stop)
-                  (and (= ctrl :next) (not (nil? next-track)))
-                  (set-track next-track next-offset owner)
-                  (and (= ctrl :previous) (not (nil? previous-track)))
-                  (set-track previous-track previous-offset owner)
-                  :else (do (ctrl-audio-node ctrl)
-                            (when (= ctrl :stop)
-                              (put! channels/now-playing {"track" {}}))
-                            (when (= ctrl :play)
-                              (put! channels/now-playing current-track)))))
-              (recur)))
-        (go (loop []
-              (<! channels/stream-position)
-              (let [c (.-currentTime audio-node)
-                    e (.-duration audio-node)]
-                (if (= 0 c)
-                  (do
-                    (om/set-state! owner :current-position 0)
-                    (om/set-state! owner :end-position 0))
-                  (do
-                    (om/set-state! owner :current-position c)
-                    (om/set-state! owner :end-position e))))
-              (recur))))
+              (set-track current-track (or offset 0) owner)
+              (om/set-state! owner :current-src track-src)
+              (om/transact! (state/ref-player) (fn [p]
+                                                 (assoc p
+                                                        :current-playlist track-src
+                                                        :current-offset (or offset 0)))))
+            (recur)))
+      (go (loop []
+            (let [ctrl (<! channels/player-ctrl)
+                  current-offset (or (om/get-state owner :current-offset) 0)
+                  previous-offset (dec current-offset)
+                  next-offset (inc current-offset)
+                  track-src (om/get-state owner :current-src)
+                  next-track (last (take (inc next-offset) track-src))
+                  previous-track (last (take (inc previous-offset) track-src))
+                  current-track (last (take (inc current-offset) track-src))]
+              (om/set-state! owner :ctrl ctrl)
+              (cond
+                (and (= ctrl :next) (> next-offset (dec (count track-src))))
+                (ctrl-audio-node :stop)
+                (and (= ctrl :next) (not (nil? next-track)))
+                (set-track next-track next-offset owner)
+                (and (= ctrl :previous) (not (nil? previous-track)))
+                (set-track previous-track previous-offset owner)
+                :else (do (ctrl-audio-node ctrl)
+                          (when (= ctrl :stop)
+                            (put! channels/now-playing {"track" {}}))
+                          (when (= ctrl :play)
+                            (put! channels/now-playing current-track)))))
+            (recur)))
+      (go (loop []
+            (<! channels/stream-position)
+            (let [c (.-currentTime audio-node)
+                  e (.-duration audio-node)]
+              (if (= 0 c)
+                (do
+                  (om/set-state! owner :current-position 0)
+                  (om/set-state! owner :end-position 0))
+                (do
+                  (om/set-state! owner :current-position c)
+                  (om/set-state! owner :end-position e))))
+            (recur))))
     om/IRender
     (render [this]
       (let [ctrl-current (om/get-state owner :ctrl)
@@ -112,8 +111,7 @@
                 [:li {:on-click (fn [e] (put! channels/player-ctrl :next))}
                  [:i.fa.fa-step-forward]]
                 [:li [:i.fa.fa-repeat]]
-                [:li [:i.fa.fa-random]]
-                ]])))))
+                [:li [:i.fa.fa-random]]]])))))
 
 (defn view-now-playing [data owner]
   (reify
@@ -135,20 +133,14 @@
                 [:div.now-playing
                  [:a {:href album-nav}
                   [:img {:src album-image}]]
-                 [:span track-heading]
-               ]))))))
+                 [:span track-heading]]))))))
 
 (defn view-playlists [data owner]
   (reify
-    om/IInitState
-    (init-state [this]
-      {:playlist []
-       :current "this is a test"})
     om/IRender
     (render [this]
       (let [current (:current-playlist (om/observe owner (state/ref-player)))
-            current-offset (:current-offset (om/observe owner (state/ref-player)))
-            t (om/get-state owner :current)]
+            current-offset (:current-offset (om/observe owner (state/ref-player)))]
         (html [:div
                [:i.fa.fa-plus]
                [:ul.playlist

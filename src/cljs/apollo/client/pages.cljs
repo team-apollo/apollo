@@ -36,24 +36,24 @@
     om/IRender
     (render [this]
       (let [active-artist (:active-artist data)
-        active-nav (:active-nav data)
-        artists (:artists data)
-        artist-count (count artists)
-        albums (:albums data)
-        album-count (count albums)
-        active-album (:active-album data)]
-    (html
-     [:div.browse
-      (om/build nav/main-nav data)
-      (om/build left-column data)
-      [:div.middle-column.pure-g
-       [:div.pure-u-1
-        [:div.content
-         (nav/nav-partial (or (first active-artist) active-nav))
-         (cond
-           (and (nil? active-artist) (nil? active-album))
-           (artists/artist-list-partial artists)
-           (and (not (nil? active-artist)) (nil? active-album))
-           (albums/album-list-partial active-artist albums)
-           (not (nil? active-album))
-           (albums/album-detail active-artist active-album))]]]])))))
+            active-nav (:active-nav data)
+            artists (:artists data)
+            artist-count (count artists)
+            albums (:albums data)
+            album-count (count albums)
+            active-album (:active-album data)]
+        (html
+         [:div.browse
+          (om/build nav/main-nav data)
+          (om/build left-column data)
+          [:div.middle-column.pure-g
+           [:div.pure-u-1
+            [:div.content
+             (nav/nav-partial (or (first active-artist) active-nav))
+             (cond
+               (and (nil? active-artist) (nil? active-album))
+               (artists/artist-list-partial artists)
+               (and (not (nil? active-artist)) (nil? active-album))
+               (albums/album-list-partial active-artist albums)
+               (not (nil? active-album))
+               (albums/album-detail active-artist active-album))]]]])))))

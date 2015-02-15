@@ -31,19 +31,19 @@
         album-label (utils/format "%s" (album "album"))
         album-zip-url (mk-album-zip-url artist album)
         play-album (fn [e]
-                    (go
-                      (let [album-detail (<! (services/album-detail artist (album "album")))
-                            tracks ((album-detail "album") "tracks")]
-                        (put! channels/track-list [tracks 0]))))]
+                     (go
+                       (let [album-detail (<! (services/album-detail artist (album "album")))
+                             tracks ((album-detail "album") "tracks")]
+                         (put! channels/track-list [tracks 0]))))]
     [:li.no-select
-      [:a
-        [:img {:src album-image}] album-label album-year]
-      [:div.album-actions
-        [:i.fa.fa-play-circle {:on-click play-album}]
-        [:a [:i.fa.fa-plus-circle.fa-lg]]
-        [:a {:href album-url} [:i.fa.fa-search.fa-lg]]
-        [:a.download {:href album-zip-url}
-          [:i.fa.fa-download.fa-lg]]]
+     [:a
+      [:img {:src album-image}] album-label album-year]
+     [:div.album-actions
+      [:i.fa.fa-play-circle {:on-click play-album}]
+      [:a [:i.fa.fa-plus-circle.fa-lg]]
+      [:a {:href album-url} [:i.fa.fa-search.fa-lg]]
+      [:a.download {:href album-zip-url}
+       [:i.fa.fa-download.fa-lg]]]
      ]))
 
 (defn album-list-partial [artist albums]
@@ -79,6 +79,6 @@
         [:h2 album-name]
         [:h3 album-year]
         [:a.download {:href album-zip-url}
-          [:i.fa.fa-download.fa-fw] "Download Album"]]
+         [:i.fa.fa-download.fa-fw] "Download Album"]]
        [:ul.tracks
         (map (fn [track] (tracks/track-detail track compilation?)) tracks)]])))

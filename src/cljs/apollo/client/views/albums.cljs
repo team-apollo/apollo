@@ -52,11 +52,12 @@
         artist-first (first artist)
         back (nav/get-up-nav artist-first)
         back-link (utils/format "#/nav/%s" back)]
-    [:div.album-list
-     [:h3.left
-      [:a {:href back-link} [:i.fa.fa-angle-left.fa-fw] "Back"]]
-     [:h3 album-heading]
-     [:ul.clear (map render-album albums)]]))
+    [:div.artist-detail
+     [:div.album-list
+      [:h3.left
+       [:a {:href back-link} [:i.fa.fa-angle-left.fa-fw] "Back"]]
+      [:h3 album-heading]
+      [:ul.clear (map render-album albums)]]]))
 
 (defn album-detail [artist album]
   (let [album-name (album "name")
@@ -69,7 +70,7 @@
         play-album (fn [e] (put! channels/track-list [tracks 0]))
         compilation? (album "compilation")]
     (if (and (not (nil? artist)) (not (nil? album)))
-      [:div 
+      [:div.album-detail
        [:h3
         [:a {:href artist-url} [:i.fa.fa-angle-left.fa-fw] "Back"]]
        [:div.info
@@ -80,6 +81,4 @@
         [:a.download {:href album-zip-url}
           [:i.fa.fa-download.fa-fw] "Download Album"]]
        [:ul.tracks
-        (map (fn [track] (tracks/track-detail track compilation?)) tracks)]
-       ]))
-  )
+        (map (fn [track] (tracks/track-detail track compilation?)) tracks)]])))

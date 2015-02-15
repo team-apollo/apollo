@@ -12,24 +12,25 @@
 (defn mk-album-url [artist album]
   (utils/format "#/artists/%s/albums/%s"
                 (utils/encode artist)
-                (utils/encode (album "album_canonical"))))
+                (utils/encode album)))
 
 (defn mk-album-image [artist album]
   (utils/format "/api/artists/%s/albums/%s/image"
                 (utils/encode artist)
-                (utils/encode (album "album_canonical"))))
+                (utils/encode album)))
 
 (defn mk-album-zip-url [artist album]
   (utils/format "/api/artists/%s/albums/%s/zip"
                 (utils/encode artist)
-                (utils/encode (album "album_canonical"))))
+                (utils/encode album)))
 
 (defn album-item [artist album]
-  (let [album-url (mk-album-url artist album)
+  (let [album-name (album "album_canonical")
+        album-url (mk-album-url artist album-name)
         album-year (album "year")
-        album-image (mk-album-image artist album)
+        album-image (mk-album-image artist album-name)
         album-label (utils/format "%s" (album "album"))
-        album-zip-url (mk-album-zip-url artist album)
+        album-zip-url (mk-album-zip-url artist album-name)
         play-album (fn [e]
                      (go
                        (let [album-detail (<! (services/album-detail artist (album "album")))
@@ -63,8 +64,8 @@
   (let [album-name (album "name")
         album-year (album "year")
         album-label (utils/format "%s" album-name)
-        album-image (mk-album-image artist album)
-        album-zip-url (mk-album-zip-url artist album)
+        album-image (mk-album-image artist (album "album_canonical"))
+        album-zip-url (mk-album-zip-url artist album-name)
         tracks (album "tracks")
         artist-url (artists/mk-artist-url artist)
         play-album (fn [e] (put! channels/track-list [tracks 0]))

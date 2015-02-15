@@ -124,10 +124,10 @@
             title (t "title")
             track-num (t "track")
             year (t "year")
-            artist-nav (utils/format "#/artists/%s" (utils/encode artist))
-            album-nav (utils/format "%s/albums/%s" artist-nav (utils/encode album))
-            album-image (albums/mk-album-image artist t)
+            artist-nav (artists/mk-artist-url artist)
+            album-nav (albums/mk-album-url artist album)
             artist-image (artists/mk-artist-image artist true)
+            album-image (albums/mk-album-image artist album)
             track-heading (utils/format "%s - %s (%s)" artist title year)]
         (html (if (not (nil? artist))
                 [:div.now-playing
@@ -137,17 +137,21 @@
 
 (defn view-playlists [data owner]
   (reify
+    om/IInitState
+    (init-state [this]
+      {:view-playing true})
     om/IRender
     (render [this]
-      (let [current (:current-playlist (om/observe owner (state/ref-player)))
-            current-offset (:current-offset (om/observe owner (state/ref-player)))]
+      (let [playing (:current-playlist (om/observe owner (state/ref-player)))
+            playing-offset (:current-offset (om/observe owner (state/ref-player)))
+            view-playing? (om/get-state owner :view-playing)
+            playlist-items (if view-playing? playing [])]
         (html [:div
-               [:i.fa.fa-plus]
+               [:span {:on-click (fn [e] (om/set-state! owner :view-playing true))} "now"]
+               [:i.fa.fa-plus {:on-click (fn [e] (om/set-state! owner :view-playing false))}]
                [:ul.playlist
-                (map-indexed
-                 (fn [idx item]
-                   [:li
-                    {:class-name (when (= idx current-offset) "active")}
-                    [:p {:on-click (fn [e]
-                                     (put! channels/track-list [current idx]))}
-                     (tracks/track-label item true)]]) current)]])))))
+                (map-indexed (fn [idx item]
+                               [:li {:class-name (when (and view-playing? (= idx playing-offset))  "active")}
+                                [:p {:on-click (fn [e] (put! channels/track-list [playing idx]))}
+                                 (tracks/track-label item true)]])
+                             playlist-items)]])))))

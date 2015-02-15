@@ -25,7 +25,11 @@
                                [:genre :integer]]}
              :mounts {:name "mounts"
                       :columns [[:id :integer "PRIMARY KEY" "AUTOINCREMENT"]
-                                [:path :string "UNIQUE"]]}})
+                                [:path :string "UNIQUE"]]}
+             :playlists {:name "playlists"
+                         :columns [[:id :integer "PRIMARY KEY" "AUTOINCREMENT"]
+                                   [:name :string "UNIQUE"]
+                                   [:body :text]]}})
 
 (defn create-tbl! [db, tbl]
   (let [args (cons (:name tbl) (:columns tbl))]

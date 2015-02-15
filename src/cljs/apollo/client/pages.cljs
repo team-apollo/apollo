@@ -56,18 +56,3 @@
 
 (defn view-browse [data owner]
   (om/component (browse-page data owner)))
-
-(defn view-player [data owner]
-  (reify
-    om/IRender
-    (render [this]
-      (let [tracks (data :play-list [])
-            playlist-item (fn [r] [:li (r "title")])]
-        (html
-         [:div.player
-          (om/build nav/main-nav data)
-          [:div.content.pure-g
-           [:div.pure-u-1
-            "probably going away"]]])))))
-
-

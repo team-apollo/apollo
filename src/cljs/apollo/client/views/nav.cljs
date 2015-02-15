@@ -7,8 +7,7 @@
 
 
 (defn get-up-nav [prefix]
-  (let [nav-str (apply str nav-seq)
-        _ (.log js/console prefix)]
+  (let [nav-str (apply str nav-seq)]
     (cond
       (= prefix "all") "all"
       (utils/s-contains? nav-str prefix) prefix
@@ -29,21 +28,17 @@
     (render [this]
       (let [browse-url "#/"
             settings-url "#/admin"
-            player-url "#/player"
             token (utils/format "#%s" (:current-token data)) 
             active-item (cond
                           (= token settings-url) {:settings true}
-                          (= token player-url) {:player true}
                           :else {:browse true})
-            browse-class-name (utils/format "fa fa-search %s" (if (:browse active-item) "active" ""))
-            player-class-name (utils/format "fa fa-list %s" (if (:player active-item) "active" ""))
-            settings-class-name (utils/format "fa fa-gear %s" (if (:settings active-item) "active" ""))]
+            browse-class-name (utils/format "fa fa-search %s"
+                                            (if (:browse active-item) "active" ""))
+            settings-class-name (utils/format "fa fa-gear %s"
+                                              (if (:settings active-item) "active" ""))]
         (html
          [:div.main-nav
           [:a {:href browse-url} [:i {:title "Browse"
                                       :class-name browse-class-name}]]
-          [:i.fa.fa-play-circle {:title "Play"}]
-          [:a {:href player-url} [:i {:title "Playlists"
-                                                 :class-name player-class-name}]]
           [:a {:href settings-url} [:i {:title "Settings"
                                         :class-name settings-class-name}]]])))))

@@ -12,7 +12,6 @@
             [apollo.client.state :as state]
             [cljs.core.async :refer [<! put! chan]]))
 
-
 (defn left-column [data owner]
   (reify
     om/IRender
@@ -32,8 +31,11 @@
             (om/build player/view-now-playing data)
             (om/build player/view-playlists data))])))))
 
-(defn browse-page [data owner]
-  (let [active-artist (:active-artist data)
+(defn view-browse [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (let [active-artist (:active-artist data)
         active-nav (:active-nav data)
         artists (:artists data)
         artist-count (count artists)
@@ -54,7 +56,4 @@
            (and (not (nil? active-artist)) (nil? active-album))
            (albums/album-list-partial active-artist albums)
            (not (nil? active-album))
-           (albums/album-detail active-artist active-album))]]]])))
-
-(defn view-browse [data owner]
-  (om/component (browse-page data owner)))
+           (albums/album-detail active-artist active-album))]]]])))))

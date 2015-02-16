@@ -60,6 +60,20 @@ $ lein cljsbuild auto
 
 Now anytime a *.cljs file is updated things will be re-built
 
+
+## live reload
+
+takes care of running server, and reloading server side code and
+pushing client changes to the browser. (you will still need to run lein sass auto for it to pick up css changes)
+
+
+```bash
+# from the project directory
+
+$ lein figwheel
+```
+
+
 ### getting initial tag data
 
 Start a repl

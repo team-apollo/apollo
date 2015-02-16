@@ -49,6 +49,8 @@ $ lein ring server
 
 Now you can point your browser at http://localhost:5050 to play with the app. 
 
+![apollo screen shot](screenshot.png)
+
 ### compiling client code
 
 ```bash

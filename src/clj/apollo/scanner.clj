@@ -96,8 +96,7 @@
                                     (.exists f)
                                     (.isFile f)
                                     (file-predicate? f)
-                                    (is-audio-file? f)
-                                    (= (mime-type-of f) "audio/mpeg")))
+                                    (is-audio-file? f)))
          audio-files (filter active-predicate? files)]
      (pmap get-info audio-files)))
   ([d] (file-tag-seq d (fn [f] true))))

@@ -20,7 +20,10 @@
 
 (defn nav-partial [active-nav]
   [:div.collection-nav
-   [:ul (map nav-item nav-seq (repeat active-nav))]])
+   [:ul (map nav-item nav-seq (repeat active-nav))]
+   [:span.fa-stack
+    [:i.fa.fa-circle.fa-stack-2x]
+    [:i.fa.fa-ellipsis-h.fa-inverse.fa-stack-1x.fa-lg]]])
 
 (defn main-nav [data]
   (reify

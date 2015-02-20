@@ -62,8 +62,25 @@ ul.right-header
   left: 300px
   h3
     color: white
+  span
+    float: left
+    width: 50px
+    text-align: center
+    margin-top: 4px
+  i
+    &.fa-stack-1x
+      color: $background
+      pointer-events: none
+      margin-top: 1px
+    &.fa-stack-2x
+      color: transparentize($highlight, .5)
+      &:hover
+        color: $highlight
+        cursor: pointer
   ul
     margin: 0
+    float: left
+    width: calc(100% - 50px)
     li
       @extend .no-select
       padding: 0
@@ -84,6 +101,7 @@ ul.right-header
         box-sizing: border-box
         width: 100%
         height: 40px
+        font-size: .8em
         line-height: 40px
         text-decoration: none
         color: white

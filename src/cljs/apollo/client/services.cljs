@@ -76,3 +76,11 @@
                {:error-handler error-handler
                 :handler (fn [response] (put! out response))})
     chan))
+
+(defn recently-added []
+  (let [out (chan)]
+    (ajax/GET "/api/recently-added"
+              {:error-handler error-handler
+               :keywords? true
+               :handler (fn [response] (put! out response))})
+    out))

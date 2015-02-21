@@ -37,7 +37,8 @@
                  [digest "1.4.4"]
                  [figwheel "0.2.3-SNAPSHOT"]
                  [environ "1.0.0"]
-                 [enlive "1.1.5"]]
+                 [enlive "1.1.5"]
+                 [clj-time "0.9.0"]]
   :source-paths ~src-paths
   :plugins [[lein-ring "0.8.13"]
             [lein-cljsbuild "1.0.4"]

@@ -60,6 +60,8 @@
        (artists-detail artist-id))
   (GET "/api/artists/:artist-id/image" [artist-id force-fetch]
        (artist-image artist-id force-fetch))
+  (GET "/api/recently-added" []
+       (recently-added))
   (GET "/api/mounts" []
        (mounts))
   (POST "/api/mounts" [new-mount]

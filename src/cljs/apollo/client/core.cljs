@@ -75,6 +75,12 @@
       (swap! app-state assoc :active-page pages/view-browse)
       (swap! app-state assoc :active-album (response "album")))))
 
+(defroute recent "/recent" []
+  (go
+    (let [response (<! (services/recently-added))]
+      (swap! app-state assoc :albums (response "albums"))
+      (swap! app-state assoc :active-page pages/view-recently-added))))
+
 (defroute admin-path "/admin" []
   (go
     (swap! app-state assoc :mounts (<! (services/mounts)))

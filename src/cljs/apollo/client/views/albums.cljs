@@ -24,12 +24,18 @@
                 (utils/encode artist)
                 (utils/encode album)))
 
-(defn album-item [artist album]
-  (let [album-name (album "album_canonical")
+(defn album-item [artist-ctx album]
+  (let [the-artist (or artist-ctx (album "artist"))
+        artist (if (utils/s-contains? the-artist ",")
+                 (first (.split the-artist ","))
+                 the-artist)
+        album-name (album "album_canonical")
         album-url (mk-album-url artist album-name)
         album-year (album "year")
         album-image (mk-album-image artist album-name)
-        album-label (utils/format "%s" (album "album"))
+        album-label (if (nil? artist-ctx)
+                      (utils/format "%s by %s" (album "album") artist)
+                      (utils/format "%s" (album "album")))
         album-zip-url (mk-album-zip-url artist album-name)
         play-album (fn [e]
                      (go

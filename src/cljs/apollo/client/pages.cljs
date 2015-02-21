@@ -57,3 +57,15 @@
                (albums/album-list-partial active-artist albums)
                (not (nil? active-album))
                (albums/album-detail active-artist active-album))]]]])))))
+
+(defn view-recently-added [data owner]
+  (reify
+    om/IRender
+    (render [this]
+      (html [:div.browse
+             (om/build nav/main-nav data)
+             (om/build left-column data)
+             [:div.middle-columns.pure-g
+              [:div.pure-u-1
+               [:div.content
+                (albums/album-list-partial nil (:albums data))]]]]))))

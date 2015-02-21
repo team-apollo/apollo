@@ -101,3 +101,10 @@
                          :year year
                          :tracks (map (fn [r] {:track r}) tracks)}})      
       {:status 404})))
+
+
+(defn recently-added []
+  (let [db-result (s/get-albums-recently-added s/the-db (* 5 365))]
+    (if (> (count db-result) 0)
+      (response {:albums db-result})
+      {:status 404})))

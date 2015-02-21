@@ -1,7 +1,9 @@
 (ns apollo.db.schema
   (:require [clojure.java.jdbc :as sql]
             [clojure.java.io :as io]
-            [apollo.utils :as utils]))
+            [apollo.utils :as utils]
+            [clj-time.core :as t]
+            [clj-time.coerce :as c]))
 
 (def the-db {:classname "org.sqlite.JDBC",
              :subprotocol "sqlite",
@@ -134,7 +136,7 @@
   (sql/query db ["select * from tracks where album_canonical=? order by disc_no, track, artist_canonical" (utils/canonicalize album)]))
 
 (defn problem-tracks [db]
-  (sql/query db ["select path from tracks where artist_canonical=? and album_canonical=? and title_canonical=? order by path"]))
+  (sql/query db ["select path from tracks where artist_canonical='' and album_canonical='' and title_canonical='' order by path"]))
 
 (defn track-by-artist-by-album [db artist album id]
   (first (sql/query db ["select * from tracks where artist_canonical=? and album_canonical=? and id=?"
@@ -147,8 +149,10 @@
         p (if (.isDirectory f) path (.getParent f))]
     (sql/query db [(format "select distinct artist_canonical, album_canonical from tracks where path like '%s%%' order by artist_canonical, album_canonical" p)])))
 
-(defn get-albums-recently-added [db]
-  (sql/query db ["select distinct artist, album from tracks order by last_modified desc,id desc limit 100"]))
+(defn get-albums-recently-added
+  ([db days-ago]
+   (sql/query db [(format "select group_concat(DISTINCT artist_canonical) as artist, album_canonical, album, year, last_modified from tracks where last_modified > %s group by album order by last_modified desc,id desc" (c/to-long (-> days-ago t/days t/ago)))]))
+  ([db] (get-albums-recently-added db 365)))
 
 (defn get-albums-by-year [db]
   (sql/query the-db ["select distinct album, artist, year from tracks order by year, artist"]))

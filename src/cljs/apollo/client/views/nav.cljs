@@ -9,7 +9,7 @@
 (defn get-up-nav [prefix]
   (let [nav-str (apply str nav-seq)]
     (cond
-      (= prefix "all") "all"
+      (or (= prefix "all") (nil? prefix)) "all"
       (utils/s-contains? nav-str prefix) prefix
       :else "#")))
 
@@ -31,17 +31,23 @@
     (render [this]
       (let [browse-url "#/"
             settings-url "#/admin"
+            recent-url "#/recent"
             token (utils/format "#%s" (:current-token data)) 
             active-item (cond
                           (= token settings-url) {:settings true}
+                          (= token recent-url) {:recent true}
                           :else {:browse true})
             browse-class-name (utils/format "fa fa-search %s"
                                             (if (:browse active-item) "active" ""))
             settings-class-name (utils/format "fa fa-gear %s"
-                                              (if (:settings active-item) "active" ""))]
+                                              (if (:settings active-item) "active" ""))
+            recent-class-name (utils/format "fa fa-bolt %s"
+                                              (if (:recent active-item) "active" ""))]
         (html
          [:div.main-nav
           [:a {:href browse-url} [:i {:title "Browse"
                                       :class-name browse-class-name}]]
+          [:a {:href recent-url} [:i {:title "Settings"
+                                        :class-name recent-class-name}]]
           [:a {:href settings-url} [:i {:title "Settings"
                                         :class-name settings-class-name}]]])))))

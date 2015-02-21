@@ -10,7 +10,10 @@
             [apollo.client.views.albums :as albums]
             [apollo.client.player :as player]
             [apollo.client.state :as state]
-            [cljs.core.async :refer [<! put! chan]]))
+            [cljs.core.async :refer [<! put! chan]]
+            [cljs-time.extend]
+            [cljs-time.coerce :as c]
+            [cljs-time.core :as t]))
 
 (defn left-column [data owner]
   (reify
@@ -58,14 +61,41 @@
                (not (nil? active-album))
                (albums/album-detail active-artist active-album))]]]])))))
 
+
+(def ageing-range [{:date (-> 1 t/days t/ago t/at-midnight) :label "Less than 24 Hours Ago"}
+                   {:date (-> 1 t/weeks t/ago t/at-midnight) :label "Less than a  Week Ago"}
+                   {:date (-> 1 t/months t/ago t/at-midnight) :label "Less than a Month Ago"}
+                   {:date (-> 3 t/months t/ago t/at-midnight) :label "Less than 3 Months Ago"}
+                   {:date (-> 6 t/months t/ago t/at-midnight) :label "Less than 6 Months Ago"}
+                   {:date (-> 1 t/years t/ago t/at-midnight) :label "Less than A Year Ago"}
+                   {:date (-> 3 t/years t/ago t/at-midnight) :label "Less than 3 Years Ago"}
+                   {:date (-> 5 t/years t/ago t/at-midnight) :label "Less than 5 Years Ago"}])
+
+(defn date-to-range-val [d]
+  (:date (first (filter (fn [x] (or (t/after? d (:date x)) (t/= d (:date x)))) ageing-range))))
+
+(defn date-to-label [d]
+  (let [dv (date-to-range-val d)]
+    (:label (first (filter (fn [x] (t/= (:date x) dv)) ageing-range)))))
+
+
+
 (defn view-recently-added [data owner]
   (reify
     om/IRender
     (render [this]
-      (html [:div.browse
-             (om/build nav/main-nav data)
-             (om/build left-column data)
-             [:div.middle-column.pure-g
-              [:div.pure-u-1
-               [:div.content
-                (albums/album-list-partial nil (:albums data))]]]]))))
+      (let [buckets (group-by
+                     (fn [x] (date-to-range-val (c/from-long (x "last_modified"))))
+                     (:albums data))
+            _ (.log js/console (clj->js (keys buckets)))
+            _ (.log js/console (clj->js (map date-to-label (keys buckets))))]
+        (html [:div.browse
+               (om/build nav/main-nav data)
+               (om/build left-column data)
+               [:div.middle-column.pure-g
+                [:div.pure-u-1
+                 [:div.content
+                  (map (fn [x]
+                         [:span
+                          [:h3 (date-to-label (first x))]
+                          (albums/album-list-partial nil (last x))]) buckets)]]]])))))

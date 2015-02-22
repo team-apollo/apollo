@@ -86,9 +86,7 @@
     (render [this]
       (let [buckets (group-by
                      (fn [x] (date-to-range-val (c/from-long (x "last_modified"))))
-                     (:albums data))
-            _ (.log js/console (clj->js (keys buckets)))
-            _ (.log js/console (clj->js (map date-to-label (keys buckets))))]
+                     (:albums data))]
         (html [:div.browse
                (om/build nav/main-nav data)
                (om/build left-column data)

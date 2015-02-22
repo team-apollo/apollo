@@ -5,7 +5,8 @@
             [apollo.images :as images]
             [pantomime.mime :refer [mime-type-of]]
             [apollo.http.cache :as cache]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [apollo.musicbrainz :as mb]))
 
 (defn artists-detail [id]
   (let [result (s/album-list-by-artist s/the-db id)]
@@ -35,3 +36,5 @@
       {:status 404})))
 
 
+(defn artist-info [artist]
+  (response {:info (:body (mb/get-artist artist))}))

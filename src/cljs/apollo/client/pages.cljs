@@ -44,7 +44,8 @@
             artist-count (count artists)
             albums (:albums data)
             album-count (count albums)
-            active-album (:active-album data)]
+            active-album (:active-album data)
+            info (:artist-info data)]
         (html
          [:div.browse
           (om/build nav/main-nav data)
@@ -57,7 +58,9 @@
                (and (nil? active-artist) (nil? active-album))
                (artists/artist-list-partial artists)
                (and (not (nil? active-artist)) (nil? active-album))
-               (albums/album-list-partial active-artist albums)
+               [:span
+                (albums/album-list-partial active-artist albums)
+                (artists/artist-info-partial info)]
                (not (nil? active-album))
                (albums/album-detail active-artist active-album))]]]])))))
 

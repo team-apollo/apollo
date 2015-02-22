@@ -33,6 +33,14 @@
                :handler (fn [response] (put! out response))})
     out))
 
+(defn artist-info [artist]
+  (let [out (chan)]
+    (ajax/GET (utils/format "/api/artists/%s/info" (utils/encode artist))
+              {:error-handler error-handler
+               :handler (fn [response] (put! out response))})
+    out))
+
+
 (defn album-detail [artist album]
   (let [out (chan)]
     (ajax/GET (utils/format "/api/artists/%s/albums/%s"

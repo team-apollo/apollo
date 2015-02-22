@@ -27,3 +27,11 @@
     (when (not (empty? artist))
       [:div.artist-detail
        [:h2 artist]])))
+
+(defn artist-info-partial [info]
+  (let [relations (group-by (fn [i] (i "type")) (info "relations"))
+        members (relations "member of band")]
+    [:ul
+     (let [wiki-link (get-in (first (relations "wikipedia"))["url" "resource"])]
+        [:li
+      [:a {:href wiki-link :target "_blank"} "wikipedia"]])]))

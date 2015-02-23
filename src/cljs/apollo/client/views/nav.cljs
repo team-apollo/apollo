@@ -41,13 +41,13 @@
                                             (if (:browse active-item) "active" ""))
             settings-class-name (utils/format "fa fa-gear %s"
                                               (if (:settings active-item) "active" ""))
-            recent-class-name (utils/format "fa fa-bolt %s"
+            recent-class-name (utils/format "fa fa-clock-o %s"
                                               (if (:recent active-item) "active" ""))]
         (html
          [:div.main-nav
           [:a {:href browse-url} [:i {:title "Browse"
                                       :class-name browse-class-name}]]
-          [:a {:href recent-url} [:i {:title "Settings"
+          [:a {:href recent-url} [:i {:title "Recent"
                                         :class-name recent-class-name}]]
           [:a {:href settings-url} [:i {:title "Settings"
                                         :class-name settings-class-name}]]])))))

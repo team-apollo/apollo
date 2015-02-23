@@ -44,7 +44,7 @@
                          (put! channels/track-list [tracks 0]))))]
     [:li.no-select
      [:a
-      [:img {:src album-image}] album-label album-year]
+      [:img.band {:src album-image}] album-label album-year]
      [:div.album-actions
       [:i.fa.fa-play-circle {:on-click play-album}]
       [:a [:i.fa.fa-plus-circle.fa-lg]]

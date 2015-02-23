@@ -65,14 +65,14 @@
                (albums/album-detail active-artist active-album))]]]])))))
 
 
-(def ageing-range [{:date (-> 1 t/days t/ago t/at-midnight) :label "Less than 24 Hours Ago"}
-                   {:date (-> 1 t/weeks t/ago t/at-midnight) :label "Less than a  Week Ago"}
-                   {:date (-> 1 t/months t/ago t/at-midnight) :label "Less than a Month Ago"}
-                   {:date (-> 3 t/months t/ago t/at-midnight) :label "Less than 3 Months Ago"}
-                   {:date (-> 6 t/months t/ago t/at-midnight) :label "Less than 6 Months Ago"}
-                   {:date (-> 1 t/years t/ago t/at-midnight) :label "Less than A Year Ago"}
-                   {:date (-> 3 t/years t/ago t/at-midnight) :label "Less than 3 Years Ago"}
-                   {:date (-> 5 t/years t/ago t/at-midnight) :label "Less than 5 Years Ago"}])
+(def ageing-range [{:date (-> 1 t/days t/ago t/at-midnight) :label "Today"}
+                   {:date (-> 1 t/weeks t/ago t/at-midnight) :label "Last 7 Days"}
+                   {:date (-> 1 t/months t/ago t/at-midnight) :label "Last 30 Days"}
+                   {:date (-> 3 t/months t/ago t/at-midnight) :label "Last 3 Months"}
+                   {:date (-> 6 t/months t/ago t/at-midnight) :label "Last 6 Months"}
+                   {:date (-> 1 t/years t/ago t/at-midnight) :label "Last Year"}
+                   {:date (-> 3 t/years t/ago t/at-midnight) :label "Last 3 Years"}
+                   {:date (-> 5 t/years t/ago t/at-midnight) :label "Last 5 Years"}])
 
 (defn date-to-range-val [d]
   (:date (first (filter (fn [x] (or (t/after? d (:date x)) (t/= d (:date x)))) ageing-range))))
@@ -97,6 +97,6 @@
                 [:div.pure-u-1
                  [:div.content
                   (map (fn [x]
-                         [:span
-                          [:h3 (date-to-label (first x))]
-                          (albums/album-list-partial nil (last x))]) buckets)]]]])))))
+                        [:span
+                          [:h2 (date-to-label (first x))]
+                          (albums/album-list-partial nil (last x))[:hr]]) buckets)]]]])))))

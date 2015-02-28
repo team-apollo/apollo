@@ -20,7 +20,7 @@
                  [ring/ring-devel "1.3.2"]
                  [ring-partial-content "1.0.0"]
                  [compojure "1.3.1"]
-                 [org.clojure/clojurescript "0.0-2755"]
+                 [org.clojure/clojurescript "0.0-2913"]
                  [org.clojure/java.jdbc "0.3.5"]
                  [org.xerial/sqlite-jdbc "3.7.15-M1"]
                  [org/jaudiotagger "2.0.3"]

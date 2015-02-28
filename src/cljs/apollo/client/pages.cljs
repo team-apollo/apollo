@@ -82,6 +82,13 @@
     (:label (first (filter (fn [x] (t/= (:date x) dv)) ageing-range)))))
 
 
+(defn view-bucket [{:keys [bucket-date albums]}]
+  (om/component
+   (html
+    [:span
+    [:h2 (date-to-label bucket-date)]
+    (om/build albums/album-list-partial {:artist nil :albums albums})
+    [:hr]])))
 
 (defn view-recently-added [data owner]
   (reify
@@ -96,7 +103,7 @@
                [:div.middle-column.pure-g
                 [:div.pure-u-1
                  [:div.content
-                  (map (fn [x]
-                         [:span
-                          [:h2 (date-to-label (first x))]
-                          (om/build albums/album-list-partial {:artist nil :albums (last x)})[:hr]]) buckets)]]]])))))
+                  (om/build-all view-bucket
+                                (map (fn [x]
+                                       {:bucket-date (first x) :albums (last x)})
+                                     buckets))]]]])))))

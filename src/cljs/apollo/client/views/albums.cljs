@@ -26,36 +26,65 @@
                 (utils/encode artist)
                 (utils/encode album)))
 
-(defn album-item [{:keys [artist-ctx album]}]
-  (om/component
-   (html
-    (let [the-artist (or artist-ctx (album "artist"))
-          artist (if (utils/s-contains? the-artist ",")
-                   (first (.split the-artist ","))
-                   the-artist)
-          album-name (album "album_canonical")
-          album-url (mk-album-url artist album-name)
-          album-year (album "year")
-          album-image (mk-album-image artist album-name)
-          album-label (if (nil? artist-ctx)
-                        (utils/format "%s by %s" (album "album") artist)
-                        (utils/format "%s" (album "album")))
-          album-zip-url (mk-album-zip-url artist album-name)
-          play-album (fn [e]
-                       (go
-                         (let [album-detail (<! (services/album-detail artist (album "album")))
-                               tracks ((album-detail "album") "tracks")]
-                           (put! channels/track-list [tracks 0]))))]
-      [:li.no-select
-       [:a
-        [:img.band {:src album-image}] album-label album-year]
-       [:div.album-actions
-        [:i.fa.fa-play-circle {:on-click play-album}]
-        [:a [:i.fa.fa-plus-circle.fa-lg]]
-        [:a {:href album-url} [:i.fa.fa-search.fa-lg]]
-        [:a.download {:href album-zip-url}
-         [:i.fa.fa-download.fa-lg]]]
-       ]))))
+(defn img [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:img.band {:src (:src data)}]))))
+
+(defn album-item [data owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:check-viewport (fn [e]
+                         (let [is-visible (or (om/get-state owner :visible)
+                                              (utils/in-view-port owner))]
+                           (om/set-state! owner :visible is-visible)
+                           (when is-visible (.removeEventListener js/window "scroll" (om/get-state owner :check-viewport)))))})
+    om/IDidMount
+    (did-mount [_]
+      (let [check-viewport (om/get-state owner :check-viewport)]
+        (om/set-state! owner :visible (utils/in-view-port owner))
+        (.addEventListener js/window "scroll" check-viewport)))
+    om/IWillUnmount
+    (will-unmount [_]
+      (let [check-viewport (om/get-state owner :check-viewport)]
+        (.removeEventListener js/window "scroll" check-viewport)))
+    om/IRender
+    (render [_]
+      (html
+       (if (not (om/get-state owner :visible))
+         [:li]
+         (let [artist-ctx (data :artist-ctx)
+               album (data :album)
+               the-artist (or artist-ctx (album "artist"))
+               artist (if (utils/s-contains? the-artist ",")
+                        (first (.split the-artist ","))
+                        the-artist)
+               album-name (album "album_canonical")
+               album-url (mk-album-url artist album-name)
+               album-year (album "year")
+               album-image (mk-album-image artist album-name)
+               album-label (if (nil? artist-ctx)
+                             (utils/format "%s by %s" (album "album") artist)
+                             (utils/format "%s" (album "album")))
+               album-zip-url (mk-album-zip-url artist album-name)
+               play-album (fn [e]
+                            (go
+                              (let [album-detail (<! (services/album-detail artist (album "album")))
+                                    tracks ((album-detail "album") "tracks")]
+                                (put! channels/track-list [tracks 0]))))]
+           [:li.no-select
+            [:a
+             (om/build img {:src album-image}) album-label album-year]
+            [:div.album-actions
+             [:i.fa.fa-play-circle {:on-click play-album}]
+             [:a [:i.fa.fa-plus-circle.fa-lg]]
+             [:a {:href album-url} [:i.fa.fa-search.fa-lg]]
+             [:a.download {:href album-zip-url}
+              [:i.fa.fa-download.fa-lg]]]
+            ]))))))
 
 (defn album-list-partial [{:keys [artist albums]}]
   (om/component

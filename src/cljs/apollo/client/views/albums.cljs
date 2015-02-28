@@ -1,5 +1,5 @@
 (ns apollo.client.views.albums
-  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]
             [apollo.client.utils :as utils]
@@ -7,9 +7,10 @@
             [apollo.client.views.artists :as artists]
             [apollo.client.views.tracks :as tracks]
             [apollo.client.views.nav :as nav]
-            [apollo.client.channels :as channels]
             [apollo.client.services :as services]
-            [cljs.core.async :refer [<! put! chan]]))
+            [apollo.client.components :as ac]
+            
+            [cljs.core.async :refer [<! put! chan unsub sub dropping-buffer]]))
 
 (defn mk-album-url [artist album]
   (utils/format "#/artists/%s/albums/%s"
@@ -35,28 +36,10 @@
 
 (defn album-item [data owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:check-viewport (fn [e]
-                         (let [is-visible (or (om/get-state owner :visible)
-                                              (utils/in-view-port owner))]
-                           (om/set-state! owner :visible is-visible)
-                           (when is-visible (.removeEventListener js/window "scroll" (om/get-state owner :check-viewport)))))})
-    om/IDidMount
-    (did-mount [_]
-      (let [check-viewport (om/get-state owner :check-viewport)]
-        (om/set-state! owner :visible (utils/in-view-port owner))
-        (.addEventListener js/window "scroll" check-viewport)))
-    om/IWillUnmount
-    (will-unmount [_]
-      (let [check-viewport (om/get-state owner :check-viewport)]
-        (.removeEventListener js/window "scroll" check-viewport)))
     om/IRender
     (render [_]
       (html
-       (if (not (om/get-state owner :visible))
-         [:li]
-         (let [artist-ctx (data :artist-ctx)
+       (let [artist-ctx (data :artist-ctx)
                album (data :album)
                the-artist (or artist-ctx (album "artist"))
                artist (if (utils/s-contains? the-artist ",")
@@ -83,8 +66,7 @@
              [:a [:i.fa.fa-plus-circle.fa-lg]]
              [:a {:href album-url} [:i.fa.fa-search.fa-lg]]
              [:a.download {:href album-zip-url}
-              [:i.fa.fa-download.fa-lg]]]
-            ]))))))
+              [:i.fa.fa-download.fa-lg]]]])))))
 
 (defn album-list-partial [{:keys [artist albums]}]
   (om/component
@@ -99,7 +81,11 @@
         [:h3.left
          [:a {:href back-link} [:i.fa.fa-angle-left.fa-fw] "Back"]]
         [:h3 album-heading]
-        [:ul.clear (om/build-all album-item album-item-args)]]]))))
+        [:ul.clear (om/build-all ac/when-visible (map
+                                                  (fn [c c-data]
+                                                    {:component c
+                                                     :component-data c-data})
+                                                  (repeat album-item) album-item-args))]]]))))
 
 
 (defn album-detail [{:keys [artist album]}]

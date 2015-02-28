@@ -10,6 +10,7 @@
             [apollo.client.views.albums :as albums]
             [apollo.client.player :as player]
             [apollo.client.state :as state]
+            [apollo.client.components :as ac]
             [cljs.core.async :refer [<! put! chan]]
             [cljs-time.extend]
             [cljs-time.coerce :as c]
@@ -103,7 +104,9 @@
                [:div.middle-column.pure-g
                 [:div.pure-u-1
                  [:div.content
-                  (om/build-all view-bucket
-                                (map (fn [x]
-                                       {:bucket-date (first x) :albums (last x)})
-                                     buckets))]]]])))))
+                  (om/build-all ac/when-visible
+                                (map (fn [c c-data] {:component c :component-data c-data})
+                                     (repeat view-bucket)
+                                     (map (fn [x]
+                                            {:bucket-date (first x) :albums (last x)})
+                                          buckets)))]]]])))))

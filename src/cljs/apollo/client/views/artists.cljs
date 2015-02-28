@@ -1,5 +1,7 @@
 (ns apollo.client.views.artists
-  (:require [apollo.client.utils :as utils]))
+  (:require [apollo.client.utils :as utils]
+            [om.core :as om :include-macros true]
+            [sablono.core :as html :refer-macros [html]]))
 
 (defn mk-artist-image
   ([artist]
@@ -12,15 +14,19 @@
 
 (defn artist-item [artist]
   (let [artist-url (mk-artist-url artist)]
-    [:li
-     [:a {:href artist-url}
-      [:div artist]]]))
+    (om/component
+     (html
+      [:li
+       [:a {:href artist-url}
+        [:div artist]]]))))
 
 (defn artist-list-partial [artists]
   (let [artist-heading (utils/format "%s Artists" (count artists))]
-    [:div.artist-list
-     [:h3 artist-heading]
-     [:ul (map artist-item artists)]]))
+    (om/component
+     (html
+      [:div.artist-list
+       [:h3 artist-heading]
+       [:ul (om/build-all artist-item artists)]]))))
 
 (defn artist-detail-partial [artist]
   (let [artist-image (mk-artist-image artist true)]
@@ -29,11 +35,14 @@
        [:h2 artist]])))
 
 (defn artist-info-partial [info]
-  [:div]
-  ;; (let [relations (group-by (fn [i] (i "type")) (info "relations"))
-  ;;       members (relations "member of band")]
-  ;;   [:ul
-  ;;    (let [wiki-link (get-in (first (relations "wikipedia"))["url" "resource"])]
-  ;;       [:li
-  ;;     [:a {:href wiki-link :target "_blank"} "wikipedia"]])])
+  (om/component
+   (html
+    [:div
+   ;; (let [relations (group-by (fn [i] (i "type")) (info "relations"))
+   ;;       members (relations "member of band")]
+   ;;   [:ul
+   ;;    (let [wiki-link (get-in (first (relations "wikipedia"))["url" "resource"])]
+   ;;       [:li
+   ;;     [:a {:href wiki-link :target "_blank"} "wikipedia"]])])
+   ]))
   )

@@ -53,16 +53,16 @@
           [:div.middle-column.pure-g
            [:div.pure-u-1
             [:div.content
-             (nav/nav-partial (or (first active-artist) active-nav))
+             (om/build nav/nav-partial (or (first active-artist) active-nav))
              (cond
                (and (nil? active-artist) (nil? active-album))
-               (artists/artist-list-partial artists)
+               (om/build artists/artist-list-partial artists)
                (and (not (nil? active-artist)) (nil? active-album))
                [:span
-                (albums/album-list-partial active-artist albums)
-                (artists/artist-info-partial info)]
+                (om/build albums/album-list-partial {:artist active-artist :albums albums})
+                (om/build artists/artist-info-partial info)]
                (not (nil? active-album))
-               (albums/album-detail active-artist active-album))]]]])))))
+               (om/build albums/album-detail {:artist active-artist :album active-album}))]]]])))))
 
 
 (def ageing-range [{:date (-> 1 t/days t/ago t/at-midnight) :label "Today"}
@@ -97,6 +97,6 @@
                 [:div.pure-u-1
                  [:div.content
                   (map (fn [x]
-                        [:span
+                         [:span
                           [:h2 (date-to-label (first x))]
-                          (albums/album-list-partial nil (last x))[:hr]]) buckets)]]]])))))
+                          (om/build albums/album-list-partial {:artist nil :albums (last x)})[:hr]]) buckets)]]]])))))

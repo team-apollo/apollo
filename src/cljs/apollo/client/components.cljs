@@ -36,7 +36,8 @@
     (render [_]
       (html
        (if (not (om/get-state owner :visible))
-         [:span]
+         [:span
+          [:img {:height "150"}]]
          (let [component (:component data)
                component-data (:component-data data)]
            (om/build component component-data)))))))

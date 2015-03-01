@@ -99,18 +99,20 @@
     (init-state [_]
       {:result-count 20
        :scroll-chan (chan (dropping-buffer 1))
-       :result-inc 0.01})
+       :result-inc 1.05})
     om/IWillMount
     (will-mount [_]
       (let [scroll-chan (om/get-state owner :scroll-chan)]
         (sub events/event-bus :at-bottom scroll-chan)
         (go
           (loop []
-            (let [e (<! scroll-chan)]
-              (om/set-state! owner
-                            :result-count
-                            (* (+ 1 (om/get-state owner :result-inc))
-                               (om/get-state owner :result-count))))
+            (let [e (<! scroll-chan)
+                  old-result-count (om/get-state owner :result-count)
+                  i (* (om/get-state owner :result-inc)
+                       old-result-count)
+                  the-i (if (> (- i old-result-count) 100) i (+ 100 old-result-count))
+                  _ (.log js/console (clj->js the-i))]
+              (om/set-state! owner :result-count the-i))
             (recur)))))
     om/IRender
     (render [this]

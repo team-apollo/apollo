@@ -33,5 +33,5 @@
 (defn scroll-bottom? []
   (let [doc-height (dom/getDocumentHeight)
         viewport-height (.-height (dom/getViewportSize))
-        scroll-x (.-x (dom/getDocumentScroll))]
-    (= doc-height (+ scroll-x viewport-height))))
+        scroll-y (.-y (dom/getDocumentScroll))]
+    (= doc-height (+ scroll-y viewport-height))))

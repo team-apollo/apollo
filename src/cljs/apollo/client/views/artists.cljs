@@ -30,8 +30,8 @@
            filter-fn (fn [a]
                        (if (or (nil? post-filter) (empty? post-filter))
                          true
-                         (utils/str-contains? (.toLowerCase (str a)) (.toLowerCase post-filter))))]
-    (html
+                         (utils/str-contains? (str a) post-filter)))]
+       (html
       [:div.artist-list
        [:h3 artist-heading]
        [:ul (om/build-all artist-item (filter filter-fn artists))]])))))

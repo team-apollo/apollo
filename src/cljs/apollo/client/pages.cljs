@@ -158,9 +158,9 @@
             filtered-albums (filter (fn [a]  (if (or (nil? post-filter)
                                                 (empty? post-filter))
                                               true
-                                              (let [c-f (.toLowerCase post-filter)
-                                                    c-a-b (.toLowerCase (str (a "album")))
-                                                    c-a-a (.toLowerCase (str (a "artist")))]
+                                              (let [c-f post-filter
+                                                    c-a-b (str (a "album"))
+                                                    c-a-a (str (a "artist"))]
                                                 (or (utils/str-contains? c-a-b c-f)
                                                     (utils/str-contains? c-a-a c-f))))
                                       )

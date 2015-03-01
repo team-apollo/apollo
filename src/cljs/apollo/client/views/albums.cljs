@@ -81,12 +81,13 @@
             filtered-albums (filter (fn [a]  (if (or (nil? post-filter)
                                                 (empty? post-filter))
                                               true
-                                              (let [c-f (.toLowerCase post-filter)
-                                                    c-a-b (.toLowerCase (a "album"))
-                                                    c-a-a (.toLowerCase (a "artist" ""))]
+                                              (let [c-f post-filter
+                                                    c-a-b  (str (a "album" ""))
+                                                    c-a-a  (str (a "artist" ""))]
                                                 (or (utils/str-contains? c-a-b c-f)
-                                                    (when (not(empty? c-a-a))
-                                                      (utils/str-contains? c-a-a c-f)))))
+                                                    (if (not(empty? c-a-a))
+                                                      (utils/str-contains? c-a-a c-f)
+                                                      false))))
                                       )
                                     albums)
             back (nav/get-up-nav artist-first)

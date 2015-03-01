@@ -11,7 +11,7 @@
             [apollo.client.pages :as pages]
             [apollo.client.debug :as debug]
             [apollo.client.views.admin :as admin]
-            [apollo.client.state :refer [app-state]]
+            [apollo.client.state :refer [app-state ref-post-filter]]
             [apollo.client.player :refer [audio-elem view-now-playing]]
             [cljs.core.async :refer [<!]])
   
@@ -69,7 +69,8 @@
       ;; (swap! app-state assoc :artist-info (info-response "info"))
       (swap! app-state assoc :active-page pages/view-browse)
       (swap! app-state assoc :albums (response "albums"))
-      (swap! app-state assoc :active-album nil))))
+      (swap! app-state assoc :active-album nil)
+      (om/transact! (ref-post-filter) :value (fn [_] nil)))))
 
 (defroute album-path "/artists/:artist/albums/:album" [artist album]
   (go

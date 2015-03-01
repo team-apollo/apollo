@@ -51,9 +51,12 @@
         (loop []
           (let [e (<! (om/get-state owner :keypress-chan))
                 key-code (.-keyCode (:event (:message e)))
-                n (om/get-node owner "filter-input")]
+                n (om/get-node owner "filter-input")
+                ov (:value (state/ref-post-filter))]
             (om/transact! (state/ref-post-filter)
                           (fn [p] (assoc p :value (.-value n))))
+            (when (not (= ov (.-value n)))
+              (events/publish events/event-chan :post-filter-changed (.-value n)))
             (when (= key-code 191)
               (om/set-state! owner :visible true)
               (.focus n)))
@@ -134,11 +137,14 @@
     (init-state [_]
       {:result-count 20
        :scroll-chan (chan (dropping-buffer 1))
+       :keypress-chan (chan (dropping-buffer 1))
        :result-inc 1.05})
     om/IWillMount
     (will-mount [_]
-      (let [scroll-chan (om/get-state owner :scroll-chan)]
+      (let [scroll-chan (om/get-state owner :scroll-chan)
+            keypress-chan (om/get-state owner :keypress-chan)]
         (sub events/event-bus :at-bottom scroll-chan)
+        (sub events/event-bus :post-filter-changed keypress-chan)
         (go
           (loop []
             (let [e (<! scroll-chan)
@@ -147,10 +153,17 @@
                        old-result-count)
                   the-i (if (> (- i old-result-count) 100) i (+ 100 old-result-count))]
               (om/set-state! owner :result-count the-i))
+            (recur)))
+        (go
+          (loop []
+            (let [post-filter (:value (om/observe owner (state/ref-post-filter)))
+                  e (<! keypress-chan)]
+              (om/set-state! owner :result-count 20))
             (recur)))))
     om/IWillUnmount
     (will-unmount [_]
-      (unsub events/event-bus :at-bottom (om/get-state owner :scroll-chan)))
+      (unsub events/event-bus :at-bottom (om/get-state owner :scroll-chan))
+      (unsub events/event-bus :keypress (om/get-state owner :keypress-chan)))
     om/IRender
     (render [this]
       (let [result-count (om/get-state owner :result-count)
@@ -162,8 +175,7 @@
                                                     c-a-b (str (a "album"))
                                                     c-a-a (str (a "artist"))]
                                                 (or (utils/str-contains? c-a-b c-f)
-                                                    (utils/str-contains? c-a-a c-f))))
-                                      )
+                                                    (utils/str-contains? c-a-a c-f)))))
                                     (:albums data))
             buckets (group-by
                      (fn [x]

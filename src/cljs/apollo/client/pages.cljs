@@ -117,7 +117,7 @@
       (let [result-count (om/get-state owner :result-count)
             buckets (group-by
                      (fn [x]
-                       (let [d (x "last_modified")]
+                       (let [d (x "scan_date")]
                          (date-to-range-val (c/from-long d))))
                      (take result-count (:albums data)))]
         (html [:div.browse

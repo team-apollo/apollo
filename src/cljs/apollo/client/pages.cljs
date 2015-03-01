@@ -73,7 +73,8 @@
                    {:date (-> 6 t/months t/ago t/at-midnight) :label "4 - 6 Months"}
                    {:date (-> 1 t/years t/ago t/at-midnight) :label "7 months -  Year"}
                    {:date (-> 3 t/years t/ago t/at-midnight) :label "1 - 3 Years"}
-                   {:date (-> 5 t/years t/ago t/at-midnight) :label "4 - 5 Years"}])
+                   {:date (-> 5 t/years t/ago t/at-midnight) :label "4 - 5 Years"}
+                   {:date (-> 100 t/years t/ago t/at-midnight) :label "6+ years"}])
 
 (defn date-to-range-val [d]
   (:date (first (filter (fn [x] (or (t/after? d (:date x)) (t/= d (:date x)))) ageing-range))))
@@ -87,16 +88,18 @@
   (om/component
    (html
     [:span
-    [:h2 (date-to-label bucket-date)]
-    (om/build albums/album-list-partial {:artist nil :albums albums})
-    [:hr]])))
+       [:h2 (date-to-label bucket-date)]
+       (om/build albums/album-list-partial {:artist nil :albums albums})
+       [:hr]])))
 
 (defn view-recently-added [data owner]
   (reify
     om/IRender
     (render [this]
       (let [buckets (group-by
-                     (fn [x] (date-to-range-val (c/from-long (x "last_modified"))))
+                     (fn [x]
+                       (let [d (x "last_modified")]
+                         (date-to-range-val (c/from-long d))))
                      (take 500 (:albums data)))]
         (html [:div.browse
                (om/build nav/main-nav data)

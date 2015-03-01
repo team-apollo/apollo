@@ -1,7 +1,7 @@
 (ns apollo.client.state
   (:require [om.core :as om :include-macros true]))
 
-(def app-state (atom {:now-playing []
+(defonce app-state (atom {:now-playing []
                       :player {:current-playlist []}
                       :sub-view-mode [:now-playing]
                       :post-filter {:value nil}}))

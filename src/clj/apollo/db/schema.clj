@@ -24,7 +24,8 @@
                                [:title_canonical :string]
                                [:last_modified :integer]
                                [:duration :integer]
-                               [:genre :integer]]}
+                               [:genre :integer]
+                               [:scan_date :integer]]}
              :mounts {:name "mounts"
                       :columns [[:id :integer "PRIMARY KEY" "AUTOINCREMENT"]
                                 [:path :string "UNIQUE"]]}
@@ -63,8 +64,9 @@
 
 (defn insert-track!
   "returns last row id which should correspond to id"
-  [db track-info]
-  ((keyword "last_insert_rowid()") (first (sql/insert! db :tracks track-info))))
+  [db raw-track-info scan-date]
+  (let [track-info (assoc raw-track-info :scan_date scan-date)]
+    ((keyword "last_insert_rowid()") (first (sql/insert! db :tracks track-info)))))
 
 (defn delete-track!
   "returns rows effected which should be > 1 if successful"
@@ -73,11 +75,11 @@
 
 (defn upsert-track!
   "returns {id:??}for insert or {row-count:??} for update"
-  [db track-info]
+  [db scan-date track-info]
   (let [update-result (update-track! db track-info)]
     (if (> update-result 0)
       {:row-count update-result :action :update}
-      {:id (insert-track! db track-info) :action :insert})))
+      {:id (insert-track! db track-info scan-date) :action :insert})))
 
 (defn insert-mount! [db p]
   ((keyword "last_insert_rowid()") (first (sql/insert! db :mounts {:path p}))))
@@ -151,7 +153,7 @@
 
 (defn get-albums-recently-added
   ([db days-ago]
-   (sql/query db [(format "select group_concat(DISTINCT artist) as artist, album_canonical, album, year, last_modified from tracks where last_modified > %s group by album order by last_modified desc,id desc" (c/to-long (-> days-ago t/days t/ago)))]))
+   (sql/query db [(format "select group_concat(DISTINCT artist) as artist, album_canonical, album, year, scan_date, last_modified from tracks where scan_date > %s group by album order by scan_date desc,last_modified desc,id desc" (c/to-long (-> days-ago t/days t/ago)))]))
   ([db] (get-albums-recently-added db 365)))
 
 (defn get-albums-by-year [db]

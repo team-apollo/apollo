@@ -67,13 +67,13 @@
 
 
 (def ageing-range [{:date (-> 1 t/days t/ago t/at-midnight) :label "Today"}
-                   {:date (-> 1 t/weeks t/ago t/at-midnight) :label "Last 7 Days"}
-                   {:date (-> 1 t/months t/ago t/at-midnight) :label "Last 30 Days"}
-                   {:date (-> 3 t/months t/ago t/at-midnight) :label "Last 3 Months"}
-                   {:date (-> 6 t/months t/ago t/at-midnight) :label "Last 6 Months"}
-                   {:date (-> 1 t/years t/ago t/at-midnight) :label "Last Year"}
-                   {:date (-> 3 t/years t/ago t/at-midnight) :label "Last 3 Years"}
-                   {:date (-> 5 t/years t/ago t/at-midnight) :label "Last 5 Years"}])
+                   {:date (-> 1 t/weeks t/ago t/at-midnight) :label "1 - 7 Days"}
+                   {:date (-> 1 t/months t/ago t/at-midnight) :label "8 - 30 Days"}
+                   {:date (-> 3 t/months t/ago t/at-midnight) :label "1 - 3 Months"}
+                   {:date (-> 6 t/months t/ago t/at-midnight) :label "4 - 6 Months"}
+                   {:date (-> 1 t/years t/ago t/at-midnight) :label "7 months -  Year"}
+                   {:date (-> 3 t/years t/ago t/at-midnight) :label "1 - 3 Years"}
+                   {:date (-> 5 t/years t/ago t/at-midnight) :label "4 - 5 Years"}])
 
 (defn date-to-range-val [d]
   (:date (first (filter (fn [x] (or (t/after? d (:date x)) (t/= d (:date x)))) ageing-range))))
@@ -97,16 +97,14 @@
     (render [this]
       (let [buckets (group-by
                      (fn [x] (date-to-range-val (c/from-long (x "last_modified"))))
-                     (:albums data))]
+                     (take 500 (:albums data)))]
         (html [:div.browse
                (om/build nav/main-nav data)
                (om/build left-column data)
                [:div.middle-column.pure-g
                 [:div.pure-u-1
                  [:div.content
-                  (om/build-all ac/when-visible
-                                (map (fn [c c-data] {:component c :component-data c-data})
-                                     (repeat view-bucket)
-                                     (map (fn [x]
-                                            {:bucket-date (first x) :albums (last x)})
-                                          buckets)))]]]])))))
+                  (om/build-all view-bucket
+                                (reverse (sort-by :bucket-date
+                                         (map (fn [x] {:bucket-date (first x) :albums (last x)})
+                                     buckets))))]]]])))))

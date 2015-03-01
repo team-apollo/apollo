@@ -6,7 +6,9 @@
             [apollo.utils :refer [canonicalize]]
             [pantomime.mime :refer [mime-type-of]]
             [clojure.tools.logging :as log]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [clj-time.core :as t]
+            [clj-time.coerce :as c])
   (:import org.jaudiotagger.audio.AudioFileFilter
            org.jaudiotagger.audio.AudioFileIO))
 
@@ -103,8 +105,9 @@
 
 
 (defn process-dir! [d]
-  (let [fseq (file-tag-seq d (mk-need-info))
-        upsert (partial db/upsert-track! db/the-db)]
+  (let [scan-date (c/to-long (t/now))
+        fseq (file-tag-seq d (mk-need-info))
+        upsert (partial db/upsert-track! db/the-db scan-date)]
     (dorun (map  upsert fseq))))
 
 (defn process-mounts! []

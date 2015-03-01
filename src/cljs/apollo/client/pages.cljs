@@ -11,7 +11,8 @@
             [apollo.client.player :as player]
             [apollo.client.state :as state]
             [apollo.client.components :as ac]
-            [cljs.core.async :refer [<! put! chan]]
+            [apollo.client.events :as events]
+            [cljs.core.async :refer [<! put! chan sub dropping-buffer]]
             [cljs-time.extend]
             [cljs-time.coerce :as c]
             [cljs-time.core :as t]))
@@ -94,13 +95,31 @@
 
 (defn view-recently-added [data owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:result-count 20
+       :scroll-chan (chan (dropping-buffer 1))
+       :result-inc 0.01})
+    om/IWillMount
+    (will-mount [_]
+      (let [scroll-chan (om/get-state owner :scroll-chan)]
+        (sub events/event-bus :at-bottom scroll-chan)
+        (go
+          (loop []
+            (let [e (<! scroll-chan)]
+              (om/set-state! owner
+                            :result-count
+                            (* (+ 1 (om/get-state owner :result-inc))
+                               (om/get-state owner :result-count))))
+            (recur)))))
     om/IRender
     (render [this]
-      (let [buckets (group-by
+      (let [result-count (om/get-state owner :result-count)
+            buckets (group-by
                      (fn [x]
                        (let [d (x "last_modified")]
                          (date-to-range-val (c/from-long d))))
-                     (take 500 (:albums data)))]
+                     (take result-count (:albums data)))]
         (html [:div.browse
                (om/build nav/main-nav data)
                (om/build left-column data)

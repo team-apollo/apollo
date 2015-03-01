@@ -1,5 +1,6 @@
 (ns apollo.client.views.artists
   (:require [apollo.client.utils :as utils]
+            [apollo.client.state :as state]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
@@ -20,13 +21,20 @@
        [:a {:href artist-url}
         [:div artist]]]))))
 
-(defn artist-list-partial [artists]
-  (let [artist-heading (utils/format "%s Artists" (count artists))]
-    (om/component
-     (html
+(defn artist-list-partial [artists owner]
+  (reify
+   om/IRender
+   (render [_]
+     (let [artist-heading (utils/format "%s Artists" (count artists))
+           post-filter (:value (om/observe owner (state/ref-post-filter)))
+           filter-fn (fn [a]
+                       (if (or (nil? post-filter) (empty? post-filter))
+                         true
+                         (utils/str-contains? (.toLowerCase (str a)) (.toLowerCase post-filter))))]
+    (html
       [:div.artist-list
        [:h3 artist-heading]
-       [:ul (om/build-all artist-item artists)]]))))
+       [:ul (om/build-all artist-item (filter filter-fn artists))]])))))
 
 (defn artist-detail-partial [artist]
   (let [artist-image (mk-artist-image artist true)]

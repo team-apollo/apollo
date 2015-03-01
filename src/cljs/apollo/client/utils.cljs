@@ -6,6 +6,7 @@
 
 (def encode js/encodeURIComponent)
 (def format gstring/format)
+(def str-contains? gstring/contains)
 
 (defn format-duration [d]
   (let [hours (quot d 3600)

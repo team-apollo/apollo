@@ -9,7 +9,7 @@
             [apollo.client.views.nav :as nav]
             [apollo.client.services :as services]
             [apollo.client.components :as ac]
-            
+            [apollo.client.state :as state]
             [cljs.core.async :refer [<! put! chan unsub sub dropping-buffer]]))
 
 (defn mk-album-url [artist album]
@@ -68,24 +68,41 @@
              [:a.download {:href album-zip-url}
               [:i.fa.fa-download.fa-lg]]]])))))
 
-(defn album-list-partial [{:keys [artist albums]}]
-  (om/component
-   (html
-    (let [album-heading (utils/format "%s Albums" (count albums))
-          artist-first (first artist)
-          back (nav/get-up-nav artist-first)
-          back-link (utils/format "#/nav/%s" back)
-          album-item-args (map (fn [artist album] {:artist-ctx artist :album album}) (repeat artist) albums)]
-      [:div.artist-detail
-       [:div.album-list
-        [:h3.left
-         [:a {:href back-link} [:i.fa.fa-angle-left.fa-fw] "Back"]]
-        [:h3 album-heading]
-        [:ul.clear (om/build-all ac/when-visible (map
-                                                  (fn [c c-data]
-                                                    {:component c
-                                                     :component-data c-data})
-                                                  (repeat album-item) album-item-args))]]]))))
+(defn album-list-partial [data owner]
+  (reify
+   om/IRender
+   (render [_]
+     (html
+      (let [artist (:artist data)
+            albums (:albums data)
+            album-heading (utils/format "%s Albums" (count albums))
+            artist-first (first artist)
+            post-filter (:value (om/observe owner (state/ref-post-filter)))
+            filtered-albums (filter (fn [a]  (if (or (nil? post-filter)
+                                                (empty? post-filter))
+                                              true
+                                              (let [c-f (.toLowerCase post-filter)
+                                                    c-a-b (.toLowerCase (a "album"))
+                                                    c-a-a (.toLowerCase (a "artist" ""))]
+                                                (or (utils/str-contains? c-a-b c-f)
+                                                    (when (not(empty? c-a-a))
+                                                      (utils/str-contains? c-a-a c-f)))))
+                                      )
+                                    albums)
+            back (nav/get-up-nav artist-first)
+            
+            back-link (utils/format "#/nav/%s" back)
+            album-item-args (map (fn [artist album] {:artist-ctx artist :album album}) (repeat artist) filtered-albums)]
+        [:div.artist-detail
+         [:div.album-list
+          [:h3.left
+           [:a {:href back-link} [:i.fa.fa-angle-left.fa-fw] "Back"]]
+          [:h3 album-heading]
+          [:ul.clear (om/build-all ac/when-visible (map
+                                                    (fn [c c-data]
+                                                      {:component c
+                                                       :component-data c-data})
+                                                    (repeat album-item) album-item-args))]]])))))
 
 
 (defn album-detail [{:keys [artist album]}]

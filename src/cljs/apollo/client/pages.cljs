@@ -12,7 +12,7 @@
             [apollo.client.state :as state]
             [apollo.client.components :as ac]
             [apollo.client.events :as events]
-            [cljs.core.async :refer [<! put! chan sub dropping-buffer]]
+            [cljs.core.async :refer [<! put! chan sub dropping-buffer unsub]]
             [cljs-time.extend]
             [cljs-time.coerce :as c]
             [cljs-time.core :as t]))
@@ -36,6 +36,38 @@
             (om/build player/view-now-playing data)
             (om/build player/view-playlists data))])))))
 
+(defn list-filter [data owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:visible true})
+    om/IWillMount
+    (will-mount [_]
+      (om/set-state! owner :keypress-chan (chan (dropping-buffer 1)))
+      (sub events/event-bus :keypress (om/get-state owner :keypress-chan))
+      (go
+        (loop []
+          (let [e (<! (om/get-state owner :keypress-chan))
+                key-code (.-keyCode (:event (:message e)))
+                n (om/get-node owner "filter-input")]
+            (om/transact! (state/ref-post-filter)
+                          (fn [p] (assoc p :value (.-value n))))
+            (when (= key-code 191)
+              (om/set-state! owner :visible true)
+              (.focus n)))
+          (recur))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (unsub events/event-bus :keypress (om/get-state owner :keypress-chan)))
+    om/IRender
+    (render [_]
+      (let [value (:value (om/observe owner (state/ref-post-filter)))]
+        (html
+         [:div {:style {:display (if (om/get-state owner :visible)
+                                   "block"
+                                   "none")}}
+          [:input {:type "text" :ref "filter-input"}]])))))
+
 (defn view-browse [data owner]
   (reify
     om/IRender
@@ -56,6 +88,7 @@
            [:div.pure-u-1
             [:div.content
              (om/build nav/nav-partial (or (first active-artist) active-nav))
+             (om/build list-filter {})
              (cond
                (and (nil? active-artist) (nil? active-album))
                (om/build artists/artist-list-partial artists)
@@ -110,24 +143,39 @@
                   old-result-count (om/get-state owner :result-count)
                   i (* (om/get-state owner :result-inc)
                        old-result-count)
-                  the-i (if (> (- i old-result-count) 100) i (+ 100 old-result-count))
-                  _ (.log js/console (clj->js the-i))]
+                  the-i (if (> (- i old-result-count) 100) i (+ 100 old-result-count))]
               (om/set-state! owner :result-count the-i))
             (recur)))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (unsub events/event-bus :at-bottom (om/get-state owner :scroll-chan)))
     om/IRender
     (render [this]
       (let [result-count (om/get-state owner :result-count)
+            post-filter (:value (om/observe owner (state/ref-post-filter)))
+            filtered-albums (filter (fn [a]  (if (or (nil? post-filter)
+                                                (empty? post-filter))
+                                              true
+                                              (let [c-f (.toLowerCase post-filter)
+                                                    c-a-b (.toLowerCase (str (a "album")))
+                                                    c-a-a (.toLowerCase (str (a "artist")))]
+                                                (or (utils/str-contains? c-a-b c-f)
+                                                    (utils/str-contains? c-a-a c-f))))
+                                      )
+                                    (:albums data))
             buckets (group-by
                      (fn [x]
                        (let [d (x "scan_date")]
                          (date-to-range-val (c/from-long d))))
-                     (take result-count (:albums data)))]
+                     (take result-count filtered-albums))]
         (html [:div.browse
                (om/build nav/main-nav data)
                (om/build left-column data)
+
                [:div.middle-column.pure-g
                 [:div.pure-u-1
                  [:div.content
+                  (om/build list-filter {})
                   (om/build-all view-bucket
                                 (reverse (sort-by :bucket-date
                                          (map (fn [x] {:bucket-date (first x) :albums (last x)})

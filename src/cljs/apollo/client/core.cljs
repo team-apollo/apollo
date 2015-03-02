@@ -13,9 +13,31 @@
             [apollo.client.views.admin :as admin]
             [apollo.client.state :refer [app-state ref-post-filter]]
             [apollo.client.player :refer [audio-elem view-now-playing]]
-            [cljs.core.async :refer [<!]])
+            [apollo.client.keyboard :as keyboard]
+            [apollo.client.events :as e]
+            [cljs.core.async :refer [<! sub chan dropping-buffer]])
   
   (:import goog.History))
+
+(def nav-map {:nav-browse "#/"
+              :nav-recent "#/recent"
+              :nav-config "#/admin"})
+
+(keyboard/register-shortcut :nav-browse "g b")
+(keyboard/register-shortcut :nav-recent "g r")
+(keyboard/register-shortcut :nav-config "g c")
+
+(def shortcut-chan (chan (dropping-buffer 1)))
+(sub e/event-bus :shortcut shortcut-chan)
+
+(go
+  (loop []
+    (let [id (:message (:message (<! shortcut-chan)))
+          route (id nav-map)]
+      (when (not (nil? route))
+        (set! (.-hash js/window.location) route)
+        (secretary/dispatch! route)))
+    (recur)))
 
 (defn loading-page [data]
   (reify

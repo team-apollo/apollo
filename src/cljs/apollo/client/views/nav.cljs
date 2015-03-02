@@ -1,10 +1,33 @@
 (ns apollo.client.views.nav
-  (:require [apollo.client.utils :as utils]
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [secretary.core :as secretary]
+            [apollo.client.utils :as utils]
+            [apollo.client.keyboard :as keyboard]
+            [apollo.client.utils :as utils]
+            [apollo.client.events :as e]
             [sablono.core :as html :refer-macros [html]]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true]
+            [cljs.core.async :refer [<! sub chan dropping-buffer]]))
 
 (def nav-seq (concat ["all"] (map str "abcdefghijklmnopqrstuvwxyz#")))
 
+(doall (map (fn[x] (keyboard/register-shortcut
+                    (keyword (utils/format "browse-%s" x))
+                    (utils/format "n %s" x)))
+            (filter (fn [x] (not (= x "all"))) nav-seq)))
+
+(def shortcut-chan (chan (dropping-buffer 1)))
+(sub e/event-bus :shortcut shortcut-chan)
+
+(go
+  (loop []
+    (let [id (:message (:message (<! shortcut-chan)))
+          prefix (.replace (name id) "browse-" "")
+          route (utils/format "#/nav/%s" prefix)]
+      (when (some #{prefix} nav-seq)
+        (set! (.-hash js/window.location) route)
+        (secretary/dispatch! route)))
+    (recur)))
 
 (defn get-up-nav [prefix]
   (let [nav-str (apply str nav-seq)]

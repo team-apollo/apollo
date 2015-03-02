@@ -11,7 +11,7 @@
   (put! chan {:topic topic :message message}))
 
 (events/listen js/window "scroll" (fn [e] (publish event-chan :scroll nil)))
-(events/listen js/window "keyup" (fn [e] (publish event-chan :keypress {:event e})))
+(events/listen js/window "keyup" (fn [e] (publish event-chan :keypress {:event e}))) ;; probably redundant with keyboard.cljs
 
 (def scroll-chan (chan (dropping-buffer 1)))
 (sub event-bus :scroll scroll-chan)
@@ -21,3 +21,6 @@
     (when (utils/scroll-bottom?)
                          (publish event-chan :at-bottom nil)))
   (recur))
+
+
+

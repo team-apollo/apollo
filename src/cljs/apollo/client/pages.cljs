@@ -135,10 +135,10 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:result-count 20
+      {:result-count 50
        :scroll-chan (chan (dropping-buffer 1))
        :keypress-chan (chan (dropping-buffer 1))
-       :result-inc 1.05})
+       :result-inc 50})
     om/IWillMount
     (will-mount [_]
       (let [scroll-chan (om/get-state owner :scroll-chan)
@@ -149,10 +149,8 @@
           (loop []
             (let [e (<! scroll-chan)
                   old-result-count (om/get-state owner :result-count)
-                  i (* (om/get-state owner :result-inc)
-                       old-result-count)
-                  the-i (if (> (- i old-result-count) 100) i (+ 100 old-result-count))]
-              (om/set-state! owner :result-count the-i))
+                  i (+ (om/get-state owner :result-inc) old-result-count)]
+              (om/set-state! owner :result-count i))
             (recur)))
         (go
           (loop []

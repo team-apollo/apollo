@@ -32,7 +32,7 @@
          (<= (.-left rect) view-port-width))))
 
 (defn scroll-bottom? []
-  (let [doc-height (dom/getDocumentHeight)
+  (let [doc-height (- (dom/getDocumentHeight) 100)
         viewport-height (.-height (dom/getViewportSize))
         scroll-y (.-y (dom/getDocumentScroll))]
-    (= doc-height (+ scroll-y viewport-height))))
+    (<= doc-height (+ scroll-y viewport-height))))

@@ -19,7 +19,7 @@
 (go-loop []
   (let [e (<! scroll-chan)]
     (when (utils/scroll-bottom?)
-                         (publish event-chan :at-bottom nil)))
+      (publish event-chan :at-bottom nil)))
   (recur))
 
 

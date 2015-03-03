@@ -44,8 +44,10 @@
     om/IWillMount
     (will-mount [_]
       (om/set-state! owner :keypress-chan (chan (dropping-buffer 1)))
-      (om/transact! (state/ref-post-filter)
-                    (fn [p] (assoc p :value nil)))      
+      ;; this is causing errors in react, dont know why
+      ;; (om/transact! (state/ref-post-filter)
+      ;;               (fn [p] (assoc p :value nil)))
+      
       (sub events/event-bus :keypress (om/get-state owner :keypress-chan))
       (go
         (loop []

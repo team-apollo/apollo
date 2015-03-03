@@ -59,12 +59,13 @@
                                     tracks ((album-detail "album") "tracks")]
                                 (put! channels/track-list [tracks 0]))))]
            [:li.no-select
-            [:a
-             (om/build img {:src album-image}) album-label album-year]
+            [:a {:href album-url}
+             (om/build img {:src album-image})]
+            [:span album-label]
+            [:span album-year]
             [:div.album-actions
              [:i.fa.fa-play-circle {:on-click play-album}]
              [:a [:i.fa.fa-plus-circle.fa-lg]]
-             [:a {:href album-url} [:i.fa.fa-search.fa-lg]]
              [:a.download {:href album-zip-url}
               [:i.fa.fa-download.fa-lg]]]])))))
 

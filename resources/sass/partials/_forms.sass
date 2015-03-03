@@ -1,0 +1,18 @@
+input
+  background: darken($background, 5)
+  border: solid 1px lighten($background, 5)
+  border-radius: 1em
+  height: 2em
+  margin-bottom: 1em
+  line-height: 2em
+  color: $font-color
+  width: 15em
+  max-width: 500px
+  padding-left: 1.5em
+  transition: border .3s, width .3s
+  &:hover, &:focus
+    border: solid 1px $highlight
+  &:focus
+    border: solid 1px $highlight
+    width: 30%
+

@@ -73,7 +73,7 @@
          [:div {:style {:display (if (om/get-state owner :visible)
                                    "block"
                                    "none")}}
-          [:input {:type "text" :ref "filter-input"}]])))))
+          [:input {:type "text" :placeholder "Press / to activate search..." :ref "filter-input"}]])))))
 
 (defn view-browse [data owner]
   (reify

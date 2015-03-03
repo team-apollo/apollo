@@ -113,21 +113,28 @@ ul
       overflow: hidden
       display: block
       color: #3f3f3f
-      span
-        color: $font-color
-        position: relative
-        left: 0
-        display: block
-        font-size: .75em
-        text-overflow: ellipsis
-        overflow: hidden
-        white-space: nowrap
-        &:hover
-          cursor: default
-        &:first-of-type
-          padding: .5em 0 0
-        &:last-of-type
-          opacity: .5
+      &:hover, &:focus
+        i
+          opacity: 1
+        img
+          filter: grayscale(0)
+          -webkit-filter: grayscale(0)
+          -moz-filter: grayscale(0)
+    span
+      color: $font-color
+      position: relative
+      left: 0
+      display: block
+      font-size: .75em
+      text-overflow: ellipsis
+      overflow: hidden
+      white-space: nowrap
+      &:hover
+        cursor: default
+      &:first-of-type
+        padding: .5em 0 0
+      &:last-of-type
+        opacity: .5
     i
       opacity: 0
       transition: opacity .3s
@@ -141,14 +148,7 @@ ul
     display: inline-flex
     transition: box-shadow .3s
     &:hover
-      cursor: pointer
       box-shadow: 0 0 10px darken($background, 10)
-      a
-        background: $highlight
-        color: lighten($font-color, 10)
-        text-shadow: 0 0 10px $background
-      div
-        left: 10%
     a
       padding: .5em
       background: lighten($background, 10)
@@ -158,6 +158,13 @@ ul
       height: 2.5em
       line-height: 1.2
       color: $font-color
+      &:hover, &:focus
+        cursor: pointer
+        background: $highlight
+        color: lighten($font-color, 10)
+        text-shadow: 0 0 10px $background
+        div
+          left: 10%
     div
       display: initial
       position: relative
@@ -175,7 +182,7 @@ ul
     color: $font-color
     position: absolute
     padding: .5em
-    &:hover
+    &:hover, &:focus
       opacity: 1 !important
       cursor: pointer
     &.fa-download

@@ -31,7 +31,7 @@
                  [cljs-ajax "0.3.3"]
                  [org.omcljs/om "0.8.8"]
                  [bk/ring-gzip "0.1.1"]
-                 [sablono "0.3.1"]
+                 [sablono "0.3.4"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clj-http "1.0.1"]
                  [digest "1.4.4"]

@@ -34,9 +34,9 @@
         image-urls (map image-response results)]
     image-urls))
 
-(defn image-from-cache [& keys]
+(defn image-from-cache [& kys]
   (let [root (cache/cache-root)
-        k (str (apply cache/make-key keys) ".")
+        k (str (apply cache/make-key kys) ".")
         candidates (filter (fn [f] (utils/starts-with? (.getName f) k)) (seq (.listFiles root)))
         result (first (reverse (sort-by (fn [f] (.lastModified f)) candidates)))]
     result))

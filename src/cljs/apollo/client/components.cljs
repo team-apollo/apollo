@@ -11,7 +11,7 @@
     om/IInitState
     (init-state [_]
       {:scroll-chan (chan (dropping-buffer 1))
-       :check-visible (fn []          
+       :check-visible (fn []
                          (let [is-visible (or (om/get-state owner :visible)
                                               (utils/in-view-port owner))]
                            (om/set-state! owner :visible is-visible)

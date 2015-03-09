@@ -47,7 +47,6 @@
                   current-track (if (> (or offset 0) 0)
                                   (last (take (inc offset) track-src))
                                   (first track-src))]
-              
               (set-track current-track (or offset 0) owner)
               (om/set-state! owner :current-src track-src)
               (om/transact! (state/ref-player) (fn [p]
@@ -107,7 +106,7 @@
                 [:li {:on-click (fn [e] (put! channels/player-ctrl (if is-playing? :pause :play)))}
                  (if is-playing?
                    [:i.fa.fa-pause]
-                   [:i.fa.fa-play])]            
+                   [:i.fa.fa-play])]
                 [:li {:on-click (fn [e] (put! channels/player-ctrl :next))}
                  [:i.fa.fa-step-forward]]
                 [:li [:i.fa.fa-repeat]]

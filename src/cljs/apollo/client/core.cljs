@@ -16,7 +16,7 @@
             [apollo.client.keyboard :as keyboard]
             [apollo.client.events :as e]
             [cljs.core.async :refer [<! sub chan dropping-buffer]])
-  
+
   (:import goog.History))
 
 (def nav-map {:nav-browse "#/"

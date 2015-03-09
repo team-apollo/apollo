@@ -92,7 +92,6 @@
                                       )
                                     albums)
             back (nav/get-up-nav artist-first)
-            
             back-link (utils/format "#/nav/%s" back)
             album-item-args (map (fn [artist album] {:artist-ctx artist :album album}) (repeat artist) filtered-albums)]
         [:div.artist-detail

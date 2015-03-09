@@ -77,7 +77,6 @@
   (let [tracks (filter (fn [t]
                          (= (utils/canonicalize artist-id) (:artist_canonical t)))
                        (s/tracks-by-album s/the-db album-id))
-        
         img (or (first (images-for-tracks tracks))
                 (images/image-from-cache artist-id album-id)
                 (first-album-image-from-google artist-id album-id))]
@@ -99,7 +98,7 @@
                          :name album
                          :album_canonical album_canonical
                          :year year
-                         :tracks (map (fn [r] {:track r}) tracks)}})      
+                         :tracks (map (fn [r] {:track r}) tracks)}})
       {:status 404})))
 
 

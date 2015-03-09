@@ -47,7 +47,6 @@
       ;; this is causing errors in react, dont know why
       ;; (om/transact! (state/ref-post-filter)
       ;;               (fn [p] (assoc p :value nil)))
-      
       (sub events/event-bus :keypress (om/get-state owner :keypress-chan))
       (go
         (loop []

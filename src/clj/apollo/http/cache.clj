@@ -5,9 +5,9 @@
             [pantomime.mime :refer [mime-type-of]]
             [clojure.tools.logging :as log]))
 
-(defn make-key [& keys]
-  (let [result (utils/chk-sum-str (interpose ":" keys))]
-    (log/info {:result result :keys keys})
+(defn make-key [& kys]
+  (let [result (utils/chk-sum-str (interpose ":" kys))]
+    (log/info {:result result :keys kys})
     result))
 
 (defn cache-root []
@@ -17,15 +17,15 @@
       nil)))
 
 (defn cache-response
-  ([url the-cache-root keep? & name]
-   (log/info (format "caching %s for %s" url name))
+  ([url the-cache-root keep? & n]
+   (log/info (format "caching %s for %s" url n))
    (let [res (client/get url {:as :byte-array
                               :throw-exceptions false})
          status (:status res)
          content-type ((:headers res) "Content-Type")
          body (:body res)
          cache-path (.getAbsolutePath the-cache-root)
-         k (apply make-key (if (seq? name) name [name]))
+         k (apply make-key (if (seq? n) n [n]))
          extension (utils/get-extension-for-mime (or content-type (mime-type-of body) ".jpg"))
          file-name (format "%s/%s%s" cache-path k extension)]
      (if (and (= 200 status) (keep? res))
@@ -34,8 +34,8 @@
          (.write w body)
          (io/file file-name))
        nil)))
-  ([url name]
-   (cache-response url (cache-root) (fn [r] true) name)))
+  ([url n]
+   (cache-response url (cache-root) (fn [r] true) n)))
 
 (defn image-response? [r]
   (utils/starts-with? (or ((:headers r) "Content-type")

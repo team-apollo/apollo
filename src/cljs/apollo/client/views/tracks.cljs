@@ -25,7 +25,6 @@
       (utils/format "%s by %s" track-title artist)
       (utils/format "%s. %s" track-num track-title))))
 
-  
 (defn track-detail [track compilation?]
   (let [t (track "track")
         duration (t "duration")

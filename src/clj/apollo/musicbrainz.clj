@@ -8,10 +8,10 @@
                                                                        :limit 10
                                                                        :fmt "json"}
                                                         :as :json}))
-(defn entity-by-id [entity id inc]
+(defn entity-by-id [entity id num-inc]
   (client/get (format "%s%s" (format musicbrainz-base-qry-url entity) id)
               {:query-params {:fmt "json"
-                              :inc inc}
+                              :inc num-inc}
                :as :json}))
 
 (defn get-artist [artist-name]

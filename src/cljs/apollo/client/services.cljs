@@ -15,7 +15,7 @@
     (secretary/dispatch! "#/error")))
 
 
-(defn artist-list-prefix 
+(defn artist-list-prefix
   ([prefix]
    (let [out (chan)]
      (ajax/GET (utils/format "/api/artists/search/%s" (utils/encode prefix))
@@ -47,7 +47,7 @@
                             (utils/encode artist)
                             (utils/encode album))
               {:error-handler error-handler
-               :handler (fn [response] (put! out response))})    
+               :handler (fn [response] (put! out response))})
     out))
 
 

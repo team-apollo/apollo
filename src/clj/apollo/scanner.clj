@@ -1,10 +1,8 @@
 (ns apollo.scanner
   (:require [clojure.java.io :as io]
-            [claudio.id3 :as id3] ;; might want to ditch this, it's pretty limited
             [clojure.string :as s]
             [apollo.db.schema :as db]
             [apollo.utils :refer [canonicalize]]
-            [pantomime.mime :refer [mime-type-of]]
             [clojure.tools.logging :as log]
             [clojure.string :as string]
             [clj-time.core :as t]

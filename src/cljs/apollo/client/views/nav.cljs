@@ -57,7 +57,7 @@
       (let [browse-url "#/"
             settings-url "#/admin"
             recent-url "#/recent"
-            token (utils/format "#%s" (:current-token data)) 
+            token (utils/format "#%s" (:current-token data))
             active-item (cond
                           (= token settings-url) {:settings true}
                           (= token recent-url) {:recent true}

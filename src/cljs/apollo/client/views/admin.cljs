@@ -14,11 +14,12 @@
 
 (defn mount-item [m]
   (let [path (m "mount")]
-    [:li path [:a {
-                   :on-click (fn [e]
-                               (delete-mount path)
-                               false)}
-               "delete"]]))
+    [:li path
+      [:a.button.subtle {
+            :on-click (fn [e]
+              (delete-mount path)
+                false)}
+        [:i.fa.fa-trash]]]))
 
 (defn view-admin [data owner]
   (reify
@@ -39,6 +40,11 @@
                 [:div.pure-u-1
                  [:h2 "Existing Mounts"]
                  [:ul (map mount-item mounts)]
-                 [:input {:type "text" :ref "new-mount"}]
-                 [:a.button {:href "#" :on-click on-add-mount} "create"]
-                 [:a.button {:on-click (fn [e] (services/do-scan))} "(re)scan"]]]])))))
+                 [:a.button {:on-click (fn [e] (services/do-scan))}
+                  [:i.fa.fa-refresh] "(Re)scan Collection"]
+                 [:hr]
+                 [:h2 "Add New Mount"]
+                 [:input.has-btn {:type "text" :ref "new-mount" :placeholder "Copy a folder location here..."}]
+                 [:a.button {:href "#" :on-click on-add-mount}
+                  [:i.fa.fa-plus] "Add Mount"]
+                 ]]])))))

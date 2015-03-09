@@ -1,0 +1,24 @@
+.button
+  background: $btn-bg
+  box-sizing: border-box
+  height: 2em
+  border-radius: 1em
+  display: inline-block
+  line-height: 2em
+  padding: 0 1em
+  color: $font-color
+  transition: background .3s
+  &.subtle
+    background: none
+  &:hover 
+    color: $font-color
+    background: lighten($btn-bg, 15)
+  i
+    padding-right: .5em
+    line-height: 2em
+    &:last-child
+      padding-right: 0
+
+input
+  + .button
+    border-radius: 0 1em 1em 0

@@ -36,6 +36,13 @@
             (om/build player/view-now-playing data)
             (om/build player/view-playlists data))])))))
 
+(defn set-post-filter-value [value]
+  (om/transact!
+   (state/ref-post-filter)
+   (fn [p]
+     (let [result (assoc p :value value)]
+       result))))
+
 (defn list-filter [data owner]
   (reify
     om/IInitState
@@ -44,20 +51,12 @@
     om/IWillMount
     (will-mount [_]
       (om/set-state! owner :keypress-chan (chan (dropping-buffer 1)))
-      ;; this is causing errors in react, dont know why
-      ;; (om/transact! (state/ref-post-filter)
-      ;;               (fn [p] (assoc p :value nil)))
       (sub events/event-bus :keypress (om/get-state owner :keypress-chan))
       (go
         (loop []
           (let [e (<! (om/get-state owner :keypress-chan))
                 key-code (.-keyCode (:event (:message e)))
-                n (om/get-node owner "filter-input")
-                ov (:value (state/ref-post-filter))]
-            (om/transact! (state/ref-post-filter)
-                          (fn [p] (assoc p :value (.-value n))))
-            (when (not (= ov (.-value n)))
-              (events/publish events/event-chan :post-filter-changed (.-value n)))
+                n (om/get-node owner "filter-input")]
             (when (= key-code 191)
               (om/set-state! owner :visible true)
               (.focus n)))
@@ -72,7 +71,11 @@
          [:div {:style {:display (if (om/get-state owner :visible)
                                    "block"
                                    "none")}}
-          [:input {:type "text" :placeholder "Press / to activate search..." :ref "filter-input"}]])))))
+          [:input {:type "text"
+                   :value value
+                   :on-change (fn [e] (set-post-filter-value (.-value (.-target e))))
+                   :placeholder "Press / to activate search..."
+                   :ref "filter-input"}]])))))
 
 (defn view-browse [data owner]
   (reify
@@ -142,27 +145,18 @@
        :result-inc 50})
     om/IWillMount
     (will-mount [_]
-      (let [scroll-chan (om/get-state owner :scroll-chan)
-            keypress-chan (om/get-state owner :keypress-chan)]
+      (let [scroll-chan (om/get-state owner :scroll-chan)]
         (sub events/event-bus :at-bottom scroll-chan)
-        (sub events/event-bus :post-filter-changed keypress-chan)
         (go
           (loop []
             (let [e (<! scroll-chan)
                   old-result-count (om/get-state owner :result-count)
                   i (+ (om/get-state owner :result-inc) old-result-count)]
               (om/set-state! owner :result-count i))
-            (recur)))
-        (go
-          (loop []
-            (let [post-filter (:value (om/observe owner (state/ref-post-filter)))
-                  e (<! keypress-chan)]
-              (om/set-state! owner :result-count 20))
             (recur)))))
     om/IWillUnmount
     (will-unmount [_]
-      (unsub events/event-bus :at-bottom (om/get-state owner :scroll-chan))
-      (unsub events/event-bus :keypress (om/get-state owner :keypress-chan)))
+      (unsub events/event-bus :at-bottom (om/get-state owner :scroll-chan)))
     om/IRender
     (render [this]
       (let [result-count (om/get-state owner :result-count)

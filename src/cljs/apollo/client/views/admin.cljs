@@ -32,7 +32,8 @@
             on-add-mount (fn [e]
                            (go (let [v (.-value (om/get-node owner "new-mount"))
                                      result (<! (services/add-mount v))]
-                                 (secretary/dispatch! "#/admin")))
+                                 (secretary/dispatch! "#/admin")
+                                 (set! (.-value (om/get-node owner "new-mount")) nil)))
                            false)]
         (html [:div.admin
                (om/build nav/main-nav data)

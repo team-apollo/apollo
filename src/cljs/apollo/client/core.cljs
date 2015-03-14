@@ -15,6 +15,7 @@
             [apollo.client.player :refer [audio-elem view-now-playing]]
             [apollo.client.keyboard :as keyboard]
             [apollo.client.events :as e]
+            [apollo.client.state :as state]
             [cljs.core.async :refer [<! sub chan dropping-buffer]])
 
   (:import goog.History))
@@ -64,6 +65,13 @@
          {:target (. js/document (getElementById "app"))})
 
 
+(defn reset-post-filter []
+  (om/transact!
+   (state/ref-post-filter)
+   (fn [p]
+     (let [result (assoc p :value nil)]
+       result))))
+
 (defroute home-path "/" []
   (go
     (swap! app-state assoc :artists (<! (services/artist-list-prefix "all")))
@@ -91,8 +99,7 @@
       ;; (swap! app-state assoc :artist-info (info-response "info"))
       (swap! app-state assoc :active-page pages/view-browse)
       (swap! app-state assoc :albums (response "albums"))
-      (swap! app-state assoc :active-album nil)
-      (om/transact! (ref-post-filter) :value (fn [_] nil)))))
+      (swap! app-state assoc :active-album nil))))
 
 (defroute album-path "/artists/:artist/albums/:album" [artist album]
   (go
@@ -128,6 +135,7 @@
                    (fn [event]
                      (secretary/dispatch! (.-token event))
                      (swap! app-state assoc :current-token (.-token event))
+                     (reset-post-filter)
                      true))
     (.setEnabled history true)))
 

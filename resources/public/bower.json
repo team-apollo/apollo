@@ -7,7 +7,6 @@
   "license": "private",
   "private": true,
   "dependencies": {
-    "fontawesome": "~4.2.0",
-    "react": "~0.12.2"
+    "fontawesome": "~4.2.0"
   }
 }

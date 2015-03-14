@@ -26,7 +26,7 @@
   (comp
      (set-attr :class "is-dev")
      (prepend (html [:script {:type "text/javascript" :src "/javascripts/apollo/goog/base.js"}]))
-     (prepend (html [:script {:type "text/javascript" :src "/lib/react/react.min.js"}]))
+
      (append  (html [:script {:type "text/javascript"} "goog.require('apollo.client.core')"]))
      (append  (html [:script {:type "text/javascript"} "goog.require('apollo.client.dev')"]))))
 

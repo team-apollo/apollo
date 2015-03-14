@@ -35,7 +35,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clj-http "1.0.1"]
                  [digest "1.4.4"]
-                 [figwheel "0.2.3-SNAPSHOT"]
+                 [figwheel "0.2.5"]
                  [environ "1.0.0"]
                  [enlive "1.1.5"]
                  [clj-time "0.9.0"]

@@ -16,7 +16,7 @@
             [apollo.client.keyboard :as keyboard]
             [apollo.client.events :as e]
             [apollo.client.state :as state]
-            [cljs.core.async :refer [<! sub chan dropping-buffer]])
+            [cljs.core.async :refer [<! sub chan dropping-buffer timeout]])
 
   (:import goog.History))
 
@@ -135,7 +135,9 @@
                    (fn [event]
                      (secretary/dispatch! (.-token event))
                      (swap! app-state assoc :current-token (.-token event))
-                     (reset-post-filter)
+                     (go
+                       (<! (timeout 100))
+                       (reset-post-filter))
                      true))
     (.setEnabled history true)))
 

@@ -139,20 +139,21 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:result-count 50
+      {:result-count 25
        :scroll-chan (chan (dropping-buffer 1))
        :keypress-chan (chan (dropping-buffer 1))
-       :result-inc 50})
+       :result-inc 25})
     om/IWillMount
     (will-mount [_]
       (let [scroll-chan (om/get-state owner :scroll-chan)]
         (sub events/event-bus :at-bottom scroll-chan)
         (go
           (loop []
-            (let [e (<! scroll-chan)
+            (let [e (<! (events/throttle scroll-chan 100))
                   old-result-count (om/get-state owner :result-count)
                   i (+ (om/get-state owner :result-inc) old-result-count)]
-              (om/set-state! owner :result-count i))
+              (om/set-state! owner :result-count i)
+              (.log js/console "loading more shit"))
             (recur)))))
     om/IWillUnmount
     (will-unmount [_]

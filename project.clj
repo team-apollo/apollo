@@ -27,7 +27,7 @@
                  [claudio "0.1.2"]
                  [com.novemberain/pantomime "2.4.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [secretary "1.2.2"]
+                 [secretary "1.2.1"]
                  [cljs-ajax "0.3.10"]
                  [org.omcljs/om "0.8.8"]
                  [bk/ring-gzip "0.1.1"]

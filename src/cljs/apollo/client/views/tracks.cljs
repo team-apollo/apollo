@@ -31,12 +31,11 @@
   (reify
     om/IRender
     (render [this]
-      (html
-       (let [t (track "track")
-             duration (t "duration")
-             track-label (track-label track compilation?)]
+      (let [t (track "track")
+            duration (t "duration")
+            track-label (track-label track compilation?)]
+        (html
          [:li.track-row
-          
           [:a {:on-click (fn [e]
                            (put! channels/track-list [[track] 0])
                            (.preventDefault e))}

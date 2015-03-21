@@ -34,10 +34,10 @@
       (unsub events/event-bus :scroll (om/get-state owner :scroll-chan)))
     om/IRender
     (render [_]
-      (html
-       (if (not (om/get-state owner :visible))
-         [:span
-          [:img {:height "150"}]]
-         (let [component (:component data)
-               component-data (:component-data data)]
+      (let [component (:component data)
+            component-data (:component-data data)]
+        (html
+         (if (not (om/get-state owner :visible))
+           [:span
+            [:img {:height "150"}]]
            (om/build component component-data)))))))

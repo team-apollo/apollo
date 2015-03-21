@@ -38,8 +38,7 @@
   (reify
     om/IRender
     (render [_]
-      (html
-       (let [artist-ctx (data :artist-ctx)
+      (let [artist-ctx (data :artist-ctx)
                album (data :album)
                the-artist (or artist-ctx (album "artist"))
                artist (if (utils/s-contains? the-artist ",")
@@ -58,6 +57,7 @@
                               (let [album-detail (<! (services/album-detail artist (album "album")))
                                     tracks ((album-detail "album") "tracks")]
                                 (put! channels/track-list [tracks 0]))))]
+        (html
            [:li.no-select
             [:a {:href album-url}
              (om/build img {:src album-image})]
@@ -73,8 +73,7 @@
   (reify
    om/IRender
    (render [_]
-     (html
-      (let [artist (:artist data)
+     (let [artist (:artist data)
             albums (:albums data)
             album-heading (utils/format "%s Albums" (count albums))
             artist-first (first artist)
@@ -94,6 +93,7 @@
             back (nav/get-up-nav artist-first)
             back-link (utils/format "#/nav/%s" back)
             album-item-args (map (fn [artist album] {:artist-ctx artist :album album}) (repeat artist) filtered-albums)]
+     (html
         [:div.artist-detail
          [:div.album-list
           [:h3.left
@@ -108,8 +108,7 @@
 
 (defn album-detail [{:keys [artist album]}]
   (om/component
-   (html
-    (let [album-name (album "name")
+   (let [album-name (album "name")
           album-year (album "year")
           album-label (utils/format "%s" album-name)
           album-image (mk-album-image artist (album "album_canonical"))
@@ -117,7 +116,8 @@
           tracks (album "tracks")
           artist-url (artists/mk-artist-url artist)
           play-album (fn [e] (put! channels/track-list [tracks 0]))
-          compilation? (album "compilation")]
+         compilation? (album "compilation")]
+     (html
       (if (and (not (nil? artist)) (not (nil? album)))
         [:div.album-detail
          [:h3

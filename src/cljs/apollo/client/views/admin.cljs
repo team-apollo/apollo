@@ -16,8 +16,8 @@
   (reify
     om/IRender
     (render [this]
-      (html
-       (let [path (m "mount")]
+      (let [path (m "mount")]
+        (html
          [:li path
           [:a.button.subtle {
                              :on-click (fn [e]

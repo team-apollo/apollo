@@ -49,7 +49,7 @@
          :port ~port}
   :clean-targets ^{:protect false} [~cljs-output-dir]
   :profiles {:dev {:repl-options {:init-ns apollo.core}
-                   :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]]
+                   :plugins [[lein-figwheel "0.2.5"]]
                    :hooks [leiningen.cljsbuild
                            leiningen.sass]
                    :env {:is-dev true}
@@ -61,13 +61,13 @@
                               }
                    :cljsbuild {:builds
                                {:app {:source-paths [~cljs-src "env/dev/cljs"]
-                                 :compiler {:output-to ~cljs-output-to
-                                            :optimizations :none
-                                            :cache-analysis true
-                                            :pretty-print true
-                                            :pseudo-names true
-                                            :source-map true
-                                            :output-dir ~cljs-output-dir}}}}}
+                                      :compiler {:output-to ~cljs-output-to
+                                                 :optimizations :none
+                                                 :cache-analysis true
+                                                 :pretty-print true
+                                                 :pseudo-names true
+                                                 :source-map true
+                                                 :output-dir ~cljs-output-dir}}}}}
              :uberjar {:hooks [leiningen.cljsbuild
                                leiningen.sass]
                        :aot :all
@@ -78,6 +78,6 @@
                                                 :cache-analysis true
                                                 :pretty-print false
                                                 :pseudo-names false}}]}}}  
-   :sass {:src ~sass-src
+  :sass {:src ~sass-src
          :output-directory ~sass-output-dir
          :output-extension "css"})

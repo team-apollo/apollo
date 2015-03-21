@@ -13,13 +13,17 @@
     (secretary/dispatch! "#/admin")))
 
 (defn mount-item [m]
-  (let [path (m "mount")]
-    [:li path
-      [:a.button.subtle {
-            :on-click (fn [e]
-              (delete-mount path)
-                false)}
-        [:i.fa.fa-trash]]]))
+  (reify
+    om/IRender
+    (render [this]
+      (html
+       (let [path (m "mount")]
+         [:li path
+          [:a.button.subtle {
+                             :on-click (fn [e]
+                                         (delete-mount path)
+                                         false)}
+           [:i.fa.fa-trash]]])))))
 
 (defn view-admin [data owner]
   (reify
@@ -40,7 +44,7 @@
                [:div.content.pure-g
                 [:div.pure-u-1
                  [:h2 "Existing Mounts"]
-                 [:ul (map mount-item mounts)]
+                 [:ul (om/build-all mount-item mounts)]
                  [:a.button {:on-click (fn [e] (services/do-scan))}
                   [:i.fa.fa-refresh] "(Re)scan Collection"]
                  [:hr]

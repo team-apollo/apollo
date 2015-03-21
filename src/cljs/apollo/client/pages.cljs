@@ -179,7 +179,6 @@
         (html [:div.browse
                (om/build nav/main-nav data)
                (om/build left-column data)
-
                [:div.middle-column.pure-g
                 [:div.pure-u-1
                  [:div.content

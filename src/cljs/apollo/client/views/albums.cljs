@@ -130,5 +130,7 @@
           [:a.download {:href album-zip-url}
            [:i.fa.fa-download.fa-fw] "Download Album"]]
          [:ul.tracks
-          (map (fn [track] (tracks/track-detail track compilation?)) tracks)]]
+          (om/build-all tracks/track-detail (map (fn [track] {:track track
+                                                              :compilation? compilation?}) tracks (repeat compilation?)))
+          ]]
         [:div])))))

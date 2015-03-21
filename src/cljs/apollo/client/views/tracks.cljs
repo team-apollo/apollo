@@ -1,5 +1,7 @@
 (ns apollo.client.views.tracks
-  (:require [apollo.client.utils :as utils]
+  (:require [om.core :as om :include-macros true]
+            [sablono.core :as html :refer-macros [html]]
+            [apollo.client.utils :as utils]
             [apollo.client.channels :as channels]
             [cljs.core.async :refer [<! put! chan]]))
 
@@ -25,13 +27,18 @@
       (utils/format "%s by %s" track-title artist)
       (utils/format "%s. %s" track-num track-title))))
 
-(defn track-detail [track compilation?]
-  (let [t (track "track")
-        duration (t "duration")
-        track-label (track-label track compilation?)]
-    [:li.track-row
-     [:a {:on-click (fn [e]
-                      (put! channels/track-list [[track] 0])
-                      (.preventDefault e))}
-      track-label
-      [:div.right (utils/format-duration duration)]]]))
+(defn track-detail [{:keys [track compilation?]}]
+  (reify
+    om/IRender
+    (render [this]
+      (html
+       (let [t (track "track")
+             duration (t "duration")
+             track-label (track-label track compilation?)]
+         [:li.track-row
+          
+          [:a {:on-click (fn [e]
+                           (put! channels/track-list [[track] 0])
+                           (.preventDefault e))}
+           track-label
+           [:div.right (utils/format-duration duration)]]])))))

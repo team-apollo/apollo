@@ -36,16 +36,20 @@
       (utils/s-contains? nav-str prefix) prefix
       :else "#")))
 
-(defn nav-item [x active-nav]
-  (let [nav-url (utils/format "#/nav/%s" (utils/encode x))
-        active? (= x (get-up-nav active-nav))]
-    [:li {:class-name (when active? "active")} [:a {:href nav-url} x]]))
+(defn nav-item [{:keys [x active-nav]}]
+  (reify
+    om/IRender
+    (render [this]
+      (let [nav-url (utils/format "#/nav/%s" (utils/encode x))
+            active? (= x (get-up-nav active-nav))]
+        (html
+         [:li {:class-name (when active? "active")} [:a {:href nav-url} x]])))))
 
 (defn nav-partial [active-nav]
   (om/component
    (html
     [:div.collection-nav
-     [:ul (map nav-item nav-seq (repeat active-nav))]
+     [:ul (om/build-all nav-item (map (fn [the-x the-active-nav] {:x the-x :active-nav the-active-nav}) nav-seq (repeat active-nav)))]
      [:span.fa-stack
       [:i.fa.fa-circle.fa-stack-2x]
       [:i.fa.fa-ellipsis-h.fa-inverse.fa-stack-1x.fa-lg]]])))

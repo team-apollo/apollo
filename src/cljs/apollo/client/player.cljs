@@ -13,15 +13,14 @@
             [sablono.core :as html :refer-macros [html]]))
 
 (defn ctrl-audio-node [action]
-  (let [seek-offset 5]
-    (case action
+  (case action
       :stop (do (.pause audio-node)
                 (aset audio-node "currentTime" 0))
       :play (.play audio-node)
       :pause (.pause audio-node)
       :seek-backward (aset audio-node "currentTime" (- (.-currentTime audio-node) 1))
       :seek-forward (aset audio-node "currentTime" (+ (.-currentTime audio-node) 1))
-      (.pause audio-node))))
+      (.pause audio-node)))
 
 (defn set-track [track offset owner]
   (om/set-state! owner :current-offset offset)
@@ -37,7 +36,6 @@
       {:current-src ""
        :current-offset 0
        :ctrl :stop
-       :track-src []
        :current-position 0
        :end-position 0})
     om/IWillMount
@@ -134,6 +132,15 @@
                   [:img {:src album-image}]]
                  [:span track-heading]]))))))
 
+(defn view-playlist-item [{:keys [idx item view-playing? playing playing-offset]}]
+  (reify
+    om/IRender
+    (render [this]
+      (html
+       [:li {:class-name (when (and view-playing? (= idx playing-offset))  "active")}
+        [:p {:on-click (fn [e] (put! channels/track-list [playing idx]))}
+         (tracks/track-label item true)]]))))
+
 (defn view-playlists [data owner]
   (reify
     om/IInitState
@@ -149,8 +156,9 @@
                [:span {:on-click (fn [e] (om/set-state! owner :view-playing true))} "now"]
                [:i.fa.fa-plus {:on-click (fn [e] (om/set-state! owner :view-playing false))}]
                [:ul.playlist
-                (map-indexed (fn [idx item]
-                               [:li {:class-name (when (and view-playing? (= idx playing-offset))  "active")}
-                                [:p {:on-click (fn [e] (put! channels/track-list [playing idx]))}
-                                 (tracks/track-label item true)]])
-                             playlist-items)]])))))
+                (om/build-all view-playlist-item
+                              (map-indexed (fn [idx item] {:idx idx
+                                                           :item item
+                                                           :view-playing? view-playing?
+                                                           :playing playing
+                                                           :playing-offset playing-offset}) playlist-items))]])))))

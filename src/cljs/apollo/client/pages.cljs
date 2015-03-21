@@ -152,8 +152,7 @@
             (let [e (<! (events/throttle scroll-chan 100))
                   old-result-count (om/get-state owner :result-count)
                   i (+ (om/get-state owner :result-inc) old-result-count)]
-              (om/set-state! owner :result-count i)
-              (.log js/console "loading more shit"))
+              (om/set-state! owner :result-count i))
             (recur)))))
     om/IWillUnmount
     (will-unmount [_]

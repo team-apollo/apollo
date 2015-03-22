@@ -24,6 +24,7 @@
 
 (defn set-track [track offset owner]
   (om/set-state! owner :current-offset offset)
+  (om/set-state! owner :current-track track)
   (om/transact! (state/ref-player) (fn [p] (assoc p :current-offset offset)))
   (aset audio-node "src" (tracks/mk-track-url track))
   (ctrl-audio-node :play)
@@ -35,6 +36,7 @@
     (init-state [this]
       {:current-src ""
        :current-offset 0
+       :current-track nil
        :ctrl :stop
        :current-position 0
        :end-position 0})
@@ -44,8 +46,11 @@
             (let [[track-src offset] (<! channels/track-list)
                   current-track (if (> (or offset 0) 0)
                                   (last (take (inc offset) track-src))
-                                  (first track-src))]
-              (set-track current-track (or offset 0) owner)
+                                  (first track-src))
+                  cp (om/get-state owner :current-track)]
+              (when (not= ((current-track "track") "id")
+                        (((or cp {}) "track" {}) "id"))
+                (set-track current-track (or offset 0) owner))
               (om/set-state! owner :current-src track-src)
               (om/transact! (state/ref-player) (fn [p]
                                                  (assoc p

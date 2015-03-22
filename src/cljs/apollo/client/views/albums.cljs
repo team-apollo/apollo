@@ -56,7 +56,13 @@
                             (go
                               (let [album-detail (<! (services/album-detail artist (album "album")))
                                     tracks ((album-detail "album") "tracks")]
-                                (put! channels/track-list [tracks 0]))))]
+                                (put! channels/track-list [tracks 0]))))
+            append-album (fn [e]
+                           (go (let [album-detail (<! (services/album-detail artist (album "album")))
+                                     tracks ((album-detail "album") "tracks")
+                                     playing (:current-playlist (state/ref-player))
+                                     playing-offset (:current-offset (state/ref-player))]
+                                 (put! channels/track-list [(concat playing tracks) playing-offset]))))]
         (html
            [:li.no-select
             [:a {:href album-url}
@@ -65,7 +71,7 @@
             [:span album-year]
             [:div.album-actions
              [:i.fa.fa-play-circle {:on-click play-album}]
-             [:a [:i.fa.fa-plus-circle.fa-lg]]
+             [:i.fa.fa-plus-circle.fa-lg {:on-click append-album}]
              [:a.download {:href album-zip-url}
               [:i.fa.fa-download.fa-lg]]]])))))
 

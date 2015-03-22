@@ -34,8 +34,7 @@
   (reify
     om/IInitState
     (init-state [this]
-      {:current-src ""
-       :current-offset 0
+      {:current-offset 0
        :current-track nil
        :ctrl :stop
        :current-position 0
@@ -48,10 +47,9 @@
                                   (last (take (inc offset) track-src))
                                   (first track-src))
                   cp (om/get-state owner :current-track)]
-              (when (not= ((current-track "track") "id")
-                        (((or cp {}) "track" {}) "id"))
+              (when (not= (((or current-track {}) "track" {}) "id")
+                          (((or cp {}) "track" {}) "id"))
                 (set-track current-track (or offset 0) owner))
-              (om/set-state! owner :current-src track-src)
               (om/transact! (state/ref-player) (fn [p]
                                                  (assoc p
                                                         :current-playlist track-src
@@ -62,7 +60,7 @@
                   current-offset (or (om/get-state owner :current-offset) 0)
                   previous-offset (dec current-offset)
                   next-offset (inc current-offset)
-                  track-src (om/get-state owner :current-src)
+                  track-src ((state/ref-player) :current-playlist)
                   next-track (last (take (inc next-offset) track-src))
                   previous-track (last (take (inc previous-offset) track-src))
                   current-track (last (take (inc current-offset) track-src))]
@@ -113,7 +111,11 @@
                 [:li {:on-click (fn [e] (put! channels/player-ctrl :next))}
                  [:i.fa.fa-step-forward]]
                 [:li [:i.fa.fa-repeat]]
-                [:li [:i.fa.fa-random]]]])))))
+                [:li {:on-click (fn [e] (om/transact!
+                                         (state/ref-player)
+                                         (fn [p]
+                                           (assoc p :current-playlist (shuffle (:current-playlist p))))))}
+                 [:i.fa.fa-random]]]])))))
 
 (defn view-now-playing [data owner]
   (reify

@@ -13,9 +13,11 @@
       {:scroll-chan (chan (dropping-buffer 1))
        :check-visible (fn []
                          (let [is-visible (or (om/get-state owner :visible)
-                                              (utils/in-view-port owner))]
+                                              (utils/in-view-port owner))
+                               scroll-chan (om/get-state owner :scroll-chan)]
                            (om/set-state! owner :visible is-visible)
-                           (when is-visible (unsub events/event-bus :scroll (om/get-state owner :scroll-chan)))))})
+                           (when is-visible
+                             (unsub events/event-bus :scroll scroll-chan))))})
     om/IWillMount
     (will-mount [_]
       (let [scroll-chan (om/get-state owner :scroll-chan)

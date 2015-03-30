@@ -25,10 +25,13 @@
 (def inject-devmode-html
   (comp
      (set-attr :class "is-dev")
-     (prepend (html [:script {:type "text/javascript" :src "/javascripts/apollo/goog/base.js"}]))
+     (prepend (html [:script {:type "text/javascript"
+                              :src "/javascripts/apollo/goog/base.js"}]))
 
-     (append  (html [:script {:type "text/javascript"} "goog.require('apollo.client.core')"]))
-     (append  (html [:script {:type "text/javascript"} "goog.require('apollo.client.dev')"]))))
+     (append  (html [:script {:type "text/javascript"}
+                     "goog.require('apollo.client.core')"]))
+     (append  (html [:script {:type "text/javascript"}
+                     "goog.require('apollo.client.dev')"]))))
 
 (deftemplate page
   (io/resource "index.html") [] [:body] (if is-dev? inject-devmode-html identity))

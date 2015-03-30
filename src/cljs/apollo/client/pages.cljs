@@ -78,14 +78,9 @@
   (reify
     om/IRender
     (render [this]
-      (let [active-artist (:active-artist data)
-            active-nav (:active-nav data)
-            artists (:artists data)
+      (let [{:keys [active-artist active-nav artists albums active-album artist-info]} data
             artist-count (count artists)
-            albums (:albums data)
-            album-count (count albums)
-            active-album (:active-album data)
-            info (:artist-info data)]
+            album-count (count albums)]
         (html
          [:div.browse
           (om/build nav/main-nav data)
@@ -102,7 +97,7 @@
                [:span
                 (om/build albums/album-list-partial {:artist active-artist
                                                      :albums (sort-by (fn [a] (first (split (a "year") "-"))) albums)})
-                (om/build artists/artist-info-partial info)]
+                (om/build artists/artist-info-partial artist-info)]
                (not (nil? active-album))
                (om/build albums/album-detail {:artist active-artist :album active-album}))]]]])))))
 

@@ -18,7 +18,8 @@
             [apollo.http.artist :refer :all]
             [apollo.http.album :refer :all]
             [apollo.http.track :refer :all]
-            [apollo.db.schema :as schema]))
+            [apollo.db.schema :as schema]
+            [apollo.scanner :as scanner]))
 
 (def is-dev? (env :is-dev))
 
@@ -102,3 +103,9 @@
      (log/info (schema/create-all-tbls! schema/the-db))
      (log/info (format "%s created, you will need to add some mounts from the admin page." (.getAbsolutePath db-file))))
    (log/info (format "database %s exists... we're all good." (.getAbsolutePath db-file)))))
+
+
+(def scan-job (future (while true
+                        (Thread/sleep 5000)
+                        (try (scanner/process-mounts!)
+                             (catch Exception e (log/error e))))))

@@ -101,7 +101,7 @@
                (and (not (nil? active-artist)) (nil? active-album))
                [:span
                 (om/build albums/album-list-partial {:artist active-artist
-                                                     :albums (sort-by (fn [a] (a "year")) (map (fn [x] (assoc x "year" (first (split (x "year") "-")))) albums))})
+                                                     :albums (sort-by (fn [a] (first (split (a "year") "-"))) albums)})
                 (om/build artists/artist-info-partial info)]
                (not (nil? active-album))
                (om/build albums/album-detail {:artist active-artist :album active-album}))]]]])))))

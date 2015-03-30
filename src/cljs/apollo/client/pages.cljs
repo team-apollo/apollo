@@ -15,7 +15,8 @@
             [cljs.core.async :refer [<! put! chan sub dropping-buffer unsub]]
             [cljs-time.extend]
             [cljs-time.coerce :as c]
-            [cljs-time.core :as t]))
+            [cljs-time.core :as t]
+            [clojure.string :refer [split]]))
 
 (defn left-column [data owner]
   (reify
@@ -37,11 +38,7 @@
             (om/build player/view-playlists data))])))))
 
 (defn set-post-filter-value [value]
-  (om/transact!
-   (state/ref-post-filter)
-   (fn [p]
-     (let [result (assoc p :value value)]
-       result))))
+  (om/transact! (state/ref-post-filter) (fn [p] (assoc p :value value))))
 
 (defn list-filter [data owner]
   (reify
@@ -103,7 +100,8 @@
                (om/build artists/artist-list-partial artists)
                (and (not (nil? active-artist)) (nil? active-album))
                [:span
-                (om/build albums/album-list-partial {:artist active-artist :albums albums})
+                (om/build albums/album-list-partial {:artist active-artist
+                                                     :albums (sort-by (fn [a] (a "year")) (map (fn [x] (assoc x "year" (first (split (x "year") "-")))) albums))})
                 (om/build artists/artist-info-partial info)]
                (not (nil? active-album))
                (om/build albums/album-detail {:artist active-artist :album active-album}))]]]])))))

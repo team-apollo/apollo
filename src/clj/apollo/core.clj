@@ -68,6 +68,8 @@
        (artist-info artist-id))
   (GET "/api/recently-added" []
        (recently-added))
+  (GET "/api/by-year" []
+       (albums-by-year))
   (GET "/api/mounts" []
        (mounts))
   (POST "/api/mounts" [new-mount]

@@ -157,4 +157,4 @@
   ([db] (get-albums-recently-added db 365)))
 
 (defn get-albums-by-year [db]
-  (sql/query the-db ["select distinct album, artist, year from tracks order by year, artist"]))
+  (sql/query the-db ["select group_concat(DISTINCT artist) as artist, album_canonical, album, year, scan_date, last_modified from tracks group by album order by year desc, artist"]))

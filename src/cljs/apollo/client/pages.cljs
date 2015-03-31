@@ -126,7 +126,15 @@
     [:span
        [:h2 (date-to-label bucket-date)]
        (om/build albums/album-list-partial {:artist nil :albums albums})
-       [:hr]])))
+     [:hr]])))
+
+(defn view-bucket-2 [{:keys [bucket-date albums]}]
+  (om/component
+   (html
+    [:span
+       [:h2 bucket-date]
+       (om/build albums/album-list-partial {:artist nil :albums albums})
+     [:hr]])))
 
 (defn view-recently-added [data owner]
   (reify
@@ -179,3 +187,53 @@
                                 (reverse (sort-by :bucket-date
                                          (map (fn [x] {:bucket-date (first x) :albums (last x)})
                                      buckets))))]]]])))))
+
+(defn view-by-year [data owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:result-count 25
+       :scroll-chan (chan (dropping-buffer 1))
+       :keypress-chan (chan (dropping-buffer 1))
+       :result-inc 25})
+    om/IWillMount
+    (will-mount [_]
+      (let [scroll-chan (om/get-state owner :scroll-chan)]
+        (sub events/event-bus :at-bottom scroll-chan)
+        (go
+          (loop []
+            (let [e (<! (events/throttle scroll-chan 100))
+                  old-result-count (om/get-state owner :result-count)
+                  i (+ (om/get-state owner :result-inc) old-result-count)]
+              (om/set-state! owner :result-count i))
+            (recur)))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (unsub events/event-bus :at-bottom (om/get-state owner :scroll-chan)))
+    om/IRender
+    (render [this]
+      (let [result-count (om/get-state owner :result-count)
+            post-filter (:value (om/observe owner (state/ref-post-filter)))
+            filtered-albums (filter (fn [a]  (if (or (nil? post-filter)
+                                                     (empty? post-filter))
+                                               true
+                                               (let [c-f post-filter
+                                                     c-a-b (str (a "album"))
+                                                     c-a-a (str (a "artist"))]
+                                                 (or (utils/str-contains? c-a-b c-f)
+                                                     (utils/str-contains? c-a-a c-f)))))
+                                    (:albums data))
+            buckets (group-by
+                     (fn [x]
+                       (first (clojure.string/split (x "year") "-")))
+                     (take result-count (reverse (sort-by (fn [x] (first (clojure.string/split (x "year") "-"))) filtered-albums))))]
+        (html [:div.browse
+             (om/build nav/main-nav data)
+             (om/build left-column data)
+             [:div.middle-column.pure-g
+              [:div.pure-u-1
+               [:div.content
+                (om/build list-filter {})
+                (om/build-all view-bucket-2
+                              (reverse (sort-by (fn [x] (str (x :bucket-date)))
+                                                (map (fn [x] {:bucket-date (first x) :albums (last x)}) buckets))))]]]])))))

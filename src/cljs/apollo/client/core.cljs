@@ -116,6 +116,13 @@
       (swap! app-state assoc :active-album nil)
       (swap! app-state assoc :active-page pages/view-recently-added))))
 
+(defroute by-year "/by-year" {}
+  (go
+    (let [response (<! (services/by-year))]
+      (swap! app-state assoc :albums (response "albums"))
+      (swap! app-state assoc :active-artist nil)
+      (swap! app-state assoc :active-album nil)
+      (swap! app-state assoc :active-page pages/view-by-year))))
 (defroute admin-path "/admin" []
   (go
     (swap! app-state assoc :mounts (<! (services/mounts)))

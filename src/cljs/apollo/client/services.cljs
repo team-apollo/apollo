@@ -92,3 +92,11 @@
                :keywords? true
                :handler (fn [response] (put! out response))})
     out))
+
+(defn by-year []
+  (let [out (chan)]
+    (ajax/GET "/api/by-year"
+              {:error-handler error-handler
+               :keywords? true
+               :handler (fn [response] (put! out response))})
+    out))

@@ -107,3 +107,9 @@
     (if (> (count db-result) 0)
       (response {:albums db-result})
       {:status 404})))
+
+(defn albums-by-year []
+  (let [db-result (s/get-albums-by-year s/the-db)]
+    (if (> (count db-result) 0)
+      (response {:albums db-result})
+      {:status 404})))

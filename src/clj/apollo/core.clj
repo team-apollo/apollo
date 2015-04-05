@@ -98,15 +98,23 @@
       (wrap-gzip)
       (wrap-partial-content)))
 
-(let [db-file (io/file (:subname schema/the-db))]
- (if (not (.exists db-file))
-   (do
-     (log/info (format "%s does not exist so creating." (.getAbsolutePath db-file)))
-     (log/info (schema/create-all-tbls! schema/the-db))
-     (log/info (format "%s created, you will need to add some mounts from the admin page." (.getAbsolutePath db-file))))
-   (log/info (format "database %s exists... we're all good." (.getAbsolutePath db-file)))))
+(defn check-db []
+  (let [db-file (io/file (:subname schema/the-db))]
+    (if (not (.exists db-file))
+      (do
+        (log/info (format "%s does not exist so creating." (.getAbsolutePath db-file)))
+        (log/info (schema/create-all-tbls! schema/the-db))
+        (log/info (format "%s created, you will need to add some mounts from the admin page." (.getAbsolutePath db-file))))
+      (log/info (format "database %s exists... we're all good." (.getAbsolutePath db-file))))))
 
-(def scan-job (future (while true
-                        (Thread/sleep 60000)
-                        (try (scanner/process-mounts!)
-                             (catch Exception e (log/error e))))))
+(defn initialize []
+  (do
+    (check-db)
+    (let [scan-job (future (while true
+                             (Thread/sleep 60000)
+                             (log/info "scanning now")
+                             (try (scanner/process-mounts!)
+                                  (catch Exception e (log/error e)))))]
+      true)))
+
+(when is-dev? (initialize)) ;; when running through figwheel

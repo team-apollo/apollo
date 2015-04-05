@@ -46,7 +46,8 @@
             [lein-haml-sass "0.2.7-SNAPSHOT"]
             [lein-environ "1.0.0"]]
   :ring {:handler ~handler
-         :port ~port}
+         :port ~port
+         :init apollo.core/initialize}
   :clean-targets ^{:protect false} [~cljs-output-dir]
   :profiles {:dev {:repl-options {:init-ns apollo.core}
                    :plugins [[lein-figwheel "0.2.5"]]

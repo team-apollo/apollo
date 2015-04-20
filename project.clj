@@ -25,7 +25,7 @@
                  [org.xerial/sqlite-jdbc "3.8.7"]
                  [org/jaudiotagger "2.0.3"]
                  [claudio "0.1.2"]
-                 [com.novemberain/pantomime "2.5.0"]
+                 [com.novemberain/pantomime "2.4.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [secretary "1.2.3"]
                  [cljs-ajax "0.3.11"]

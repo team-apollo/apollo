@@ -39,7 +39,7 @@
             np-t (or (now-playing "track") {"id" nil})
             is-active? (= (np-t "id") (t "id"))]
         (html
-         [:li {:class-name (if is-active? "track-row.active" "track-row")}
+         [:li {:class-name (if is-active? "track-row active" "track-row")}
           [:a {:on-click (fn [e]
                            (put! channels/track-list [[track] 0])
                            (.preventDefault e))}

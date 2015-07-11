@@ -75,10 +75,12 @@ ul.right-header
       pointer-events: none
       margin-top: 1px
     &.fa-stack-2x
-      color: transparentize($highlight, .5)
+      color: $btn-bg
       &:hover
-        color: $highlight
+        color: lighten($btn-bg, 10)
         cursor: pointer
+      &:focus
+        color: $highlight
   ul
     margin: 0
     float: left

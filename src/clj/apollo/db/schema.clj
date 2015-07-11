@@ -109,9 +109,7 @@
 
 (defn managed? [f mounts]
   (let [normalized-mounts (map (fn [x] (.getAbsolutePath (.getAbsoluteFile (io/file x)))) mounts)]
-       (do
-         (log/info (.getAbsolutePath f) normalized-mounts)
-         (some (partial utils/starts-with? (.getAbsolutePath f)) normalized-mounts))))
+       (some (partial utils/starts-with? (.getAbsolutePath f)) normalized-mounts)))
 
 (defn prune-tracks!
   "get rid of rows where the files no longer exist or are no longer managed"

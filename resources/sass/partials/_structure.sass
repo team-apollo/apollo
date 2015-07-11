@@ -52,7 +52,7 @@ body
     display: block
     box-sizing: border-box
   &.active
-    background: $btn-bg
+    background: rgba(12,159,232,.25)
     a, p
       color: $font-color
 
@@ -160,7 +160,7 @@ ul
       color: $font-color
       &:hover, &:focus
         cursor: pointer
-        background: $highlight
+        background: lighten($btn-bg, 10)
         color: lighten($font-color, 10)
         text-shadow: 0 0 10px $background
         div

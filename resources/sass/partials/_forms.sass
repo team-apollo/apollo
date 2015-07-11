@@ -1,4 +1,4 @@
-input
+input[type="text"]
   background: darken($background, 5)
   border: solid 1px lighten($background, 5)
   border-radius: 1em
@@ -15,9 +15,12 @@ input
     border: solid 1px lighten($background, 15)
   &:focus
     background: darken($background, 2)
-    border: solid 1px lighten($background, 15)
-    width: 30%
+    border: solid 1px $highlight
   &.has-btn
     border-radius: 1em 0 0 1em
     float: left
 
+.browse
+  input[type="text"]
+    &:focus
+      width: 30%

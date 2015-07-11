@@ -103,19 +103,19 @@
                                    (utils/format-duration end-position))]
                [:ul
                 [:li {:on-click (fn [e] (put! channels/player-ctrl :previous))}
-                 [:i.fa.fa-step-backward]]
+                 [:i.fa.fa-step-backward.fa-fw]]
                 [:li {:on-click (fn [e] (put! channels/player-ctrl (if is-playing? :pause :play)))}
                  (if is-playing?
-                   [:i.fa.fa-pause]
-                   [:i.fa.fa-play])]
+                   [:i.fa.fa-pause.fa-fw]
+                   [:i.fa.fa-play.fa-fw])]
                 [:li {:on-click (fn [e] (put! channels/player-ctrl :next))}
-                 [:i.fa.fa-step-forward]]
-                [:li [:i.fa.fa-repeat]]
+                 [:i.fa.fa-step-forward.fa-fw]]
+                [:li [:i.fa.fa-repeat.fa-fw]]
                 [:li {:on-click (fn [e] (om/transact!
                                          (state/ref-player)
                                          (fn [p]
                                            (assoc p :current-playlist (shuffle (:current-playlist p))))))}
-                 [:i.fa.fa-random]]]])))))
+                 [:i.fa.fa-random.fa-fw]]]])))))
 
 (defn view-now-playing [data owner]
   (reify

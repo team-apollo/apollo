@@ -108,7 +108,10 @@
     result))
 
 (defn managed? [f mounts]
-  (some (partial utils/starts-with? (.getAbsolutePath f)) mounts))
+  (let [normalized-mounts (map (fn [x] (.getAbsolutePath (.getAbsoluteFile (io/file x)))) mounts)]
+       (do
+         (log/info (.getAbsolutePath f) normalized-mounts)
+         (some (partial utils/starts-with? (.getAbsolutePath f)) normalized-mounts))))
 
 (defn prune-tracks!
   "get rid of rows where the files no longer exist or are no longer managed"
@@ -117,11 +120,6 @@
         mounts (mount-points db)
         should-prune? (fn [f]
                         (do
-                          (log/info
-                           (.getAbsolutePath f)
-                           mounts
-                           (.exists f)
-                           (not (managed? f mounts)))
                           (or (not (.exists f)) (not (managed? f mounts)))))
         files (filter should-prune? (map io/file fkeys))]
     (map (partial delete-track! db) (map (fn [f] (.getAbsolutePath f)) files))))

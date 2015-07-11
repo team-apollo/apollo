@@ -3,7 +3,8 @@
             [clojure.java.io :as io]
             [apollo.utils :as utils]
             [clj-time.core :as t]
-            [clj-time.coerce :as c]))
+            [clj-time.coerce :as c]
+            [clojure.tools.logging :as log]))
 
 (def the-db {:classname "org.sqlite.JDBC",
              :subprotocol "sqlite",
@@ -114,7 +115,14 @@
   [db]
   (let [fkeys (keys (last-modified-index db))
         mounts (mount-points db)
-        should-prune? (fn [f] (or (not (.exists f)) (not (managed? f mounts))))
+        should-prune? (fn [f]
+                        (do
+                          (log/info
+                           (.getAbsolutePath f)
+                           mounts
+                           (.exists f)
+                           (not (managed? f mounts)))
+                          (or (not (.exists f)) (not (managed? f mounts)))))
         files (filter should-prune? (map io/file fkeys))]
     (map (partial delete-track! db) (map (fn [f] (.getAbsolutePath f)) files))))
 

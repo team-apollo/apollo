@@ -3,7 +3,8 @@
             [sablono.core :as html :refer-macros [html]]
             [apollo.client.utils :as utils]
             [apollo.client.channels :as channels]
-            [cljs.core.async :refer [<! put! chan]]))
+            [cljs.core.async :refer [<! put! chan]]
+            [apollo.client.state :as state]))
 
 (defn mk-track-url
   ([artist album track-id]
@@ -27,15 +28,18 @@
       (utils/format "%s by %s" track-title artist)
       (utils/format "%s. %s" track-num track-title))))
 
-(defn track-detail [{:keys [track compilation?]}]
+(defn track-detail [{:keys [track compilation?]} owner]
   (reify
     om/IRender
     (render [this]
       (let [t (track "track")
             duration (t "duration")
-            track-label (track-label track compilation?)]
+            track-label (track-label track compilation?)
+            now-playing (or (first (om/observe owner (state/ref-now-playing))) {})
+            np-t (or (now-playing "track") {"id" nil})
+            is-active? (= (np-t "id") (t "id"))]
         (html
-         [:li.track-row
+         [:li {:class-name (if is-active? "track-row.active" "track-row")}
           [:a {:on-click (fn [e]
                            (put! channels/track-list [[track] 0])
                            (.preventDefault e))}

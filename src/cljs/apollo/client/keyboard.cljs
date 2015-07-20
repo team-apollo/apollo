@@ -3,7 +3,6 @@
             [goog.events :as e])
   (:import [goog.ui KeyboardShortcutHandler]))
 
-
 ;;; keyboard shortcuts wiring
 (def kb (new KeyboardShortcutHandler js/window))
 

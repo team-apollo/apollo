@@ -9,7 +9,7 @@
             [om.core :as om :include-macros true]
             [cljs.core.async :refer [<! sub chan dropping-buffer]]))
 
-(def nav-seq (concat ["all"] (map str "abcdefghijklmnopqrstuvwxyz#")))
+(def nav-seq (concat ["all"] (map str "abcdefghijklmnopqrstuvwxyz")))
 
 (doall (map (fn[x] (keyboard/register-shortcut
                     (keyword (utils/format "browse-%s" x))

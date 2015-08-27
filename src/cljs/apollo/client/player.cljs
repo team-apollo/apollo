@@ -137,7 +137,10 @@
                 [:div.now-playing
                  [:a {:href album-nav}
                   [:img {:src album-image}]]
-                 [:span track-heading]]))))))
+                 [:span
+                  [:h2 artist]
+                  [:p title]
+                  [:p (utils/format "%s | %s" album year)]]]))))))
 
 (defn view-playlist-item [{:keys [idx item view-playing? playing playing-offset]}]
   (reify

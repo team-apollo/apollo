@@ -22,8 +22,7 @@
   (reify
     om/IRender
     (render [this]
-      (let [active-artist (:active-artist data)
-            sub-view (first (om/observe owner (state/ref-subview)))
+      (let [sub-view (first (om/observe owner (state/ref-subview)))
             set-subview (fn [k] (om/transact! (state/ref-subview) (fn [p] [k])))]
         (html
          [:div.left-column
@@ -34,7 +33,6 @@
            [:li {:on-click (fn [e]
                              (set-subview :playlists))
                  :class-name (if (= sub-view :playlists) "active" "")} "playlists"]]
-          (artists/artist-detail-partial active-artist)
           (if (= sub-view :now-playing)
             (om/build player/view-now-playing data)
             (om/build player/view-playlists data))])))))
@@ -92,6 +90,7 @@
             [:div.content
              (om/build nav/nav-partial (or (first active-artist) active-nav))
              (om/build list-filter {})
+             (artists/artist-detail-partial active-artist)
              (cond
                (and (nil? active-artist) (nil? active-album))
                (om/build artists/artist-list-partial artists)

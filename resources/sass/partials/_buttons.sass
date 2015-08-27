@@ -22,3 +22,25 @@
 input
   + .button
     border-radius: 0 1em 1em 0
+
+ul
+  &.toggle
+    margin-top: 0
+    li
+      display: inline-block
+      padding: 0 .5em
+      height: 40px
+      line-height: 40px
+      text-align: center
+      text-transform: capitalize
+      color: transparentize($white, .5)
+      width: 50%
+      box-sizing: border-box
+      background: $background
+      &:hover
+        cursor: pointer
+        background: lighten($btn-bg, 15)
+        color: $white
+      &.active
+        background: $highlight
+        color: $white

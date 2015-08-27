@@ -27,12 +27,14 @@
             set-subview (fn [k] (om/transact! (state/ref-subview) (fn [p] [k])))]
         (html
          [:div.left-column
+          [:ul.toggle
+           [:li {:on-click (fn [e]
+                             (set-subview :now-playing))
+                 :class-name (if (= sub-view :now-playing) "active" "")} "now playing"]
+           [:li {:on-click (fn [e]
+                             (set-subview :playlists))
+                 :class-name (if (= sub-view :playlists) "active" "")} "playlists"]]
           (artists/artist-detail-partial active-artist)
-          [:ul
-           [:li {:on-click (fn [e]
-                             (set-subview :now-playing))} "now playing"]
-           [:li {:on-click (fn [e]
-                             (set-subview :playlists))} "playlists"]]
           (if (= sub-view :now-playing)
             (om/build player/view-now-playing data)
             (om/build player/view-playlists data))])))))

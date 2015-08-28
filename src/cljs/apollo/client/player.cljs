@@ -132,24 +132,30 @@
             album-nav (albums/mk-album-url artist album)
             artist-image (artists/mk-artist-image artist true)
             album-image (albums/mk-album-image artist album)
-            track-heading (utils/format "%s - %s (%s)" artist title year)]
+            track-heading (utils/format "%s - %s (%s)" artist title year)
+            wiki-link (utils/format "http://www.wikipedia.org/wiki/%s (band)" artist)]
         (html (if (not (nil? artist))
                 [:div.now-playing
                  [:a {:href album-nav}
                   [:img {:src album-image}]]
                  [:span
-                  [:h2 artist]
-                  [:p title]
-                  [:p (utils/format "%s | %s" album year)]]]))))))
+                  [:h2 (utils/format "%s" artist)
+                    [:a {:href wiki-link :target "_blank"}
+                      [:i.fa.fa-external-link]]]
+                  [:label.caption "Album"]
+                  [:p album]
+                  [:p.year year]
+                  [:label.caption "Track"]
+                  [:p title]]]))))))
 
 (defn view-playlist-item [{:keys [idx item view-playing? playing playing-offset]}]
   (reify
     om/IRender
     (render [this]
       (html
-       [:li {:class-name (when (and view-playing? (= idx playing-offset))  "active")}
-        [:p {:on-click (fn [e] (put! channels/track-list [playing idx]))}
-         (tracks/track-label item true)]]))))
+       [:li {:class-name (when (and view-playing? (= idx playing-offset))  "active") :on-click (fn [e] (put! channels/track-list [playing idx]))}
+        [:p (tracks/track-label item true)]
+        [:span (tracks/artist item true)]]))))
 
 (defn view-playlists [data owner]
   (reify
@@ -163,8 +169,8 @@
             view-playing? (om/get-state owner :view-playing)
             playlist-items (if view-playing? playing [])]
         (html [:div
-               [:span {:on-click (fn [e] (om/set-state! owner :view-playing true))} "now"]
-               [:i.fa.fa-plus {:on-click (fn [e] (om/set-state! owner :view-playing false))}]
+               ;[:i.fa.fa-plus {:on-click (fn [e] (om/set-state! owner :view-playing false))}]
+               [:h3 {:on-click (fn [e] (om/set-state! owner :view-playing true))} "Instant Playlist"]
                [:ul.playlist
                 (om/build-all view-playlist-item
                               (map-indexed (fn [idx item] {:idx idx

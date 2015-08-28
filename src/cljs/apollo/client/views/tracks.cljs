@@ -22,11 +22,16 @@
 (defn track-label [track with-artist?]
   (let [t (track "track")
         track-num (t "track")
-        track-title (t "title")
+        track-title (t "title")]
+    (if with-artist?
+      (utils/format "%s" track-title)
+      (utils/format "%s. %s" track-num track-title))))
+
+(defn artist [track with-artist?]
+  (let [t (track "track")
         artist (t "artist")]
     (if with-artist?
-      (utils/format "%s by %s" track-title artist)
-      (utils/format "%s. %s" track-num track-title))))
+      (utils/format "%s" artist))))
 
 (defn track-detail [{:keys [track compilation?]} owner]
   (reify

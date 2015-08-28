@@ -15,10 +15,6 @@ body
   border-right: solid 1px darken($background, 5)
   background: transparentize(darken($background, 5), .1)
   overflow-y: auto
-  span
-    padding: .5em
-    display: block
-    box-sizing: border-box
 
 .middle-column
   margin-left: 300px
@@ -72,6 +68,14 @@ body
       text-overflow: ellipsis
     &:hover:not(.active)
       background: $background
+    span
+      display: none
+    &.active
+      span
+        @extend label.caption
+        font-size: 13px
+        margin-bottom: 0
+        margin-top: -1em        
 
 ul
   padding: 0

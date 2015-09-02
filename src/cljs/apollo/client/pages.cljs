@@ -89,7 +89,9 @@
            [:div.pure-u-1
             [:div.content
              (om/build nav/nav-partial (or (first active-artist) active-nav))
-             (om/build list-filter {})
+             (cond
+                (nil? active-album)
+                (om/build list-filter {}))
              (artists/artist-detail-partial active-artist)
              (cond
                (and (nil? active-artist) (nil? active-album))

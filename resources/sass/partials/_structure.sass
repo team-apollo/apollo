@@ -61,21 +61,36 @@ body
 .playlist
   li
     @extend .track-row
+    position: relative
+    &:hover:not(.active), &:focus
+      background: $background
+      span
+        display: block
+      i
+        display: block
+    &.active
+      span
+        display: block
     p
       width: 100%
       overflow: hidden
       white-space: nowrap
       text-overflow: ellipsis
-    &:hover:not(.active)
-      background: $background
     span
+      @extend label.caption
       display: none
-    &.active
-      span
-        @extend label.caption
-        font-size: 13px
-        margin-bottom: 0
-        margin-top: -1em        
+      font-size: 13px
+      margin-bottom: 0
+      margin-top: -1em
+    i
+      position: absolute
+      right: .25em
+      top: .35em
+      display: none
+      opacity: .2
+      transition: opacity .3s
+      &:hover
+        opacity: 1
 
 ul
   padding: 0

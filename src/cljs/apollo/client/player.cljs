@@ -153,9 +153,10 @@
     om/IRender
     (render [this]
       (html
-       [:li {:class-name (when (and view-playing? (= idx playing-offset))  "active") :on-click (fn [e] (put! channels/track-list [playing idx]))}
+       [:li {:class-name (when (and view-playing? (= idx playing-offset))  "active") :on-double-click (fn [e] (put! channels/track-list [playing idx]))}
         [:p (tracks/track-label item true)]
-        [:span (tracks/artist item true)]]))))
+        [:span (tracks/artist item true)]
+        [:i.fa.fa-times-circle.fa-2x]]))))
 
 (defn view-playlists [data owner]
   (reify

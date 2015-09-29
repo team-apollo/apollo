@@ -1,10 +1,11 @@
 (ns apollo.db.schema
-  (:require [clojure.java.jdbc :as sql]
-            [clojure.java.io :as io]
-            [apollo.utils :as utils]
-            [clj-time.core :as t]
+  (:require [apollo.utils :as utils]
             [clj-time.coerce :as c]
-            [clojure.tools.logging :as log]))
+            [clj-time.core :as t]
+            [clojure.java.io :as io]
+            [clojure.java.jdbc :as sql]
+            [clojure.tools.logging :as log]
+            [korma.core :as k]))
 
 (def the-db {:classname "org.sqlite.JDBC",
              :subprotocol "sqlite",

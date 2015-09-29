@@ -56,7 +56,7 @@
          :nrepl {:start? true :port nrepl-port}}
   :clean-targets ^{:protect false} [~cljs-output-dir]
   :profiles {:dev {:repl-options {:init-ns apollo.core}
-                   :plugins [[lein-figwheel "0.2.5"]]
+                   :plugins [[lein-figwheel "0.4.0"]]
                    :hooks [leiningen.cljsbuild
                            leiningen.sass]
                    :env {:is-dev true}

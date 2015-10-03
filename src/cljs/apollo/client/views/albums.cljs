@@ -54,11 +54,11 @@
             album-zip-url (mk-album-zip-url artist album-name)
             play-album (fn [e]
                          (go
-                           (let [album-detail (<! (services/album-detail artist (:name album)))
+                           (let [album-detail (<! (services/album-detail artist (:id album)))
                                  tracks (:tracks (:album album-detail))]
                              (put! channels/track-list [tracks 0]))))
             append-album (fn [e]
-                           (go (let [album-detail (<! (services/album-detail artist (:name album)))
+                           (go (let [album-detail (<! (services/album-detail artist (:id album)))
                                      tracks (:tracks (:album album-detail))
                                      playing (:current-playlist (state/ref-player))
                                      playing-offset (:current-offset (state/ref-player))]

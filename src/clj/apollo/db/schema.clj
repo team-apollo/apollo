@@ -189,7 +189,7 @@
 
 (defn get-albums-recently-added
   ([db days-ago]
-   (sql/query db [(format "select group_concat(DISTINCT artist) as artist, album_canonical, album, year, scan_date, last_modified from tracks where scan_date > %s group by album order by scan_date desc,last_modified desc,id desc" (c/to-long (-> days-ago t/days t/ago)))]))
+   (sql/query db [(format "select group_concat(DISTINCT artist) as artist_id, album_canonical as id, album as name, year, scan_date, last_modified from tracks where scan_date > %s group by album order by scan_date desc,last_modified desc,id desc" (c/to-long (-> days-ago t/days t/ago)))]))
   ([db] (get-albums-recently-added db 365)))
 
 (defn get-albums-by-year [db]

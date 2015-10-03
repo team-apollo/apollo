@@ -81,7 +81,6 @@
       (let [{:keys [active-artist active-nav artists albums active-album artist-info]} data
             artist-count (count artists)
             album-count (count albums)]
-        (.log js/console (clj->js data))
         (html
          [:div.browse
           (om/build nav/main-nav data)

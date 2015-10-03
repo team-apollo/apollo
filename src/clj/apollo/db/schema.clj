@@ -36,6 +36,34 @@
                                    [:name :string "UNIQUE"]
                                    [:body :text]]}})
 
+(k/defentity track (k/table :tracks))
+
+(defn get-count [e f]
+  (k/aggregate e (count f) :count))
+
+(def album (k/subselect track
+                        (k/fields [:album_canonical :id]
+                                  [:album :name]
+                                  [:artist_canonical :artist_id]
+                                  :year)
+                        (k/modifier "DISTINCT")
+                        (k/where {:name [not= nil]})
+                        (k/order :id)))
+
+(def artist (k/subselect track
+                         (k/fields [:artist_canonical :id]
+                                   [:artist :name])
+                         (k/modifier "DISTINCT")
+                         (k/where {:name [not= nil]})
+                         (k/order :id)))
+
+(def year (k/subselect track
+                       (k/fields :year)
+                       (k/modifier "DISTINCT")
+                       (k/where {:year [not= nil]})
+                       (k/order :year)))
+
+
 (defn create-tbl! [db, tbl]
   (let [args (cons (:name tbl) (:columns tbl))]
     (sql/db-do-commands db
@@ -54,10 +82,7 @@
   (map first (:columns t)))
 
 (defn track-exists? [db t]
-  (> (:count
-      (first
-       (sql/query db ["select count(id) as count from tracks where path=?" t])))
-     0))
+  (> (:count (first (-> (k/select* track) (k/where {:path t}) (get-count :id) (k/select)))) 0))
 
 (defn update-track!
   "returns count of rows affected"
@@ -124,23 +149,29 @@
     (map (partial delete-track! db) (map (fn [f] (.getAbsolutePath f)) files))))
 
 ;; queries for web endpoints
-(defn artist-list [db]
-  (sql/query db ["select distinct artist from tracks where artist is not null order by artist_canonical"]))
+(defn artist-list []
+  (-> (k/select* artist)))
 
-(defn artist-search [db prefix]
-  (cond (= prefix "all") (artist-list db)
+
+(defn artist-search [prefix]
+  (cond (= prefix "all") (-> (artist-list) (k/select))
         (= prefix "#")
-        (let [db-results (sql/query db [(format "select distinct artist_canonical as artist from tracks where artist_canonical < 'a' order by artist_canonical")]) ;; needs fix for canonical
-              results (filter (fn [x] (not (= (:artist x) ""))) db-results)]
-          (take-while (fn [x] (not (= (subs (str (:artist x)) 0 1) "a"))) results))
-    :else (sql/query db [(format "select distinct artist from tracks where artist_canonical like '%s%%' order by artist_canonical" prefix)])))
+        (let [db-results (-> (artist-list) (k/where {:id [< "a"]})(k/select)) ;; needs fix for canonical
+              results (filter (fn [x] (not (= (:id x) ""))) db-results)]
+          (take-while (fn [x] (not (= (subs (str (:id x)) 0 1) "a"))) results))
+        :else (-> (artist-list) (k/where {:name [like (format "%s%%" prefix)]}) (k/select))))
 
-(defn album-list-by-artist [db artist]
-  (sql/query db ["select distinct album, album_canonical, year from tracks where artist_canonical=? order by year" (utils/canonicalize artist)]))
+(defn album-list-by-artist [artist]
+  (-> (k/select* album) (k/where {:artist_id (utils/canonicalize artist)}) (k/order :year) (k/select)))
 
 
-(defn tracks-by-album [db album]
-  (sql/query db ["select * from tracks where album_canonical=? order by disc_no, track, artist_canonical" (utils/canonicalize album)]))
+(defn tracks-by-album [album]
+  (-> (k/select* track)
+      (k/where {:album_canonical (utils/canonicalize album)})
+      (k/order :disc_no)
+      (k/order :track)
+      (k/order :artist_canonical)
+      (k/select)))
 
 (defn problem-tracks [db]
   (sql/query db ["select path from tracks where artist_canonical='' and album_canonical='' and title_canonical='' order by path"]))

@@ -13,23 +13,23 @@
                  (utils/encode album)
                  (utils/encode track-id)))
   ([track]
-   (let [t (track "track")
-         artist (t "artist")
-         album (t "album")
-         id (t "id")]
+   (let [t (:track track)
+         artist (:artist t)
+         album (:album t)
+         id (:id t)]
      (mk-track-url artist album id))))
 
 (defn track-label [track with-artist?]
-  (let [t (track "track")
-        track-num (t "track")
-        track-title (t "title")]
+  (let [t (:track track)
+        track-num (:track t)
+        track-title (:title t)]
     (if with-artist?
       (utils/format "%s" track-title)
       (utils/format "%s. %s" track-num track-title))))
 
 (defn artist [track with-artist?]
-  (let [t (track "track")
-        artist (t "artist")]
+  (let [t (:track track)
+        artist (:artist t)]
     (if with-artist?
       (utils/format "%s" artist))))
 
@@ -37,12 +37,12 @@
   (reify
     om/IRender
     (render [this]
-      (let [t (track "track")
-            duration (t "duration")
+      (let [t (:track track)
+            duration (:duration t)
             track-label (track-label track compilation?)
             now-playing (or (first (om/observe owner (state/ref-now-playing))) {})
-            np-t (or (now-playing "track") {"id" nil})
-            is-active? (= (np-t "id") (t "id"))]
+            np-t (or (:track now-playing) {"id" nil})
+            is-active? (= (:id np-t) (:id t))]
         (html
          [:li {:class-name (if is-active? "track-row active" "track-row")}
           [:a {:on-click (fn [e]

@@ -81,6 +81,7 @@
       (let [{:keys [active-artist active-nav artists albums active-album artist-info]} data
             artist-count (count artists)
             album-count (count albums)]
+        (.log js/console (clj->js data))
         (html
          [:div.browse
           (om/build nav/main-nav data)
@@ -99,7 +100,7 @@
                (and (not (nil? active-artist)) (nil? active-album))
                [:span
                 (om/build albums/album-list-partial {:artist active-artist
-                                                     :albums (sort-by (fn [a] (first (split (a "year") "-"))) albums)})
+                                                     :albums (sort-by (fn [a] (first (split (:year a) "-"))) albums)})
                 (om/build artists/artist-info-partial artist-info)]
                (not (nil? active-album))
                (om/build albums/album-detail {:artist active-artist :album active-album}))]]]])))))
@@ -169,14 +170,14 @@
                                                 (empty? post-filter))
                                               true
                                               (let [c-f post-filter
-                                                    c-a-b (str (a "album"))
-                                                    c-a-a (str (a "artist"))]
+                                                    c-a-b (str (:album a))
+                                                    c-a-a (str (:artist a))]
                                                 (or (utils/str-contains? c-a-b c-f)
                                                     (utils/str-contains? c-a-a c-f)))))
                                     (:albums data))
             buckets (group-by
                      (fn [x]
-                       (let [d (x "scan_date")]
+                       (let [d (:scan_date x)]
                          (date-to-range-val (c/from-long d))))
                      (take result-count filtered-albums))]
         (html [:div.browse
@@ -221,15 +222,15 @@
                                                      (empty? post-filter))
                                                true
                                                (let [c-f post-filter
-                                                     c-a-b (str (a "album"))
-                                                     c-a-a (str (a "artist"))]
+                                                     c-a-b (str (:album a))
+                                                     c-a-a (str (:artist a))]
                                                  (or (utils/str-contains? c-a-b c-f)
                                                      (utils/str-contains? c-a-a c-f)))))
                                     (:albums data))
             buckets (group-by
                      (fn [x]
-                       (first (clojure.string/split (x "year") "-")))
-                     (take result-count (reverse (sort-by (fn [x] (first (clojure.string/split (x "year") "-"))) filtered-albums))))]
+                       (first (clojure.string/split (:year x) "-")))
+                     (take result-count (reverse (sort-by (fn [x] (first (clojure.string/split (:year x) "-"))) filtered-albums))))]
         (html [:div.browse
              (om/build nav/main-nav data)
              (om/build left-column data)

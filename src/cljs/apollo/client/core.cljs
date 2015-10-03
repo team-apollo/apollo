@@ -95,10 +95,10 @@
     (let [response (<! (services/artist-detail artist))
           ;; info-response (<! (services/artist-info artist))
           ]
-      (swap! app-state assoc :active-artist (response "artist"))
+      (swap! app-state assoc :active-artist (response :artist))
       ;; (swap! app-state assoc :artist-info (info-response "info"))
       (swap! app-state assoc :active-page pages/view-browse)
-      (swap! app-state assoc :albums (response "albums"))
+      (swap! app-state assoc :albums (response :albums))
       (swap! app-state assoc :active-album nil))))
 
 (defroute album-path "/artists/:artist/albums/:album" [artist album]
@@ -106,12 +106,12 @@
     (let [response (<! (services/album-detail artist album))]
       (swap! app-state assoc :active-artist artist)
       (swap! app-state assoc :active-page pages/view-browse)
-      (swap! app-state assoc :active-album (response "album")))))
+      (swap! app-state assoc :active-album (response :album)))))
 
 (defroute recent "/recent" []
   (go
     (let [response (<! (services/recently-added))]
-      (swap! app-state assoc :albums (response "albums"))
+      (swap! app-state assoc :albums (response :albums))
       (swap! app-state assoc :active-artist nil)
       (swap! app-state assoc :active-album nil)
       (swap! app-state assoc :active-page pages/view-recently-added))))
@@ -119,7 +119,7 @@
 (defroute by-year "/by-year" {}
   (go
     (let [response (<! (services/by-year))]
-      (swap! app-state assoc :albums (response "albums"))
+      (swap! app-state assoc :albums (response :albums))
       (swap! app-state assoc :active-artist nil)
       (swap! app-state assoc :active-album nil)
       (swap! app-state assoc :active-page pages/view-by-year))))

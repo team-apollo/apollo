@@ -43,7 +43,8 @@
                  [com.andrewmcveigh/cljs-time "0.3.13"]
                  [org.apache.commons/commons-compress "1.10"] ;;temporary
                  ;; [org.clojure/tools.reader "0.9.2"] ;;temporary
-
+                 [org.slf4j/slf4j-log4j12 "1.7.12"]
+                 [log4j/log4j "1.2.17"]
                  [korma "0.4.2"]]
   :source-paths ~src-paths
   :plugins [[lein-ring "0.8.13"]

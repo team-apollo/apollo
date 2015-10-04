@@ -97,7 +97,7 @@
 (defn wrap-db-transaction [h]
   (fn [request]
     (with-db db
-      (transaction (h request)))))
+      (h request))))
 
 (def app
   (-> http-handler

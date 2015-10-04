@@ -16,7 +16,7 @@
   (reify
     om/IRender
     (render [this]
-      (let [path (m "mount")]
+      (let [path (:mount m)]
         (html
          [:li path
           [:a.button.subtle {
@@ -32,7 +32,7 @@
       {:mount-input-value nil})
     om/IRender
     (render [this]
-      (let [mounts ((:mounts data) "mounts")
+      (let [mounts (:mounts (:mounts data))
             on-add-mount (fn [e]
                            (go (let [v (.-value (om/get-node owner "new-mount"))
                                      result (<! (services/add-mount v))]

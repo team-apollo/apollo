@@ -93,10 +93,10 @@
                  (filter (just-artist artist-id) db-result))]
     (if (> (count db-result) 0)
       (response {:album {:artist artist
-                         :artist_canonical artist_canonical
+                         :artist_id artist_canonical
                          :compilation compilation?
                          :name album
-                         :album_canonical album_canonical
+                         :id album_canonical
                          :year year
                          :tracks (map (fn [r] {:track r}) tracks)}})
       {:status 404})))

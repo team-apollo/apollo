@@ -212,7 +212,7 @@
                  ["count(DISTINCT artist_canonical)" :artist_count]
                  [:album_canonical :id]
                  [:album :name]
-                 :year :scan_date :last_modified)
+                 :artist :year :scan_date :last_modified)
        (k/where {:scan_date [> (c/to-long (-> days-ago t/days t/ago))]})
        (k/group :album_canonical :year)
        (k/order :last_modified :desc)
@@ -227,7 +227,7 @@
                 ["count(DISTINCT artist_canonical)" :artist_count]
                 [:album_canonical :id]
                 [:album :name]
-                :year :scan_date :last_modified)
+                :artist :year :scan_date :last_modified)
       (k/group :album_canonical)
       (k/order :year :desc)
       (k/order :artist)

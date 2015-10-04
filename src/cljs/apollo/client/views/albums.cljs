@@ -49,7 +49,7 @@
             album-year (:year album)
             album-image (mk-album-image artist album-name)
             album-label (if (nil? artist-ctx)
-                          (utils/format "%s by %s" (:name album) artist)
+                          (utils/format "%s by %s" (:name album) (if (> (:artist_count album) 1) "Various Artists" (:artist album)))
                           (utils/format "%s" (:name album)))
             album-zip-url (mk-album-zip-url artist album-name)
             play-album (fn [e]
@@ -63,6 +63,7 @@
                                      playing (:current-playlist (state/ref-player))
                                      playing-offset (:current-offset (state/ref-player))]
                                  (put! channels/track-list [(concat playing tracks) playing-offset]))))]
+
         (html
            [:li.no-select
             [:a {:href album-url}
@@ -80,25 +81,27 @@
    om/IRender
    (render [_]
      (let [artist (:artist data)
-            albums (:albums data)
-            album-heading (utils/format "%s Albums" (count albums))
-            artist-first (first artist)
-            post-filter (:value (om/observe owner (state/ref-post-filter)))
-            filtered-albums (filter (fn [a]  (if (or (nil? post-filter)
+           albums (:albums data)
+           album-heading (utils/format "%s Albums" (count albums))
+           artist-first (first artist)
+           post-filter (:value (om/observe owner (state/ref-post-filter)))
+           filtered-albums (if (:filtered data)
+                             albums
+                             (filter (fn [a]  (if (or (nil? post-filter)
                                                 (empty? post-filter))
                                               true
                                               (let [c-f post-filter
-                                                    c-a-b  (str (a "album" ""))
-                                                    c-a-a  (str (a "artist" ""))]
+                                                    c-a-b  (str (a :name ""))
+                                                    c-a-a  (str (a :artist ""))]
                                                 (or (utils/str-contains? c-a-b c-f)
                                                     (if (not(empty? c-a-a))
                                                       (utils/str-contains? c-a-a c-f)
                                                       false))))
                                       )
-                                    albums)
-            back (nav/get-up-nav artist-first)
-            back-link (utils/format "#/nav/%s" back)
-            album-item-args (map (fn [artist album] {:artist-ctx artist :album album}) (repeat artist) filtered-albums)]
+                                    albums))
+           back (nav/get-up-nav artist-first)
+           back-link (utils/format "#/nav/%s" back)
+           album-item-args (map (fn [artist album] {:artist-ctx artist :album album}) (repeat artist) filtered-albums)]
      (html
         [:div.artist-detail
          [:div.album-list
@@ -117,12 +120,13 @@
    (let [album-name (:name album)
          album-year (:year album)
          album-label (utils/format "%s" album-name)
-         album-image (mk-album-image artist (:album_id album))
+         album-image (mk-album-image artist (:id album))
          album-zip-url (mk-album-zip-url artist album-name)
          tracks (:tracks album)
          artist-url (artists/mk-artist-url artist)
          play-album (fn [e] (put! channels/track-list [tracks 0]))
          compilation? (:compilation album)]
+
      (html
       (if (and (not (nil? artist)) (not (nil? album)))
         [:div.album-detail

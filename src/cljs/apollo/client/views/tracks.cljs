@@ -24,7 +24,6 @@
         track-num (:track t)
         track-title (:title t)
         artist (:artist t)]
-    (.log js/console (clj->js track))
     (if with-artist?
       (utils/format "%s. %s by %s" track-num track-title artist)
       (utils/format "%s. %s" track-num track-title))))

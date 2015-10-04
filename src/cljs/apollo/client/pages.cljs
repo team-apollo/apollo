@@ -169,7 +169,7 @@
                                                 (empty? post-filter))
                                               true
                                               (let [c-f post-filter
-                                                    c-a-b (str (:album a))
+                                                    c-a-b (str (:name a))
                                                     c-a-a (str (:artist a))]
                                                 (or (utils/str-contains? c-a-b c-f)
                                                     (utils/str-contains? c-a-a c-f)))))
@@ -188,7 +188,7 @@
                   (om/build list-filter {})
                   (om/build-all view-bucket
                                 (reverse (sort-by :bucket-date
-                                         (map (fn [x] {:bucket-date (first x) :albums (last x)})
+                                         (map (fn [x] {:bucket-date (first x) :albums (last x)  :filtered true})
                                      buckets))))]]]])))))
 
 (defn view-by-year [data owner]
@@ -221,7 +221,7 @@
                                                      (empty? post-filter))
                                                true
                                                (let [c-f post-filter
-                                                     c-a-b (str (:album a))
+                                                     c-a-b (str (:name a))
                                                      c-a-a (str (:artist a))]
                                                  (or (utils/str-contains? c-a-b c-f)
                                                      (utils/str-contains? c-a-a c-f)))))
@@ -239,4 +239,4 @@
                 (om/build list-filter {})
                 (om/build-all view-bucket-2
                               (reverse (sort-by (fn [x] (str (x :bucket-date)))
-                                                (map (fn [x] {:bucket-date (first x) :albums (last x)}) buckets))))]]]])))))
+                                                (map (fn [x] {:bucket-date (first x) :albums (last x) :filtered true}) buckets))))]]]])))))

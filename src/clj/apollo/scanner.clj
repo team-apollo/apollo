@@ -105,10 +105,12 @@
 (defn process-dir! [d]
   (let [scan-date (c/to-long (t/now))
         fseq (file-tag-seq d (mk-need-info))
-        upsert (partial db/upsert-track! db/the-db scan-date)]
-    (dorun (map  upsert fseq))))
+        upsert (partial db/upsert-track! scan-date)
+        work-load (partition 100 (map upsert fseq))
+        worker (map (fn [w] (transaction (dorun w))) work-load)]
+    (dorun worker)))
 
 (defn process-mounts! []
-  (let [m (db/mount-points db/the-db)]
-    (dorun (db/prune-tracks! db/the-db))
+  (let [m (db/mount-points)]
+    (dorun (db/prune-tracks!))
     (dorun (map process-dir! m))))

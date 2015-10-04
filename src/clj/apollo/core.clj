@@ -125,7 +125,7 @@
     (let [scan-job (future (while true
                              (Thread/sleep 60000)
                              (log/info "scanning now")
-                             (try (with-db db (transaction (scanner/process-mounts!)))
+                             (try (with-db db (scanner/process-mounts!))
                                   (catch Exception e (log/error e)))))]
       true)))
 

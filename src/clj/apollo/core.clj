@@ -94,14 +94,14 @@
 (def db-settings (sqlite3 {:db (:subname schema/the-db) :make-pool? true}))
 (defdb db db-settings)
 
-(defn wrap-db-transaction [h]
+(defn wrap-db [h]
   (fn [request]
     (with-db db
       (h request))))
 
 (def app
   (-> http-handler
-      wrap-db-transaction
+      wrap-db
       (wrap-params)
       (j/wrap-json-response)
       (m/wrap-resource "public")

@@ -53,7 +53,7 @@
   :ring {:handler ~handler
          :port ~port
          :init apollo.core/initialize
-         :nrepl {:start? true :port nrepl-port}}
+         :nrepl {:start? true :port ~nrepl-port}}
   :clean-targets ^{:protect false} [~cljs-output-dir]
   :profiles {:dev {:repl-options {:init-ns apollo.core}
                    :plugins [[lein-figwheel "0.4.0"]]

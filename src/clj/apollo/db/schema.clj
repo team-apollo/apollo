@@ -65,7 +65,7 @@
 
 
 (defn create-tbl! [db, tbl]
-  (let [args (cons (:name tbl) (:columns tbl))]
+    (let [args (cons (:name tbl) (:columns tbl))]
     (sql/db-do-commands db
                       (apply sql/create-table-ddl args))))
 
@@ -166,7 +166,7 @@
         (let [db-results (-> (artist-list) (k/where {:id [< "a"]})(k/select)) ;; needs fix for canonical
               results (filter (fn [x] (not (= (:id x) ""))) db-results)]
           (take-while (fn [x] (not (= (subs (str (:id x)) 0 1) "a"))) results))
-        :else (-> (artist-list) (k/where {:name [like (format "%s%%" prefix)]}) (k/select))))
+        :else (-> (artist-list) (k/where {:id [like (format "%s%%" prefix)]}) (k/select))))
 
 (defn album-list-by-artist [artist]
   (-> (k/select* album) (k/where {:artist_id (utils/canonicalize artist)}) (k/order :year) (k/select)))

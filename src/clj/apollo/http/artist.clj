@@ -16,7 +16,7 @@
       {:status 404})))
 
 (defn artists-index [req]
-  (response {:artists (s/artist-list s/the-db)}))
+  (response {:artists (s/artist-search "all")}))
 
 (defn artist-search [prefix]
   (response {:artists (s/artist-search prefix)}))

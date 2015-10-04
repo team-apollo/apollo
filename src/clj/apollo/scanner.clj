@@ -1,12 +1,13 @@
 (ns apollo.scanner
-  (:require [clojure.java.io :as io]
-            [clojure.string :as s]
-            [apollo.db.schema :as db]
+  (:require [apollo.db.schema :as db]
             [apollo.utils :refer [canonicalize]]
-            [clojure.tools.logging :as log]
-            [clojure.string :as string]
+            [clj-time.coerce :as c]
             [clj-time.core :as t]
-            [clj-time.coerce :as c])
+            [clojure.java.io :as io]
+            [clojure.string :as s]
+            [clojure.string :as string]
+            [clojure.tools.logging :as log]
+            [korma.db :refer [transaction]])
   (:import org.jaudiotagger.audio.AudioFileFilter
            org.jaudiotagger.audio.AudioFileIO))
 
@@ -86,7 +87,7 @@
            last-modified (.lastModified f)]
        (or (nil? (last-modified-index abs-path))
            (not (= last-modified (last-modified-index abs-path)))))))
-  ([] (mk-need-info (db/last-modified-index db/the-db))))
+  ([] (mk-need-info (db/last-modified-index))))
 
 (defn file-tag-seq
   ([d file-predicate?]

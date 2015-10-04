@@ -103,13 +103,13 @@
 
 
 (defn recently-added []
-  (let [db-result (s/get-albums-recently-added s/the-db (* 5 365))]
+  (let [db-result (s/get-albums-recently-added (* 5 365))]
     (if (> (count db-result) 0)
       (response {:albums db-result})
       {:status 404})))
 
 (defn albums-by-year []
-  (let [db-result (s/get-albums-by-year s/the-db)]
+  (let [db-result (s/get-albums-by-year)]
     (if (> (count db-result) 0)
       (response {:albums db-result})
       {:status 404})))

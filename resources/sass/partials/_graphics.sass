@@ -108,3 +108,23 @@ img.band
     &::-moz-progress-bar
       background-color: lighten($background, 5)
       box-shadow: 0 2px 3px transparentize($background, .4) inset
+
+.playlist
+  li
+    &:hover, &:focus
+      i
+        right: .25em
+        transform: rotate(0deg)
+        opacity: .2
+    i
+      position: absolute
+      right: -2.25em
+      top: .35em
+      transform: rotate(300deg)
+      opacity: 0
+      display: block
+      transition: opacity .3s, right .3s, transform .3s
+      -moz-transition: opacity .3s, right .3s, transform .3s
+      text-shadow: 0 0 4px transparentize($black, .25)
+      &:hover
+        opacity: 1

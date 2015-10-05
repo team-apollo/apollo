@@ -46,7 +46,7 @@
             is-active? (= (:id np-t) (:id t))]
         (html
          [:li {:class-name (if is-active? "track-row active" "track-row")}
-          [:a {:on-click (fn [e]
+          [:a {:on-double-click (fn [e]
                            (put! channels/track-list [[track] 0])
                            (.preventDefault e))}
            track-label

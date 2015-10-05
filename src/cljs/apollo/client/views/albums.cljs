@@ -39,30 +39,31 @@
     om/IRender
     (render [_]
       (let [artist-ctx (data :artist-ctx)
-               album (data :album)
-               the-artist (or artist-ctx (album "artist"))
-               artist (if (utils/s-contains? the-artist ",")
-                        (first (.split the-artist ","))
-                        the-artist)
-               album-name (album "album_canonical")
-               album-url (mk-album-url artist album-name)
-               album-year (album "year")
-               album-image (mk-album-image artist album-name)
-               album-label (if (nil? artist-ctx)
-                             (utils/format "%s by %s" (album "album") artist)
-                             (utils/format "%s" (album "album")))
-               album-zip-url (mk-album-zip-url artist album-name)
-               play-album (fn [e]
-                            (go
-                              (let [album-detail (<! (services/album-detail artist (album "album")))
-                                    tracks ((album-detail "album") "tracks")]
-                                (put! channels/track-list [tracks 0]))))
+            album (data :album)
+            the-artist (or artist-ctx (:artist_id album))
+            artist (if (utils/s-contains? the-artist ",")
+                     (first (.split the-artist ","))
+                     the-artist)
+            album-name (:id album)
+            album-url (mk-album-url artist album-name)
+            album-year (:year album)
+            album-image (mk-album-image artist album-name)
+            album-label (if (nil? artist-ctx)
+                          (utils/format "%s by %s" (:name album) (if (> (:artist_count album) 1) "Various Artists" (:artist album)))
+                          (utils/format "%s" (:name album)))
+            album-zip-url (mk-album-zip-url artist album-name)
+            play-album (fn [e]
+                         (go
+                           (let [album-detail (<! (services/album-detail artist (:id album)))
+                                 tracks (:tracks (:album album-detail))]
+                             (put! channels/track-list [tracks 0]))))
             append-album (fn [e]
-                           (go (let [album-detail (<! (services/album-detail artist (album "album")))
-                                     tracks ((album-detail "album") "tracks")
+                           (go (let [album-detail (<! (services/album-detail artist (:id album)))
+                                     tracks (:tracks (:album album-detail))
                                      playing (:current-playlist (state/ref-player))
                                      playing-offset (:current-offset (state/ref-player))]
                                  (put! channels/track-list [(concat playing tracks) playing-offset]))))]
+
         (html
            [:li.no-select
             [:a {:href album-url}
@@ -80,25 +81,27 @@
    om/IRender
    (render [_]
      (let [artist (:artist data)
-            albums (:albums data)
-            album-heading (utils/format "%s Albums" (count albums))
-            artist-first (first artist)
-            post-filter (:value (om/observe owner (state/ref-post-filter)))
-            filtered-albums (filter (fn [a]  (if (or (nil? post-filter)
+           albums (:albums data)
+           album-heading (utils/format "%s Albums" (count albums))
+           artist-first (first artist)
+           post-filter (:value (om/observe owner (state/ref-post-filter)))
+           filtered-albums (if (:filtered data)
+                             albums
+                             (filter (fn [a]  (if (or (nil? post-filter)
                                                 (empty? post-filter))
                                               true
                                               (let [c-f post-filter
-                                                    c-a-b  (str (a "album" ""))
-                                                    c-a-a  (str (a "artist" ""))]
+                                                    c-a-b  (str (a :name ""))
+                                                    c-a-a  (str (a :artist ""))]
                                                 (or (utils/str-contains? c-a-b c-f)
                                                     (if (not(empty? c-a-a))
                                                       (utils/str-contains? c-a-a c-f)
                                                       false))))
                                       )
-                                    albums)
-            back (nav/get-up-nav artist-first)
-            back-link (utils/format "#/nav/%s" back)
-            album-item-args (map (fn [artist album] {:artist-ctx artist :album album}) (repeat artist) filtered-albums)]
+                                    albums))
+           back (nav/get-up-nav artist-first)
+           back-link (utils/format "#/nav/%s" back)
+           album-item-args (map (fn [artist album] {:artist-ctx artist :album album}) (repeat artist) filtered-albums)]
      (html
         [:div.artist-detail
          [:div.album-list
@@ -114,15 +117,16 @@
 
 (defn album-detail [{:keys [artist album]}]
   (om/component
-   (let [album-name (album "name")
-          album-year (album "year")
-          album-label (utils/format "%s" album-name)
-          album-image (mk-album-image artist (album "album_canonical"))
-          album-zip-url (mk-album-zip-url artist album-name)
-          tracks (album "tracks")
-          artist-url (artists/mk-artist-url artist)
-          play-album (fn [e] (put! channels/track-list [tracks 0]))
-         compilation? (album "compilation")]
+   (let [album-name (:name album)
+         album-year (:year album)
+         album-label (utils/format "%s" album-name)
+         album-image (mk-album-image artist (:id album))
+         album-zip-url (mk-album-zip-url artist album-name)
+         tracks (:tracks album)
+         artist-url (artists/mk-artist-url artist)
+         play-album (fn [e] (put! channels/track-list [tracks 0]))
+         compilation? (:compilation album)]
+
      (html
       (if (and (not (nil? artist)) (not (nil? album)))
         [:div.album-detail

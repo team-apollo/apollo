@@ -47,8 +47,8 @@
                                   (last (take (inc offset) track-src))
                                   (first track-src))
                   cp (om/get-state owner :current-track)]
-              (when (not= (((or current-track {}) "track" {}) "id")
-                          (((or cp {}) "track" {}) "id"))
+              (when (not= (((or current-track {}) :track {}) :id)
+                          (((or cp {}) :track {}) :id))
                 (set-track current-track (or offset 0) owner))
               (om/transact! (state/ref-player) (fn [p]
                                                  (assoc p
@@ -121,17 +121,17 @@
   (reify
     om/IRender
     (render [this]
-      (let [current-track (or (first (om/observe owner (state/ref-now-playing))) {"track" {}})
-            t (current-track "track")
-            artist (t "artist")
-            album (t "album")
-            title (t "title")
-            track-num (t "track")
-            year (t "year")
-            artist-nav (artists/mk-artist-url artist)
-            album-nav (albums/mk-album-url artist album)
-            artist-image (artists/mk-artist-image artist true)
-            album-image (albums/mk-album-image artist album)
+      (let [current-track (or (first (om/observe owner (state/ref-now-playing))) {:track {}})
+            t (current-track :track)
+            artist (t :artist)
+            album (t :album)
+            title (t :title)
+            track-num (t :track)
+            year (t :year)
+            artist-nav (artists/mk-artist-url (:artist_canonical t))
+            album-nav (albums/mk-album-url (:artist_canonical t) (:album_canonical t))
+            artist-image (artists/mk-artist-image (:artist_canonical t) true)
+            album-image (albums/mk-album-image (:artist_canonical t) (:album_canonical t))
             track-heading (utils/format "%s - %s (%s)" artist title year)
             wiki-link (utils/format "http://www.wikipedia.org/wiki/%s (band)" artist)]
         (html (if (not (nil? artist))

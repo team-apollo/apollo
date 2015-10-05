@@ -1,12 +1,13 @@
 (ns apollo.scanner
-  (:require [clojure.java.io :as io]
-            [clojure.string :as s]
-            [apollo.db.schema :as db]
+  (:require [apollo.db.schema :as db]
             [apollo.utils :refer [canonicalize]]
-            [clojure.tools.logging :as log]
-            [clojure.string :as string]
+            [clj-time.coerce :as c]
             [clj-time.core :as t]
-            [clj-time.coerce :as c])
+            [clojure.java.io :as io]
+            [clojure.string :as s]
+            [clojure.string :as string]
+            [clojure.tools.logging :as log]
+            [korma.db :refer [transaction]])
   (:import org.jaudiotagger.audio.AudioFileFilter
            org.jaudiotagger.audio.AudioFileIO))
 
@@ -86,7 +87,7 @@
            last-modified (.lastModified f)]
        (or (nil? (last-modified-index abs-path))
            (not (= last-modified (last-modified-index abs-path)))))))
-  ([] (mk-need-info (db/last-modified-index db/the-db))))
+  ([] (mk-need-info (db/last-modified-index))))
 
 (defn file-tag-seq
   ([d file-predicate?]
@@ -105,10 +106,12 @@
 (defn process-dir! [d]
   (let [scan-date (c/to-long (t/now))
         fseq (file-tag-seq d (mk-need-info))
-        upsert (partial db/upsert-track! db/the-db scan-date)]
-    (dorun (map  upsert fseq))))
+        upsert (partial db/upsert-track! scan-date)
+        work-load (partition 100 (map upsert fseq))
+        worker (map (fn [w] (transaction (dorun w))) work-load)]
+    (dorun worker)))
 
 (defn process-mounts! []
-  (let [m (db/mount-points db/the-db)]
-    (dorun (db/prune-tracks! db/the-db))
+  (let [m (db/mount-points)]
+    (dorun (db/prune-tracks!))
     (dorun (map process-dir! m))))

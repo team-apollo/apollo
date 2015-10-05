@@ -45,7 +45,7 @@
     (.toByteArray result)))
 
 (defn album-zip [artist-id album-id]
-  (let [db-result-raw (s/tracks-by-album s/the-db album-id)
+  (let [db-result-raw (s/tracks-by-album album-id)
         db-result (if (is-compilation? db-result-raw) db-result-raw (filter (just-artist artist-id) db-result-raw))
         artists (map :artist_canonical  db-result)
         albums (map :album_canonical db-result)
@@ -76,7 +76,7 @@
 (defn album-image [artist-id album-id]
   (let [tracks (filter (fn [t]
                          (= (utils/canonicalize artist-id) (:artist_canonical t)))
-                       (s/tracks-by-album s/the-db album-id))
+                       (s/tracks-by-album album-id))
         img (or (first (images-for-tracks tracks))
                 (images/image-from-cache artist-id album-id)
                 (first-album-image-from-google artist-id album-id))]
@@ -84,7 +84,7 @@
 
 
 (defn album-detail [artist-id album-id]
-  (let [db-result (s/tracks-by-album s/the-db album-id)
+  (let [db-result (s/tracks-by-album album-id)
         first-result (first db-result)
         {artist :artist artist_canonical :artist_canonical album :album album_canonical :album_canonical year :year} first-result
         compilation? (is-compilation? db-result)
@@ -93,23 +93,23 @@
                  (filter (just-artist artist-id) db-result))]
     (if (> (count db-result) 0)
       (response {:album {:artist artist
-                         :artist_canonical artist_canonical
+                         :artist_id artist_canonical
                          :compilation compilation?
                          :name album
-                         :album_canonical album_canonical
+                         :id album_canonical
                          :year year
                          :tracks (map (fn [r] {:track r}) tracks)}})
       {:status 404})))
 
 
 (defn recently-added []
-  (let [db-result (s/get-albums-recently-added s/the-db (* 5 365))]
+  (let [db-result (s/get-albums-recently-added (* 5 365))]
     (if (> (count db-result) 0)
       (response {:albums db-result})
       {:status 404})))
 
 (defn albums-by-year []
-  (let [db-result (s/get-albums-by-year s/the-db)]
+  (let [db-result (s/get-albums-by-year)]
     (if (> (count db-result) 0)
       (response {:albums db-result})
       {:status 404})))

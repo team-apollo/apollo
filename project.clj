@@ -42,11 +42,11 @@
                  [clj-time "0.11.0"]
                  [com.andrewmcveigh/cljs-time "0.3.14"]
                  [org.apache.commons/commons-compress "1.10"] ;;temporary
-                 ;; [org.clojure/tools.reader "0.9.2"] ;;temporary
                  [org.slf4j/slf4j-log4j12 "1.7.12"]
                  [log4j/log4j "1.2.17"]
                  [korma "0.4.2"]
-                 [honeysql "0.6.2"]]
+                 [honeysql "0.6.2"]
+                 [clojure.jdbc/clojure.jdbc-c3p0 "0.3.2"]]
   :source-paths ~src-paths
   :plugins [[lein-ring "0.8.13"]
             [lein-cljsbuild "1.1.1-SNAPSHOT"]
@@ -57,7 +57,7 @@
          :init apollo.core/initialize
          :nrepl {:start? true :port ~nrepl-port}}
   :clean-targets ^{:protect false} [~cljs-output-dir]
-  :profiles {:dev {:repl-options {:init-ns apollo.core}
+  :profiles {:dev {;; :repl-options {:init-ns apollo.core}
                    :plugins [[lein-figwheel "0.5.0-SNAPSHOT"]]
                    :hooks [leiningen.cljsbuild
                            leiningen.sass]

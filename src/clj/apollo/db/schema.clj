@@ -3,8 +3,10 @@
             [clj-time.coerce :as c]
             [clj-time.core :as t]
             [clojure.java.io :as io]
-            [clojure.java.jdbc :as sql]
+            [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
+            [honeysql.core :as sql]
+            [honeysql.helpers :as h]
             [korma.core :as k]))
 
 (def the-db {:classname "org.sqlite.JDBC",
@@ -36,41 +38,45 @@
                                    [:name :string "UNIQUE"]
                                    [:body :text]]}})
 
-(k/defentity track (k/table :tracks))
+(def q-track (-> (apply h/select (get-in tables [:tracks :fields]))
+               (h/from :tracks)))
 
-(defn get-count [e f]
-  (k/aggregate e (count f) :count))
+(def album-fields [[:album_canonical :id]
+                   [:album :name]
+                   [:artist_canonical :artist_id]
+                   :year])
 
-(def album (k/subselect track
-                        (k/fields [:album_canonical :id]
-                                  [:album :name]
-                                  [:artist_canonical :artist_id]
-                                  :year)
-                        (k/modifier "DISTINCT")
-                        (k/where {:name [not= nil]})
-                        (k/order :id)))
+(def artist-fields [[:artist_canonical :id]
+                    [:artist :name]])
 
-(def artist (k/subselect track
-                         (k/fields [:artist_canonical :id]
-                                   [:artist :name])
-                         (k/modifier "DISTINCT")
-                         (k/where {:name [not= nil]})
-                         (k/order :id)))
+(def year-fields [:year])
 
-(def year (k/subselect track
-                       (k/fields :year)
-                       (k/modifier "DISTINCT")
-                       (k/where {:year [not= nil]})
-                       (k/order :year)))
+(def q-album (-> track
+               (apply h/select album-fields)
+               (h/modifiers :distinct)
+               (h/where [:not= nil :name])
+               (h/order-by :id)))
+
+(def q-artist (-> track
+                (apply h/select artist-fields)
+                (h/modifiers :distinct)
+                (h/where [:not= nil :name])
+                (h/order-by :id)))
+
+(def q-year (-> track
+                (apply h/select year-fields)
+                (h/modifiers :distinct)
+                (h/where [:not= nil :year])
+                (h/order-by :year)))
 
 
 (defn create-tbl! [db, tbl]
     (let [args (cons (:name tbl) (:columns tbl))]
-    (sql/db-do-commands db
-                      (apply sql/create-table-ddl args))))
+    (jdbc/db-do-commands db
+                      (apply jdbc/create-table-ddl args))))
 
 (defn drop-tbl! [db tbl]
-  (sql/db-do-commands db (sql/drop-table-ddl (:name tbl))))
+  (jdbc/db-do-commands db (jdbc/drop-table-ddl (:name tbl))))
 
 (defn create-all-tbls! [db]
   (map (partial create-tbl! db) (vals tables)))

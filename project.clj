@@ -21,34 +21,35 @@
                  [ring/ring-devel "1.4.0"]
                  [ring-partial-content "1.0.0"]
                  [compojure "1.4.0"]
-                 [org.clojure/clojurescript "1.7.122"]
+                 [org.clojure/clojurescript "1.7.170"]
                  [org.clojure/java.jdbc "0.4.2"]
-                 [org.xerial/sqlite-jdbc "3.8.11.1"]
+                 [org.xerial/sqlite-jdbc "3.8.11.2"]
                  [org/jaudiotagger "2.0.3"]
                  [claudio "0.1.3"]
                  [com.novemberain/pantomime "2.7.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [secretary "1.2.3"]
-                 [cljs-ajax "0.3.14"]
+                 [cljs-ajax "0.5.1"]
                  [org.omcljs/om "0.9.0"]
                  [bk/ring-gzip "0.1.1"]
-                 [sablono "0.3.6"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [sablono "0.4.0"]
+                 [org.clojure/core.async "0.2.371"]
                  [clj-http "2.0.0"]
                  [digest "1.4.4"]
-                 [figwheel "0.4.0"]
+                 [figwheel "0.5.0-SNAPSHOT"]
                  [environ "1.0.1"]
                  [enlive "1.1.6"]
                  [clj-time "0.11.0"]
-                 [com.andrewmcveigh/cljs-time "0.3.13"]
+                 [com.andrewmcveigh/cljs-time "0.3.14"]
                  [org.apache.commons/commons-compress "1.10"] ;;temporary
                  ;; [org.clojure/tools.reader "0.9.2"] ;;temporary
                  [org.slf4j/slf4j-log4j12 "1.7.12"]
                  [log4j/log4j "1.2.17"]
-                 [korma "0.4.2"]]
+                 [korma "0.4.2"]
+                 [honeysql "0.6.2"]]
   :source-paths ~src-paths
   :plugins [[lein-ring "0.8.13"]
-            [lein-cljsbuild "1.0.4"]
+            [lein-cljsbuild "1.1.1-SNAPSHOT"]
             [lein-haml-sass "0.2.7-SNAPSHOT"]
             [lein-environ "1.0.0"]]
   :ring {:handler ~handler
@@ -57,7 +58,7 @@
          :nrepl {:start? true :port ~nrepl-port}}
   :clean-targets ^{:protect false} [~cljs-output-dir]
   :profiles {:dev {:repl-options {:init-ns apollo.core}
-                   :plugins [[lein-figwheel "0.4.0"]]
+                   :plugins [[lein-figwheel "0.5.0-SNAPSHOT"]]
                    :hooks [leiningen.cljsbuild
                            leiningen.sass]
                    :env {:is-dev true}
@@ -68,6 +69,7 @@
                               :nrepl-port ~nrepl-port}
                    :cljsbuild {:builds
                                {:app {:source-paths [~cljs-src "env/dev/cljs"]
+                                      :figwheel true
                                       :compiler {:output-to ~cljs-output-to
                                                  :optimizations :none
                                                  :cache-analysis true

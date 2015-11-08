@@ -44,12 +44,11 @@
                  [org.apache.commons/commons-compress "1.10"] ;;temporary
                  [org.slf4j/slf4j-log4j12 "1.7.12"]
                  [log4j/log4j "1.2.17"]
-                 [korma "0.4.2"]
                  [honeysql "0.6.2"]
                  [clojure.jdbc/clojure.jdbc-c3p0 "0.3.2"]]
   :source-paths ~src-paths
   :plugins [[lein-ring "0.8.13"]
-            [lein-cljsbuild "1.1.1-SNAPSHOT"]
+            [lein-cljsbuild "1.1.1"]
             [lein-haml-sass "0.2.7-SNAPSHOT"]
             [lein-environ "1.0.0"]]
   :ring {:handler ~handler

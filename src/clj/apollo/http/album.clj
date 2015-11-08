@@ -44,8 +44,10 @@
           (.closeEntry out))))
     (.toByteArray result)))
 
-(defn album-zip [artist-id album-id]
-  (let [db-result-raw (s/tracks-by-album album-id)
+(defn album-zip [{cn :db-connection
+                  {:keys [artist-id album-id]} :params
+                  :as request}]
+  (let [db-result-raw (s/tracks-by-album cn album-id)
         db-result (if (is-compilation? db-result-raw) db-result-raw (filter (just-artist artist-id) db-result-raw))
         artists (map :artist_canonical  db-result)
         albums (map :album_canonical db-result)
@@ -72,19 +74,21 @@
     (log/info (format "attempting to get image from internet for %s %s" artist album))
     (first (drop-while nil? (map cacher urls)))))
 
-
-(defn album-image [artist-id album-id]
+(defn album-image [{cn :db-connection
+                    {:keys[artist-id album-id]} :params}]
   (let [tracks (filter (fn [t]
                          (= (utils/canonicalize artist-id) (:artist_canonical t)))
-                       (s/tracks-by-album album-id))
+                       (s/tracks-by-album cn album-id))
         img (or (first (images-for-tracks tracks))
                 (images/image-from-cache artist-id album-id)
                 (first-album-image-from-google artist-id album-id))]
     (header (file-response (.getAbsolutePath img)) "Content-Type" (mime-type-of img))))
 
 
-(defn album-detail [artist-id album-id]
-  (let [db-result (s/tracks-by-album album-id)
+(defn album-detail [{cn :db-connection
+                     {:keys [artist-id album-id]} :params
+                     :as request}]
+  (let [db-result (s/tracks-by-album cn album-id)
         first-result (first db-result)
         {artist :artist artist_canonical :artist_canonical album :album album_canonical :album_canonical year :year} first-result
         compilation? (is-compilation? db-result)
@@ -102,14 +106,14 @@
       {:status 404})))
 
 
-(defn recently-added []
-  (let [db-result (s/get-albums-recently-added (* 5 365))]
+(defn recently-added [{cn :db-connection}]
+  (let [db-result (s/get-albums-recently-added cn (* 5 365))]
     (if (> (count db-result) 0)
       (response {:albums db-result})
       {:status 404})))
 
-(defn albums-by-year []
-  (let [db-result (s/get-albums-by-year)]
+(defn albums-by-year [{cn :db-connection}]
+  (let [db-result (s/get-albums-by-year cn)]
     (if (> (count db-result) 0)
       (response {:albums db-result})
       {:status 404})))

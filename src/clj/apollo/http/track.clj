@@ -6,8 +6,10 @@
             [pantomime.mime :refer [mime-type-of]]
             [clojure.tools.logging :as log]))
 
-(defn track-detail [artist album id]
-  (let [result (track-by-artist-by-album artist album id)
+(defn track-detail [{cn :db-connection
+                     {artist :artist-id album :album-id id :track-id} :params
+                     :as request}]
+  (let [result (track-by-artist-by-album cn artist album id)
         path (.getAbsolutePath (io/file (:path result)))]
     (if (not (nil? path))
       (let [file-name (utils/track-file-name result)

@@ -4,10 +4,8 @@
             [clj-time.core :as t]
             [clojure.java.io :as io]
             [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log]
             [honeysql.core :as sql]
-            [honeysql.helpers :as h]
-            [korma.core :as k]))
+            [honeysql.helpers :as h]))
 
 (def the-db {:classname "org.sqlite.JDBC",
              :subprotocol "sqlite",
@@ -38,8 +36,7 @@
                                    [:name :string "UNIQUE"]
                                    [:body :text]]}})
 
-(def q-track (-> (apply h/select (get-in tables [:tracks :fields]))
-               (h/from :tracks)))
+(def track-fields (map first (get-in tables [:tracks :columns])))
 
 (def album-fields [[:album_canonical :id]
                    [:album :name]
@@ -51,20 +48,23 @@
 
 (def year-fields [:year])
 
-(def q-album (-> track
-               (apply h/select album-fields)
-               (h/modifiers :distinct)
-               (h/where [:not= nil :name])
-               (h/order-by :id)))
+(def q-track (-> (apply h/select track-fields)
+                 (h/from :tracks)))
 
-(def q-artist (-> track
-                (apply h/select artist-fields)
-                (h/modifiers :distinct)
-                (h/where [:not= nil :name])
-                (h/order-by :id)))
+(def q-album (-> (apply h/select album-fields)
+                 (h/from :tracks)
+                 (h/modifiers :distinct)
+                 (h/where [:not= nil :name])
+                 (h/order-by :id)))
 
-(def q-year (-> track
-                (apply h/select year-fields)
+(def q-artist (-> (apply h/select artist-fields)
+                  (h/from :tracks)
+                  (h/modifiers :distinct)
+                  (h/where [:not= nil :name])
+                  (h/order-by :id)))
+
+(def q-year (-> (apply h/select year-fields)
+                (h/from :tracks)
                 (h/modifiers :distinct)
                 (h/where [:not= nil :year])
                 (h/order-by :year)))
@@ -87,59 +87,72 @@
 (defn column-names [t]
   (map first (:columns t)))
 
-(defn track-exists? [t]
+(defn track-exists? [cn t]
   (> (:count (first
-              (-> (k/select* track)
-                  (k/where {:path t})
-                  (get-count :id)
-                  (k/select))))
+              (jdbc/query cn (-> q-track
+                                 (h/select [:%count.* :count])
+                                 (h/where [:= :path t])
+                                 (sql/format)))))
      0))
 
 (defn update-track!
   "returns count of rows affected"
-  [track-info]
-  (k/update track
-            (k/set-fields track-info)
-            (k/where {:path (:path track-info)})))
+  [cn track-info]
+  (first (jdbc/execute! cn (-> (h/update :tracks)
+                               (h/sset track-info)
+                               (h/where [:= :path (:path track-info)])
+                               (sql/format))))) ;; does this return rows effected
 
 (defn insert-track!
   "returns last row id which should correspond to id"
-  [raw-track-info scan-date]
-  (let [track-info (assoc raw-track-info :scan_date scan-date)]
-    (k/insert track (k/values track-info))))
+  [cn raw-track-info scan-date]
+  (let [track-info (assoc raw-track-info :scan_date scan-date)
+        result (jdbc/insert! cn :tracks track-info)]
+    ((first result) (keyword "last_insert_rowid()")))) ;; does this last id?
 
 (defn delete-track!
   "returns rows effected which should be > 1 if successful"
-  [path]
-  (k/delete track (k/where {:path path})))
+  [cn path]
+  (jdbc/execute! cn (->
+                  (h/delete-from :tracks)
+                  (h/where [:= :path path])
+                  (sql/format))))
 
 (defn upsert-track!
   "returns {id:??}for insert or {row-count:??} for update"
-  [scan-date track-info]
-  (let [update-result (update-track! track-info)]
+  [cn scan-date track-info]
+  (let [update-result (update-track! cn track-info)]
     (if (> update-result 0)
       {:row-count update-result :action :update}
-      {:id (insert-track! track-info scan-date) :action :insert})))
+      {:id (insert-track! cn track-info scan-date) :action :insert})))
 
-(defn insert-mount! [p]
-  (k/insert :mounts (k/values {:path p})))
+(defn insert-mount! [cn p]
+  (jdbc/execute! cn (-> (h/insert-into :mounts)
+                     (h/values {:path p})
+                     (sql/format))))
 
 (defn delete-mount!
   "returns rows effected which should be > 1 if successful"
-  [path]
-  (k/delete :mounts (k/where {:path path})))
+  [cn path]
+  (jdbc/execute! cn (-> (h/delete-from :mounts)
+                     (h/where [:= :path path])
+                     (sql/format))))
 
 (defn mount-points
   "returned with trailing / to denote directory, io/file does the
   normalization I think"
-  []
+  [cn]
   (map (fn [x] (str (.getAbsolutePath (io/file (:path x))) "/"))
-       (k/select :mounts (k/fields :path))))
+       (jdbc/query cn (-> (h/select :*)
+                          (h/from :mounts)
+                          (sql/format)))))
 
 (defn last-modified-index
   "{path:last_modified}"
-  []
-  (let [rows (k/select track (k/fields :last_modified :path))
+  [cn]
+  (let [rows (jdbc/query cn (-> (h/select :last_modified :path)
+                                (h/from :tracks)
+                                (sql/format)))
         result (into {} (map (fn [x] (let [k (:path x)
                                            v (:last_modified x)
                                            r (hash-map k v)]
@@ -152,89 +165,96 @@
 
 (defn prune-tracks!
   "get rid of rows where the files no longer exist or are no longer managed"
-  []
-  (let [fkeys (keys (last-modified-index))
-        mounts (mount-points)
+  [cn]
+  (let [fkeys (keys (last-modified-index cn))
+        mounts (mount-points cn)
         should-prune? (fn [f]
                         (do
                           (or (not (.exists f)) (not (managed? f mounts)))))
         files (filter should-prune? (map io/file fkeys))]
-    (map delete-track! (map (fn [f] (.getAbsolutePath f)) files))))
+    (map (partial delete-track! cn) (map (fn [f] (.getAbsolutePath f)) files))))
 
 ;; queries for web endpoints
-(defn artist-list []
-  (-> (k/select* artist)))
 
-
-(defn artist-search [prefix]
-  (cond (= prefix "all") (-> (artist-list) (k/select))
+(defn artist-search [cn prefix]
+  (cond (= prefix "all") (jdbc/query cn (-> q-artist (sql/format)))
         (= prefix "#")
-        (let [db-results (-> (artist-list) (k/where {:id [< "a"]})(k/select)) ;; needs fix for canonical
+        (let [db-results (jdbc/query cn (-> q-artist
+                                            (h/where [:< :id "a"])
+                                            (sql/format))) ;; needs fix for canonical
               results (filter (fn [x] (not (= (:id x) ""))) db-results)]
           (take-while (fn [x] (not (= (subs (str (:id x)) 0 1) "a"))) results))
-        :else (-> (artist-list) (k/where {:id [like (format "%s%%" prefix)]}) (k/select))))
+        :else (jdbc/query cn (-> q-artist
+                                 (h/where [:like :artist_canonical (format "%s%%" prefix)])
+                                 (sql/format)))))
 
-(defn album-list-by-artist [artist]
-  (-> (k/select* album) (k/where {:artist_id (utils/canonicalize artist)}) (k/order :year) (k/select)))
+(defn album-list-by-artist [cn artist]
+  (jdbc/query cn (-> q-album
+                     (h/where [:= :artist_id (utils/canonicalize artist)])
+                     (h/order-by :year)
+                     (sql/format))))
 
 
-(defn tracks-by-album [album]
-  (-> (k/select* track)
-      (k/where {:album_canonical (utils/canonicalize album)})
-      (k/order :disc_no)
-      (k/order :track)
-      (k/order :artist_canonical)
-      (k/select)))
+(defn tracks-by-album [cn album]
+  (jdbc/query cn (-> q-track
+                     (h/where [:= :album_canonical (utils/canonicalize album)])
+                     (h/order-by :disc_no :track :artist_canonical)
+                     (sql/format))))
 
-(defn problem-tracks []
-  (-> (k/select* track)
-      (k/where {:artist_canonical ""
-                :album_canonical ""
-                :title_canonical ""})
-      (k/order :path)
-      (k/select)))
+(defn problem-tracks [cn]
+  (jdbc/query cn (-> q-track
+                     (h/where [:= :artist_canonical ""]
+                              [:= :album_canonical ""]
+                              [:= :title_canonical ""])
+                     (h/order-by :path)
+                     (sql/format))))
 
-(defn track-by-artist-by-album [artist album id]
-  (first (-> (k/select* track)
-             (k/where {:artist_canonical (utils/canonicalize artist)
-                       :album_canonical (utils/canonicalize album)
-                       :id id})
-             (k/select))))
+(defn track-by-artist-by-album [cn artist album id]
+  (first (jdbc/query cn (-> q-track
+                     (h/where [:= :artist_canonical (utils/canonicalize artist)]
+                              [:= :album_canonical (utils/canonicalize album)]
+                              [:= :id id])
+                     (sql/format)))))
 
-(defn get-album-and-artist-by-path [path]
+(defn get-album-and-artist-by-path [cn path]
   (let [f (io/file path)
         p (if (.isDirectory f) path (.getParent f))]
-    (-> (k/select* track)
-        (k/fields :artist_canonical :album_canonical)
-        (k/modifier "DISTINCT")
-        (k/order :artist_canonical)
-        (k/order :album_canonical)
-        (k/where {:path [like (format "%s%%" p)]}))))
+    (jdbc/query cn (-> q-track
+                       (h/select :artist_canonical :album_canonical)
+                       (h/modifiers :distinct)
+                       (h/where [:like :path (format "%s%%" p)])
+                       (h/order-by :artist_canonical :album_canonical)
+                       (sql/format)))))
 
 (defn get-albums-recently-added
-  ([days-ago]
-   (-> (k/select* track)
-       (k/fields ["group_concat(DISTINCT artist_canonical)" :artist_id]
-                 ["count(DISTINCT artist_canonical)" :artist_count]
-                 [:album_canonical :id]
-                 [:album :name]
-                 :artist :year :scan_date :last_modified)
-       (k/where {:scan_date [> (c/to-long (-> days-ago t/days t/ago))]})
-       (k/group :album_canonical :year)
-       (k/order :last_modified :desc)
-       (k/order :scan_date :desc)
-       (k/order :id :desc)
-       (k/select)))
-  ([] (get-albums-recently-added 365)))
+  ([cn days-ago]
+   (jdbc/query cn (-> q-track
+                      (h/select [(sql/call :group_concat (keyword "DISTINCT artist_canonical")) :artist_id]
+                                [(sql/call :count (keyword "DISTINCT artist_canonical")):artist_count]
+                                [:album_canonical :id]
+                                [:album :name]
+                                :artist
+                                :year
+                                :scan_date
+                                :last_modified)
+                      (h/where [:> :scan_date (c/to-long (-> days-ago t/days t/ago))])
+                      (h/group :album_canonical :year)
+                      (h/order-by [:last_modified :desc]
+                                  [:scan_date :desc]
+                                  [:id :desc])
+                      (sql/format))))
+  ([cn] (get-albums-recently-added 365)))
 
-(defn get-albums-by-year []
-  (-> (k/select* track)
-      (k/fields ["group_concat(DISTINCT artist_canonical)" :artist_id]
-                ["count(DISTINCT artist_canonical)" :artist_count]
-                [:album_canonical :id]
-                [:album :name]
-                :artist :year :scan_date :last_modified)
-      (k/group :album_canonical)
-      (k/order :year :desc)
-      (k/order :artist)
-      (k/select)))
+(defn get-albums-by-year [cn]
+  (jdbc/query cn (-> q-track
+                     (h/select [(sql/call :group_concat (keyword "DISTINCT artist_canonical")) :artist_id]
+                               [(sql/call :count (keyword "DISTINCT artist_canonical")):artist_count]
+                               [:album_canonical :id]
+                               [:album :name]
+                               :artist
+                               :year
+                               :scan_date
+                               :last_modified)
+                     (h/group :album_canonical)
+                     (h/order-by [:year :desc] :artist)
+                     (sql/format))))

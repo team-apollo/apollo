@@ -8,18 +8,22 @@
             [clojure.tools.logging :as log]
             [apollo.musicbrainz :as mb]))
 
-(defn artists-detail [id]
-  (let [result (s/album-list-by-artist id)]
+(defn artists-detail [{cn :db-connection
+                       {id :artist-id} :params
+                       :as request}]
+  (let [result (s/album-list-by-artist cn id)]
     (if (> (count result) 0)
       (response {:artist (utils/canonicalize id)
                  :albums result})
       {:status 404})))
 
-(defn artists-index [req]
-  (response {:artists (s/artist-search "all")}))
+(defn artists-index [{cn :db_connection :as request}]
+  (response {:artists (s/artist-search cn "all")}))
 
-(defn artist-search [prefix]
-  (response {:artists (s/artist-search prefix)}))
+(defn artist-search [{cn :db-connection
+                      {:keys [prefix]} :params
+                      :as request}]
+  (response {:artists (s/artist-search cn prefix)}))
 
 (defn first-artist-image-from-google [artist]
   (let [urls (map :url (images/goog-artist-images artist))

@@ -4,10 +4,10 @@
             [clj-time.coerce :as c]
             [clj-time.core :as t]
             [clojure.java.io :as io]
+            [clojure.java.jdbc :refer [with-db-transaction]]
             [clojure.string :as s]
             [clojure.string :as string]
-            [clojure.tools.logging :as log]
-            [korma.db :refer [transaction]])
+            [clojure.tools.logging :as log])
   (:import org.jaudiotagger.audio.AudioFileFilter
            org.jaudiotagger.audio.AudioFileIO))
 
@@ -81,13 +81,13 @@
                   (:tracks db/tables)))))
 
 (defn mk-need-info
-  ([last-modified-index]
-   (fn [f]
+  [cn]
+   (let [last-modified-index (db/last-modified-index cn)]
+     (fn [f]
      (let [abs-path (.getAbsolutePath f)
            last-modified (.lastModified f)]
        (or (nil? (last-modified-index abs-path))
-           (not (= last-modified (last-modified-index abs-path)))))))
-  ([] (mk-need-info (db/last-modified-index))))
+           (not (= last-modified (last-modified-index abs-path))))))))
 
 (defn file-tag-seq
   ([d file-predicate?]
@@ -103,15 +103,20 @@
   ([d] (file-tag-seq d (fn [f] true))))
 
 
-(defn process-dir! [d]
+(defn process-tracks! [cn scan-date tracks]
+  (with-db-transaction [d cn]
+    (let [upsert (partial db/upsert-track! d scan-date)
+          work (map upsert tracks)]
+      (dorun work))))
+
+(defn process-dir! [cn d]
   (let [scan-date (c/to-long (t/now))
-        fseq (file-tag-seq d (mk-need-info))
-        upsert (partial db/upsert-track! scan-date)
-        work-load (partition 100 (map upsert fseq))
-        worker (map (fn [w] (transaction (dorun w))) work-load)]
+        fseq (file-tag-seq d (mk-need-info cn))
+        work-load (partition-all 150 fseq)
+        worker (map (partial process-tracks! cn scan-date) work-load)]
     (dorun worker)))
 
-(defn process-mounts! []
-  (let [m (db/mount-points)]
-    (dorun (db/prune-tracks!))
-    (dorun (map process-dir! m))))
+(defn process-mounts! [cn]
+  (let [m (db/mount-points cn)]
+    (dorun (db/prune-tracks! cn))
+    (dorun (map (partial process-dir! cn) m))))

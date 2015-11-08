@@ -17,8 +17,9 @@
             [apollo.client.events :as e]
             [apollo.client.state :as state]
             [cljs.core.async :refer [<! sub chan dropping-buffer timeout]])
+  (:import goog.history.Html5History))
 
-  (:import goog.History))
+(defonce history (Html5History.))
 
 (def nav-map {:nav-browse "#/"
               :nav-recent "#/recent"
@@ -137,8 +138,7 @@
 
 (defn main []
   (secretary/set-config! :prefix "#")
-  (let [history (History.)]
-    (events/listen history "navigate"
+  (events/listen history "navigate"
                    (fn [event]
                      (secretary/dispatch! (.-token event))
                      (swap! app-state assoc :current-token (.-token event))
@@ -146,6 +146,6 @@
                        (<! (timeout 100))
                        (reset-post-filter))
                      true))
-    (.setEnabled history true)))
+  (doto history (.setEnabled true)))
 
 (main)

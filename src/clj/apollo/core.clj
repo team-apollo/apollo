@@ -25,7 +25,7 @@
 
 (def is-dev? (env :is-dev))
 
-(def spec (pool/make-datasource-spec schema/the-db))
+(def spec schema/the-db)
 
 (def inject-devmode-html
   (comp

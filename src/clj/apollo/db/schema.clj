@@ -9,8 +9,7 @@
 
 (def the-db {:classname "org.sqlite.JDBC",
              :subprotocol "sqlite",
-             :subname "apollo.db",
-             :make-pool? true}) ;; how to config
+             :subname "apollo.db"})
 
 (def tables {:tracks {:name "tracks"
                       :columns[[:id :integer "PRIMARY KEY" "AUTOINCREMENT"]
@@ -243,7 +242,7 @@
                                   [:scan_date :desc]
                                   [:id :desc])
                       (sql/format))))
-  ([cn] (get-albums-recently-added 365)))
+  ([cn] (get-albums-recently-added cn 365)))
 
 (defn get-albums-by-year [cn]
   (jdbc/query cn (-> q-track

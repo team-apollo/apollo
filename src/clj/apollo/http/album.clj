@@ -79,10 +79,17 @@
   (let [tracks (filter (fn [t]
                          (= (utils/canonicalize artist-id) (:artist_canonical t)))
                        (s/tracks-by-album cn album-id))
-        img (or (first (images-for-tracks tracks))
-                (images/image-from-cache artist-id album-id)
-                (first-album-image-from-google artist-id album-id))]
-    (header (file-response (.getAbsolutePath img)) "Content-Type" (mime-type-of img))))
+        files  (map :path tracks)
+        the-files (map io/file files)
+        artwork-candidate (first (flatten (map images/get-artwork-from-file the-files)))]
+    (if (nil? artwork-candidate)
+      (let [img-candidate (or (first (images-for-tracks tracks))
+                           (images/image-from-cache artist-id album-id)
+                           (first-album-image-from-google artist-id album-id))
+        [img-response mime-type] (or [(file-response (.getAbsolutePath img-candidate))
+                                      (mime-type-of img-candidate)])]
+        (header img-response "Content-Type" mime-type))
+      (header {:body (new ByteArrayInputStream (.getBinaryData artwork-candidate))} "Content-Type" (.getMimeType artwork-candidate)))))
 
 
 (defn album-detail [{cn :db-connection

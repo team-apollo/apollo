@@ -2,6 +2,7 @@
   (:require [clj-http.client :as client]
             [apollo.http.cache :as cache]
             [apollo.utils :as utils]
+            [apollo.scanner :refer [get-tag-from-file]]
             [clojure.tools.logging :as log]))
 
 (def goog-image-qry-url "http://ajax.googleapis.com/ajax/services/search/images")
@@ -40,3 +41,6 @@
         candidates (filter (fn [f] (utils/starts-with? (.getName f) k)) (seq (.listFiles root)))
         result (first (reverse (sort-by (fn [f] (.lastModified f)) candidates)))]
     result))
+
+(defn get-artwork-from-file [f]
+  (seq (.getArtworkList (get-tag-from-file f))))

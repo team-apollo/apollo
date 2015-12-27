@@ -18,8 +18,12 @@
 
 (def field-keys (map #(.name %) (.getEnumConstants org.jaudiotagger.tag.FieldKey)))
 
+
+(defn audio-file-io [f]
+  (org.jaudiotagger.audio.AudioFileIO/read f))
+
 (defn get-tag-from-file [f]
-  (.getTag (org.jaudiotagger.audio.AudioFileIO/read f)))
+  (.getTag (audio-file-io f)))
 
 (defn ->constant [k]
   (.get (.getField org.jaudiotagger.tag.FieldKey k) nil))
@@ -37,7 +41,7 @@
       (vector (keywordify k) v))))
 
 (defn read-tag [f]
-  (when-let [tag (.getTag (org.jaudiotagger.audio.AudioFileIO/read f))]
+  (when-let [tag (get-tag-from-file f)]
     (into {} (remove nil? (map (partial retrieve-field tag) field-keys)))))
 
 (defn is-audio-file? [f]

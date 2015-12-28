@@ -40,6 +40,7 @@
         k (str (apply cache/make-key kys) ".")
         candidates (filter (fn [f] (utils/starts-with? (.getName f) k)) (seq (.listFiles root)))
         result (first (reverse (sort-by (fn [f] (.lastModified f)) candidates)))]
+    (println "image from cache " result)
     result))
 
 (defn get-artwork-from-file [f]

@@ -4,6 +4,7 @@
             [apollo.utils :as utils]
             [apollo.images :as images]
             [apollo.http.cache :as cache]
+            [apollo.musicbrainz :refer [get-release-artwork]]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [pantomime.mime :refer [mime-type-of]])
@@ -66,6 +67,7 @@
 (defn images-for-tracks [tracks]
   (let [parents (into #{} (map (fn [t] (.getParentFile (io/file (:path t)))) tracks))
         result (filter utils/is-image? (flatten (map (fn [p] (seq (.listFiles p))) parents)))]
+    (println "results for image files in tracks directories")
     result))
 
 (defn first-album-image-from-google [artist album]
@@ -73,6 +75,14 @@
         cacher (fn [url] (cache/cache-image-response url artist album))]
     (log/info (format "attempting to get image from internet for %s %s" artist album))
     (first (drop-while nil? (map cacher urls)))))
+
+(defn artwork-from-musicbrainz [artist album]
+  (let [url (get-release-artwork artist album)]
+    (if url
+      (doall
+       (log/info (format "attempting to get image from internet for %s %s" artist album))
+       (cache/cache-image-response url artist album))
+      (log/info (format "no image found for %s %s from musicbrainz" artist album)))))
 
 (defn album-image [{cn :db-connection
                     {:keys[artist-id album-id]} :params}]
@@ -84,11 +94,13 @@
         artwork-candidate (first (flatten (map images/get-artwork-from-file the-files)))]
     (if (nil? artwork-candidate)
       (let [img-candidate (or (first (images-for-tracks tracks))
-                           (images/image-from-cache artist-id album-id)
-                           (first-album-image-from-google artist-id album-id))
-        [img-response mime-type] (or [(file-response (.getAbsolutePath img-candidate))
-                                      (mime-type-of img-candidate)])]
-        (header img-response "Content-Type" mime-type))
+                              (images/image-from-cache artist-id album-id)
+                              (artwork-from-musicbrainz artist-id album-id))]
+        (if img-candidate
+          (let [[img-response mime-type] [(file-response (.getAbsolutePath img-candidate))
+                                          (mime-type-of img-candidate)]]
+            (header img-response "Content-Type" mime-type))
+          {:status 404}))
       (header {:body (new ByteArrayInputStream (.getBinaryData artwork-candidate))} "Content-Type" (.getMimeType artwork-candidate)))))
 
 

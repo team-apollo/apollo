@@ -1,4 +1,4 @@
-@media screen and (max-width: 1200px)
+@media screen and (max-width: 1200px) and (min-width: 800px)
   .album-detail
     .info
       max-width: 200px
@@ -11,3 +11,22 @@
         top: 0
     ul.tracks
       margin: 0 0 0 calc(200px + 1em)
+
+@media screen and (max-width:799px)
+  .album-detail
+    .info
+      max-width: 100%
+      i.fa-play-circle
+        line-height: 1.4
+        text-align: left
+        left: 0
+        bottom: 1.1em
+        font-size: 5em
+        padding-left: 20px
+    ul.tracks
+      clear: both
+      margin: 1em 0 0 0
+      width: 100%
+  .content
+    margin-left: 0
+

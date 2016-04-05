@@ -154,7 +154,7 @@
     (render [this]
       (html
        [:li {:class-name (when (and view-playing? (= idx playing-offset))  "active") :on-double-click (fn [e] (put! channels/track-list [playing idx]))}
-        [:p (tracks/track-label item true)]
+        [:p (tracks/playlist-track item)]
         [:span (tracks/artist item true)]
         [:i.fa.fa-times-circle.fa-2x]]))))
 

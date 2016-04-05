@@ -28,6 +28,11 @@
       (utils/format "%s. %s by %s" track-num track-title artist)
       (utils/format "%s. %s" track-num track-title))))
 
+(defn playlist-track [track]
+  (let [t (:track track)
+        track-title (:title t)]
+      (utils/format "%s" track-title)))
+
 (defn artist [track with-artist?]
   (let [t (:track track)
         artist (:artist t)]

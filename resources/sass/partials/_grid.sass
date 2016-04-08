@@ -27,6 +27,51 @@
       clear: both
       margin: 1em 0 0 0
       width: 100%
-  .content
-    margin-left: 0
+  .player
+    height: 4em
+    background: $black
+    ul
+      width: 100%
+      text-align: center
+      margin-top: .5em
+    progress[value]
+      width: calc(100% - 85px)
+  .left-column
+    display: none
+  .middle-column
+    margin-left: 50px
+    .content
+      margin-left: 0
+      padding-top: 7em
+  .artist-detail, .artist-list
+    li
+      width: calc(50% - .5em)
+      float: left
+      &:nth-of-type(even)
+        float: right
+        margin-right: 0
+      img
+        height: auto !important
+        max-height: 250px
+  .collection-nav
+    left: 50px
+    top: 4em
+    width: calc(100% - 50px)
+  .album-actions
+    position: relative
+    i.fa-play-circle
+      top: auto
+      bottom: 1em
+      left: 50%
+      margin: 0
+      margin-left: -.45em
+      position: absolute
+    i.fa-plus-circle
+      bottom: 2em
+      top: auto
+    i.fa-download
+      bottom: 2em
+      top: auto
+
+@media screen and (max-width:486px)
 

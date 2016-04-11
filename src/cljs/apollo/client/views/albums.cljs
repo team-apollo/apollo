@@ -140,10 +140,11 @@
             [:i.fa.fa-play-circle.fa-lg]
             [:p "Play Album"]]
           [:img {:src album-image}]
-          [:h2 album-name]
-          [:h3 album-year]
-          [:a.download {:href album-zip-url}
-           [:i.fa.fa-download.fa-fw] "Download Album"]]
+          [:div.specifics
+            [:h2 album-name]
+            [:h3 album-year]
+            [:a.download {:href album-zip-url}
+             [:i.fa.fa-download.fa-fw] "Download Album"]]]
          [:ul.tracks
           (om/build-all tracks/track-detail (map (fn [track] {:track track
                                                               :compilation? compilation?}) tracks (repeat compilation?)))

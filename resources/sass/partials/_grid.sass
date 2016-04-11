@@ -1,30 +1,20 @@
-@media screen and (max-width: 1200px) and (min-width: 800px)
-  .album-detail
-    .info
-      max-width: 200px
-      h2
-        font-size: 1em
-      h3
-        font-size: .9em
-    ul.tracks
-      margin: 0 0 0 calc(200px + 1em)
-
 @media screen and (max-width:799px)
   .album-detail
     .info
       max-width: 100%
       img
-        width: 200px
+        width: $image-small
         max-width: 50%
-        padding-right: 1em
-        float: left
+      .specifics
+        width: calc(100% - (#{$image-small} + 1em))
       .play-band
-        width: 200px
+        width: $image-small
         max-width: 50%
     ul.tracks
       clear: both
       margin: 1em 0 0 0
       width: 100%
+
   .player
     height: 4em
     background: $black
@@ -34,27 +24,34 @@
       margin-top: .5em
     progress[value]
       width: calc(100% - 85px)
+
   .left-column
     display: none
+
   .middle-column
     margin-left: 50px
-    .content
-      margin-left: 0
-      padding-top: 7em
+
+  .content
+    padding-top: 7em
+
   .artist-detail, .artist-list
     li
-      width: calc(50% - .5em)
-      float: left
-      &:nth-of-type(even)
-        float: right
-        margin-right: 0
+      width: $image-small
+      max-width: 100%
       img
+        max-height: $image-small
+        min-height: $image-small
         height: auto !important
-        max-height: 250px
+
   .collection-nav
     left: 50px
     top: 4em
     width: calc(100% - 50px)
+    span
+      display: block
+    ul
+      width: calc(100% - 50px)
+
   .album-actions
     i.fa-play-circle
       top: auto

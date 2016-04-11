@@ -19,13 +19,9 @@ body
 .middle-column
   margin-left: 300px
   box-sizing: border-box
-  .content
-    padding: 5em 1em 1em
 
 .content
-  padding: 2em 1em 1em
-  margin-left: 50px
-
+  padding: 5em 1em 1em
 
 .no-select
   -webkit-touch-callout: none
@@ -97,7 +93,7 @@ ul
   li
     display: inline-block
     position: relative
-    width: 150px
+    width: $image-med
     margin: 0 1em 1em 0
     box-sizing: border-box
     &:hover
@@ -111,7 +107,7 @@ ul
       width: 100%
       object-fit: cover
       height: auto
-      min-height: 150px
+      min-height: $image-med
       filter: grayscale(75%)
       -webkit-filter: grayscale(75%)
       -moz-filter: grayscale(75%)
@@ -171,6 +167,24 @@ ul
       right: 0
 
 .album-detail
+  .info
+    max-width: 100%
+    position: relative
+    overflow: hidden
+    img
+      width: $image-med
+      padding-right: 1em
+      float: left
+    .specifics
+      width: calc(100% - (#{$image-med} + 1em))
+      float: left
+    .play-band
+      width: $image-med
+      max-width: 50%
+  ul.tracks
+    clear: both
+    margin: 1em 0 0 0
+    width: 100%
   li
     &:hover
       .play-band

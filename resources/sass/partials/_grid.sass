@@ -6,9 +6,6 @@
         font-size: 1em
       h3
         font-size: .9em
-      i.fa-play-circle
-        line-height: 200px
-        top: 0
     ul.tracks
       margin: 0 0 0 calc(200px + 1em)
 
@@ -16,13 +13,14 @@
   .album-detail
     .info
       max-width: 100%
-      i.fa-play-circle
-        line-height: 1.4
-        text-align: left
-        left: 0
-        bottom: 1.1em
-        font-size: 5em
-        padding-left: 20px
+      img
+        width: 200px
+        max-width: 50%
+        padding-right: 1em
+        float: left
+      .play-band
+        width: 200px
+        max-width: 50%
     ul.tracks
       clear: both
       margin: 1em 0 0 0
@@ -58,7 +56,6 @@
     top: 4em
     width: calc(100% - 50px)
   .album-actions
-    position: relative
     i.fa-play-circle
       top: auto
       bottom: 1em
@@ -66,12 +63,6 @@
       margin: 0
       margin-left: -.45em
       position: absolute
-    i.fa-plus-circle
-      bottom: 2em
-      top: auto
-    i.fa-download
-      bottom: 2em
-      top: auto
 
 @media screen and (max-width:486px)
 

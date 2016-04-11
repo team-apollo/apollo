@@ -1,24 +1,43 @@
-.album-detail
-  .info
+.info
+  width: 100%
+  max-width: 400px
+  float: left
+  position: relative
+  img
     width: 100%
-    max-width: 400px
-    float: left
-    position: relative
+    margin-bottom: .5em
+
+.play-band
+  $height: 3em
+  position: absolute
+  min-height: $height
+  top: 0
+  width: 100%
+  overflow: hidden
+  background: transparentize($black, .3)
+  transition: background .3s, opacity .3s
+  &:hover
+    background: $black
+    cursor: pointer
+    p
+      right: .5em
     i.fa-play-circle
-      font-size: 7em
-      position: absolute
-      width: 100%
-      line-height: 400px
-      text-align: center
-      transition: color .3s, text-shadow .3s
-      color: transparentize($font-color, .7)
-      &:hover
-        text-shadow: 0 0 10px transparentize($background, .5)
-        color: transparentize($font-color, .1)
-        cursor: pointer
-    img
-      width: 100%
-      margin-bottom: .5em
+      text-shadow: 0 0 10px transparentize($background, .5)
+      color: transparentize($font-color, .1)
+  i.fa-play-circle
+    float: left
+    padding: .2em
+    font-size: 2.5em
+    transition: color .3s, text-shadow .3s
+    color: transparentize($font-color, .7)
+  p
+    font-size: calc(#{$height} / 3)
+    margin: 0
+    line-height: $height
+    color: transparentize($white, .5)
+    position: absolute
+    right: -6em
+    transition: right .3s
 
 hr
   border: none
@@ -37,10 +56,12 @@ hr
   z-index: -1
 
 .album-list
+  .play-band
+    opacity: 0
   i.fa-download
     text-shadow: 0 0 10px $background
   ul
-    a
+    a:not(.download)
       background: url('http://placehold.it/250x250') no-repeat
       background-size: contain
 

@@ -33,14 +33,15 @@ ul
       line-height: 40px
       text-align: center
       text-transform: capitalize
-      color: transparentize($white, .5)
+      color: transparentize($font-color, .5)
       width: 50%
       box-sizing: border-box
       background: $background
+      transition: background .3s
       &:hover
         cursor: pointer
         background: lighten($btn-bg, 15)
-        color: $white
+        color: $font-color
       &.active
         background: $highlight
-        color: $white
+        color: $font-color

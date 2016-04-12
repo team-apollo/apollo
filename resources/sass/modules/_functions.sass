@@ -1,0 +1,5 @@
+@function set-font-color($color)
+  @if (lightness($color) > 50)
+    @return $black
+  @else
+    @return $light-font

@@ -3,6 +3,9 @@ body
   color: $font-color
   position: relative
   margin: 0
+  // animation: bg-trans 30s infinite
+  // -moz-animation: bg-trans 30s infinite
+  // -webkit-animation: bg-trans 30s infinite
 
 .left-column
   width: 250px
@@ -36,7 +39,7 @@ body
   line-height: 1.5
   font-size: .85em
   &:nth-of-type(even)
-    background: transparentize($white, .95)
+    background: transparentize($white, .92)
   @extend .no-select
   &:hover
     background: darken($background, 5)
@@ -52,7 +55,7 @@ body
     display: block
     box-sizing: border-box
   &.active
-    background: rgba(12,159,232,.25)
+    background: $highlight
     a, p
       color: $font-color
 
@@ -153,8 +156,8 @@ ul
   i
     opacity: 0
     transition: opacity .3s
-    text-shadow: 0 0 3px $background
-    color: $font-color
+    text-shadow: 0 0 3px $black
+    color: $white
     position: absolute
     padding: .5em
     &:hover, &:focus

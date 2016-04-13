@@ -26,6 +26,11 @@ body
 .content
   padding: 5em 1em 1em
 
+.admin
+  .content
+    margin-left: 50px
+    padding-top: 3em
+
 .no-select
   -webkit-touch-callout: none
   -webkit-user-select: none
@@ -47,13 +52,18 @@ body
     a, p
       color: $font-color
   a, p
-    color: transparentize($font-color, .25)
+    color: transparentize($font-color, .5)
     text-decoration: none
     padding: .5em .5em
     margin: 0
     width: 100%
     display: block
     box-sizing: border-box
+    span:first-of-type
+      width: 19px
+      display: inline-block
+      text-align: right
+      margin-right: .5em
   &.active
     background: $highlight
     a, p
@@ -64,18 +74,45 @@ body
     @extend .track-row
     position: relative
     overflow: hidden
-    &:hover:not(.active), &:focus
-      background: $background
+    height: 2.5em
+    &:hover, &:focus
+      i
+        right: .25em
+        transform: rotate(0deg)
+        opacity: .2
+      p, span
+        animation: text-scroll 5s infinite
+      span
+        animation-delay: -2.5s
+    i
+      position: absolute
+      right: -2.25em
+      top: .15em
+      transform: rotate(300deg)
+      opacity: 0
+      display: block
+      transition: opacity .3s, right .3s, transform .3s
+      -moz-transition: opacity .3s, right .3s, transform .3s
+      text-shadow: 0 0 4px transparentize($black, .25)
+      &:hover
+        opacity: 1
     p
       width: 100%
       overflow: hidden
       white-space: nowrap
       text-overflow: ellipsis
+      position: absolute
+      animation: 0
     span
-      @extend label.caption
-      font-size: 13px
-      margin-bottom: 0
-      margin-top: -1em
+      animation: 0
+      opacity: 0
+      font-size: 1em
+      margin-bottom: auto
+      margin-top: auto
+      position: absolute
+      top: 0
+      left: -3em
+      line-height: 1.5
 
 ul
   padding: 0
@@ -176,6 +213,8 @@ ul
     overflow: hidden
     img
       width: $image-med
+      background: url('../images/apollo_album.svg') no-repeat
+      background-size: contain
       padding-right: 1em
       float: left
     .specifics

@@ -126,9 +126,11 @@
       {:id (insert-track! cn track-info scan-date) :action :insert})))
 
 (defn insert-mount! [cn p]
-  (jdbc/execute! cn (-> (h/insert-into :mounts)
-                     (h/values {:path p})
-                     (sql/format))))
+  (let [q (-> (h/insert-into :mounts)
+              (h/columns :path)
+              (h/values [[p]])
+              (sql/format))]
+    (jdbc/execute! cn q)))
 
 (defn delete-mount!
   "returns rows effected which should be > 1 if successful"

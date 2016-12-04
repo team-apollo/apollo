@@ -1,24 +1,34 @@
-.album-detail
-  .info
-    width: 100%
-    max-width: 400px
-    float: left
-    position: relative
+.play-band
+  $height: 3em
+  position: absolute
+  min-height: $height
+  top: 0
+  width: 100%
+  overflow: hidden
+  background: transparentize(darken($background, 15), .3)
+  transition: background .3s, opacity .3s
+  &:hover
+    background: darken($background, 15)
+    cursor: pointer
+    p
+      right: .5em
     i.fa-play-circle
-      font-size: 7em
-      position: absolute
-      width: 100%
-      line-height: 400px
-      text-align: center
-      transition: color .3s, text-shadow .3s
-      color: transparentize($font-color, .7)
-      &:hover
-        text-shadow: 0 0 10px transparentize($background, .5)
-        color: transparentize($font-color, .1)
-        cursor: pointer
-    img
-      width: 100%
-      margin-bottom: .5em
+      text-shadow: 0 0 10px transparentize($background, .5)
+      color: transparentize($font-color, .1)
+  i.fa-play-circle
+    float: left
+    padding: .2em
+    font-size: 2.5em
+    transition: color .3s, text-shadow .3s
+    color: transparentize($font-color, .7)
+  p
+    font-size: calc(#{$height} / 3)
+    margin: 0
+    line-height: $height
+    color: transparentize($font-color, .5)
+    position: absolute
+    right: -6em
+    transition: right .3s
 
 hr
   border: none
@@ -37,11 +47,13 @@ hr
   z-index: -1
 
 .album-list
+  .play-band
+    opacity: 0
   i.fa-download
-    text-shadow: 0 0 10px $background
+    text-shadow: 0 0 10px $black
   ul
-    a
-      background: url('http://placehold.it/250x250') no-repeat
+    a:not(.download)
+      background: url('../images/apollo_album.svg') no-repeat
       background-size: contain
 
 .artist-detail
@@ -62,7 +74,7 @@ img.band
   right: 0
   left: 50px
   height: 2em
-  background: transparentize(darken($background, 10), .1)
+  background: darken($background, 15)
   width: calc(100% - 50px)
   z-index: 100
   padding: .5em
@@ -85,7 +97,7 @@ img.band
     user-select: none
     -webkit-user-select: none
     margin: 0 .5em
-    color: grayscale(lighten($background, 35))
+    color: transparentize($font-color, .6)
     transition: color .3s
     &:hover
       cursor: pointer
@@ -109,22 +121,3 @@ img.band
       background-color: lighten($background, 5)
       box-shadow: 0 2px 3px transparentize($background, .4) inset
 
-.playlist
-  li
-    &:hover, &:focus
-      i
-        right: .25em
-        transform: rotate(0deg)
-        opacity: .2
-    i
-      position: absolute
-      right: -2.25em
-      top: .35em
-      transform: rotate(300deg)
-      opacity: 0
-      display: block
-      transition: opacity .3s, right .3s, transform .3s
-      -moz-transition: opacity .3s, right .3s, transform .3s
-      text-shadow: 0 0 4px transparentize($black, .25)
-      &:hover
-        opacity: 1

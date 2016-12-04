@@ -19,14 +19,24 @@
          id (:id t)]
      (mk-track-url artist album id))))
 
+(defn track-number [track]
+  (let [t (:track track)
+        track-num (:track t)]
+      (utils/format "%s." track-num)))
+
 (defn track-label [track with-artist?]
   (let [t (:track track)
         track-num (:track t)
         track-title (:title t)
         artist (:artist t)]
     (if with-artist?
-      (utils/format "%s. %s by %s" track-num track-title artist)
-      (utils/format "%s. %s" track-num track-title))))
+      (utils/format "%s by %s" track-title artist)
+      (utils/format "%s" track-title))))
+
+(defn playlist-track [track]
+  (let [t (:track track)
+        track-title (:title t)]
+      (utils/format "%s" track-title)))
 
 (defn artist [track with-artist?]
   (let [t (:track track)
@@ -40,6 +50,7 @@
     (render [this]
       (let [t (:track track)
             duration (:duration t)
+            track-number (track-number track)
             track-label (track-label track compilation?)
             now-playing (or (first (om/observe owner (state/ref-now-playing))) {})
             np-t (or (:track now-playing) {"id" nil})
@@ -49,5 +60,6 @@
           [:a {:on-double-click (fn [e]
                            (put! channels/track-list [[track] 0])
                            (.preventDefault e))}
+           track-number
            track-label
            [:div.right (utils/format-duration duration)]]])))))

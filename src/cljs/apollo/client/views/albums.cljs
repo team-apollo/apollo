@@ -68,10 +68,13 @@
            [:li.no-select
             [:a {:href album-url}
              (om/build img {:src album-image})]
+            [:div.play-container
+             [:div.play-band {:on-click play-album}
+              [:i.fa.fa-play-circle.fa-lg]
+              [:p "Play Album"]]]
             [:span album-label]
             [:span album-year]
             [:div.album-actions
-             [:i.fa.fa-play-circle {:on-click play-album}]
              [:i.fa.fa-plus-circle.fa-lg {:on-click append-album}]
              [:a.download {:href album-zip-url}
               [:i.fa.fa-download.fa-lg]]]])))))
@@ -133,12 +136,15 @@
          [:h3
           [:a {:href artist-url} [:i.fa.fa-angle-left.fa-fw] "Back"]]
          [:div.info
-          [:i.fa.fa-play-circle.fa-lg {:on-click play-album}]
+          [:div.play-band {:on-click play-album}
+            [:i.fa.fa-play-circle.fa-lg]
+            [:p "Play Album"]]
           [:img {:src album-image}]
-          [:h2 album-name]
-          [:h3 album-year]
-          [:a.download {:href album-zip-url}
-           [:i.fa.fa-download.fa-fw] "Download Album"]]
+          [:div.specifics
+            [:h2 album-name]
+            [:h3 album-year]
+            [:a.download {:href album-zip-url}
+             [:i.fa.fa-download.fa-fw] "Download Album"]]]
          [:ul.tracks
           (om/build-all tracks/track-detail (map (fn [track] {:track track
                                                               :compilation? compilation?}) tracks (repeat compilation?)))

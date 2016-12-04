@@ -10,14 +10,14 @@ a
   position: fixed
   height: 100%
   width: 50px
-  background: darken($background, 10)
+  background: darken($background, 15)
   z-index: 10
   i
     display: block
     text-align: center
     font-size: 2em
     padding: .75em 0
-    color: transparentize($btn-bg, .3)
+    color: transparentize(set-font-color($theme), .6)
     transition: color .3s
     border-top: solid 1px $background
     border-bottom: solid 2px darken($background, 15)
@@ -26,12 +26,12 @@ a
     &:last-of-type
       border-bottom: none
     &:hover
-      color: $btn-bg
+      color: $font-color
       cursor: pointer
       &.active
-        color: $highlight
+        color: lighten($font-color,20)
     &.active
-      color: $highlight
+      color: lighten($font-color,20)
 
 ul.right-header
   position: absolute
@@ -57,7 +57,7 @@ ul.right-header
 .collection-nav
   letter-spacing: 1
   width: calc(100% - 300px)
-  background: darken($background, 10)
+  background: darken($background, 5)
   position: fixed
   top: 2em
   left: 300px
@@ -69,12 +69,9 @@ ul.right-header
     width: 50px
     text-align: center
     margin-top: 4px
+    display: none
   i
-    &.fa-stack-1x
-      color: $background
-      pointer-events: none
-      margin-top: 1px
-    &.fa-stack-2x
+    &.fa-chevron-circle-right
       color: $btn-bg
       &:hover
         color: lighten($btn-bg, 10)
@@ -84,12 +81,12 @@ ul.right-header
   ul
     margin: 0
     float: left
-    width: calc(100% - 50px)
+    width: 100%
     li
       @extend .no-select
       padding: 0
       margin: 0
-      width: calc(100% / 28)
+      width: calc(100% / 27.1)
       &.active
         a
           background: $highlight
@@ -99,7 +96,7 @@ ul.right-header
       a
         background: transparentize($btn-bg, .5)
         transition: background .3s
-        border-right: solid 1px darken($background, 10)
+        border-right: solid 1px darken($background, 15)
         display: block
         text-align: center
         box-sizing: border-box
@@ -108,7 +105,7 @@ ul.right-header
         font-size: .8em
         line-height: 40px
         text-decoration: none
-        color: white
+        color: $font-color
         text-transform: uppercase
 
 .album-detail

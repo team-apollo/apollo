@@ -49,10 +49,9 @@
   (om/component
    (html
     [:div.collection-nav
-     [:ul (om/build-all nav-item (map (fn [the-x the-active-nav] {:x the-x :active-nav the-active-nav}) nav-seq (repeat active-nav)))]
-     [:span.fa-stack
-      [:i.fa.fa-circle.fa-stack-2x]
-      [:i.fa.fa-ellipsis-h.fa-inverse.fa-stack-1x.fa-lg]]])))
+     [:span
+      [:i.fa.fa-chevron-circle-right.fa-2x]]
+     [:ul (om/build-all nav-item (map (fn [the-x the-active-nav] {:x the-x :active-nav the-active-nav}) nav-seq (repeat active-nav)))]])))
 
 (defn main-nav [data]
   (reify

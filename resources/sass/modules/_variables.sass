@@ -1,7 +1,19 @@
-$background: #262522
-$highlight: rgba(12,159,232,.25)
-$btn-bg: #363229
-$font-color: #F2ECE4
+$bg-1: #694B40
+$bg-2: #212C32
+$bg-3: #CECABC
+$bg-4: #262522
+$theme: $bg-4
+
 $main-font: "raleway", sans-serif
 $black: #111111
 $white: #BBBBBB
+$light-font: #F2ECE4
+$image-large: 350px
+$image-med: 250px
+$image-small: 150px
+
+$btn-bg: darken(adjust-hue($theme, -15deg), 5)
+$background: $theme
+$highlight: lighten(transparentize($theme,.5),30)
+
+$font-color: set-font-color($theme)

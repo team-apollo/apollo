@@ -1,13 +1,65 @@
-@media screen and (max-width: 1200px)
+@media screen and (max-width:799px)
   .album-detail
     .info
-      max-width: 200px
-      h2
-        font-size: 1em
-      h3
-        font-size: .9em
-      i.fa-play-circle
-        line-height: 200px
-        top: 0
+      max-width: 100%
+      img
+        width: $image-small
+        max-width: 50%
+      .specifics
+        width: calc(100% - (#{$image-small} + 1em))
+      .play-band
+        width: $image-small
+        max-width: 50%
     ul.tracks
-      margin: 0 0 0 calc(200px + 1em)
+      clear: both
+      margin: 1em 0 0 0
+      width: 100%
+
+  .player
+    height: 4em
+    background: darken($background, 10)
+    ul
+      width: 100%
+      text-align: center
+      margin-top: .5em
+    progress[value]
+      width: calc(100% - 85px)
+
+  .left-column
+    display: none
+
+  .middle-column
+    margin-left: 50px
+
+  .content
+    padding-top: 7em
+
+  .artist-detail, .artist-list
+    li
+      width: $image-small
+      max-width: 100%
+      img
+        max-height: $image-small
+        min-height: $image-small
+        height: auto !important
+
+  .collection-nav
+    left: 50px
+    top: 4em
+    width: calc(100% - 50px)
+    span
+      display: block
+    ul
+      width: calc(100% - 50px)
+
+  .album-actions
+    i.fa-play-circle
+      top: auto
+      bottom: 1em
+      left: 50%
+      margin: 0
+      margin-left: -.45em
+      position: absolute
+
+@media screen and (max-width:486px)
+

@@ -3,6 +3,9 @@ body
   color: $font-color
   position: relative
   margin: 0
+  // animation: bg-trans 30s infinite
+  // -moz-animation: bg-trans 30s infinite
+  // -webkit-animation: bg-trans 30s infinite
 
 .left-column
   width: 250px
@@ -19,13 +22,14 @@ body
 .middle-column
   margin-left: 300px
   box-sizing: border-box
-  .content
-    padding: 5em 1em 1em
 
 .content
-  padding: 2em 1em 1em
-  margin-left: 50px
+  padding: 5em 1em 1em
 
+.admin
+  .content
+    margin-left: 50px
+    padding-top: 3em
 
 .no-select
   -webkit-touch-callout: none
@@ -39,6 +43,8 @@ body
   color: $font-color
   line-height: 1.5
   font-size: .85em
+  &:nth-of-type(even)
+    background: transparentize($white, .92)
   @extend .no-select
   &:hover
     background: darken($background, 5)
@@ -46,15 +52,20 @@ body
     a, p
       color: $font-color
   a, p
-    color: transparentize($font-color, .25)
+    color: transparentize($font-color, .5)
     text-decoration: none
-    padding: .25em .5em
+    padding: .5em .5em
     margin: 0
     width: 100%
     display: block
     box-sizing: border-box
+    span:first-of-type
+      width: 19px
+      display: inline-block
+      text-align: right
+      margin-right: .5em
   &.active
-    background: rgba(12,159,232,.25)
+    background: $highlight
     a, p
       color: $font-color
 
@@ -63,24 +74,45 @@ body
     @extend .track-row
     position: relative
     overflow: hidden
-    &:hover:not(.active), &:focus
-      background: $background
+    height: 2.5em
+    &:hover, &:focus
+      i
+        right: .25em
+        transform: rotate(0deg)
+        opacity: .2
+      p, span
+        animation: text-scroll 5s infinite
       span
-        display: block
-    &.active
-      span
-        display: block
+        animation-delay: -2.5s
+    i
+      position: absolute
+      right: -2.25em
+      top: .15em
+      transform: rotate(300deg)
+      opacity: 0
+      display: block
+      transition: opacity .3s, right .3s, transform .3s
+      -moz-transition: opacity .3s, right .3s, transform .3s
+      text-shadow: 0 0 4px transparentize($black, .25)
+      &:hover
+        opacity: 1
     p
       width: 100%
       overflow: hidden
       white-space: nowrap
       text-overflow: ellipsis
+      position: absolute
+      animation: 0
     span
-      @extend label.caption
-      display: none
-      font-size: 13px
-      margin-bottom: 0
-      margin-top: -1em
+      animation: 0
+      opacity: 0
+      font-size: 1em
+      margin-bottom: auto
+      margin-top: auto
+      position: absolute
+      top: 0
+      left: -3em
+      line-height: 1.5
 
 ul
   padding: 0
@@ -101,40 +133,38 @@ ul
   li
     display: inline-block
     position: relative
-    width: 150px
+    width: $image-med
     margin: 0 1em 1em 0
     box-sizing: border-box
     &:hover
-      i
-        opacity: .6
       img
-        filter: grayscale(0)
-        -webkit-filter: grayscale(0)
-        -moz-filter: grayscale(0)
+        filter: grayscale(75%)
+        -webkit-filter: grayscale(75%)
+        -moz-filter: grayscale(75%)
     &.active
       border: solid 1px $highlight
     img
       width: 100%
       object-fit: cover
       height: auto
-      min-height: 150px
-      filter: grayscale(75%)
-      -webkit-filter: grayscale(75%)
-      -moz-filter: grayscale(75%)
+      min-height: $image-med
+      filter: grayscale(0)
+      -webkit-filter: grayscale(0)
+      -moz-filter: grayscale(0)
     a
       text-decoration: none
-      position: relative
       clear: both
       overflow: hidden
       display: block
       color: #3f3f3f
       &:hover, &:focus
-        i
-          opacity: 1
+        .album-actions
+          i
+            opacity: .5
         img
-          filter: grayscale(0)
-          -webkit-filter: grayscale(0)
-          -moz-filter: grayscale(0)
+          filter: grayscale(75%)
+          -webkit-filter: grayscale(75%)
+          -moz-filter: grayscale(75%)
     span
       color: $font-color
       position: relative
@@ -150,10 +180,60 @@ ul
         padding: .5em 0 0
       &:last-of-type
         opacity: .5
-    i
-      opacity: 0
-      transition: opacity .3s
-      text-shadow: 0 0 3px $background
+
+.play-container
+  position: absolute
+  top: 0
+  width: 100%
+
+.album-actions
+  position: absolute
+  bottom: 2.2em
+  width: 100%
+  i
+    opacity: 0
+    transition: opacity .3s
+    text-shadow: 0 0 3px $black
+    color: $white
+    position: absolute
+    padding: .5em
+    &:hover, &:focus
+      cursor: pointer
+    &.fa-download
+      left: 0
+      bottom: 0
+    &.fa-plus-circle
+      bottom: 0
+      right: 0
+
+.album-detail
+  .info
+    max-width: 100%
+    position: relative
+    overflow: hidden
+    img
+      width: $image-large
+      background: url('../images/apollo_album.svg') no-repeat
+      background-size: contain
+      padding-right: 1em
+      float: left
+    .specifics
+      width: calc(100% - (#{$image-large} + 1em))
+      float: left
+    .play-band
+      width: $image-large
+      max-width: 50%
+  ul.tracks
+    clear: both
+    margin: 1em 0 0 0
+    width: 100%
+  li
+    &:hover
+      .play-band
+        opacity: 1
+      .album-actions
+        i
+          opacity: 1
 
 .artist-list
   @extend .artist-detail
@@ -162,22 +242,22 @@ ul
   li
     display: inline-flex
     transition: box-shadow .3s
-    &:hover
-      box-shadow: 0 0 10px darken($background, 10)
     a
       padding: .5em
-      background: lighten($background, 10)
-      transition: background .3s, color .3s, text-shadow .3s
+      background: transparentize($white, .92)
+      transition: background .3s, color .3s
       display: block
       width: 100%
       height: 2.5em
-      line-height: 1.2
-      color: $font-color
+      line-height: 2.5em
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+      color: transparentize($font-color, .5)
       &:hover, &:focus
         cursor: pointer
-        background: lighten($btn-bg, 10)
-        color: lighten($font-color, 10)
-        text-shadow: 0 0 10px $background
+        background: darken($background, 5)
+        color: $font-color
         div
           left: 10%
     div
@@ -186,37 +266,12 @@ ul
       left: 0
       transition: left .3s
 
-.album-actions
+.album-container
   position: absolute
-  left: 0
-  top: 0
   width: 100%
+  top: 0
   a
     overflow: visible !important
-  i
-    color: $font-color
-    position: absolute
-    padding: .5em
-    &:hover, &:focus
-      opacity: 1 !important
-      cursor: pointer
-    &.fa-download
-      left: 0
-      top: 0
-    &.fa-plus-circle
-      top: 0
-      right: 0
-    &.fa-play-circle
-      font-size: 2.5em
-      padding: 0
-      left: 75px
-      top: 75px
-      margin-left: -17px
-      margin-top: -19px
-    &.fa-search
-      top: 111px
-      left: 0
-
 
 *:focus
   outline: 0 none !important

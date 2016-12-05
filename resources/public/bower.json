@@ -1,12 +1,10 @@
 {
-  "name": "apollo bower config libs(private)",
-  "version": "0.0.0",
+  "name": "Apollo_bower_config",
   "authors": [
-    "Tom Willis <twillis@topgunhq.com>"
+    "Tom Willis <tom.willis@gmail.com>"
   ],
-  "license": "private",
   "private": true,
   "dependencies": {
-    "fontawesome": "~4.4.0"
+    "font-awesome": "fontawesome#^4.7.0"
   }
 }

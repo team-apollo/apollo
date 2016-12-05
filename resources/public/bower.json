@@ -1,12 +1,22 @@
 {
-  "name": "apollo bower config libs(private)",
-  "version": "0.0.0",
+  "name": "public",
+  "homepage": "https://github.com/team-apollo/apollo",
   "authors": [
-    "Tom Willis <twillis@topgunhq.com>"
+    "Tony Trucco <tony.trucco@completeset.com>"
   ],
-  "license": "private",
+  "description": "",
+  "main": "",
+  "license": "MIT",
   "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "lib/",
+    "test",
+    "tests"
+  ],
   "dependencies": {
-    "fontawesome": "~4.4.0"
+    "font-awesome": "fontawesome#^4.7.0"
   }
 }

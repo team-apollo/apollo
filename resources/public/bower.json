@@ -2,6 +2,7 @@
   "name": "Apollo_bower_config",
   "authors": [
     "Tom Willis <tom.willis@gmail.com>"
+    "Tony Trucco <tony.trucco@completeset.com>"
   ],
   "private": true,
   "dependencies": {
